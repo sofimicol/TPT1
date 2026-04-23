@@ -1,6 +1,8 @@
 #ifndef TAD_SET_H
 #define TAD_SET_H
-#include "str.h"
+#ifndef TAD_SET_H
+#define TAD_SET_H
+#include "String.h"
 #include <stdio.h>
 #include <stdlib.h>
 #define STR 1
@@ -22,12 +24,17 @@ typedef struct dataType* Tdata; // Tdata es un Puntero a un arbol
 
 void insert_set(Tdata* set, Tdata elem); //pasa el conjunto por referencia y se inserta un nuevo elemento (sin duplicados)
 int belongs(Tdata set, Tdata elem); //retorna 0 si no pertenece, 1 si pertenece el elemento al conjunto
-void remove_set(Tdata* set, Tdata elem); //elimina un elemento del conjunto
+void remove_set(Tdata* set, Tdata elem); ///elimina un elemento del conjunto
 Tdata create_set();
 // Operaciones algebraicas
-Tdata union_set(Tdata A, Tdata B); 
-Tdata intersection_set(Tdata A, Tdata B); 
+Tdata union_set(Tdata A, Tdata B); //facu
+Tdata intersection_set(Tdata A, Tdata B); //facu
 Tdata difference_set(Tdata A, Tdata B); // son los elementos que pertenecen al primer conjunto y no pertenecen al segundo conjunto
-int subset(Tdata A, Tdata B);//retorna 1 si es subconjunto y 0 si no lo es
-int equals_set(Tdata A, Tdata B); //retorna 1 si son iguales y 0 si no lo son
+int subset(Tdata A, Tdata B);///retorna 1 si es subconjunto y 0 si no lo es
+int equals_set(Tdata A, Tdata B); ///retorna 1 si son iguales y 0 si no lo son
+void append(Tdata* list, Tdata elem); //sofi
+int length(Tdata list);//tamaño de la lista
+Tdata copy_list(Tdata list) (copia profunda); //sofi
+Tdata concat(Tdata l1, Tdata l2); //facu
+int search(Tdata list, Tdata elem);///
 #endif

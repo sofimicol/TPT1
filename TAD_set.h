@@ -1,6 +1,6 @@
 #ifndef TAD_SET_H
 #define TAD_SET_H
-#include "String.h"
+#include "str.h"
 #include <stdio.h>
 #include <stdlib.h>
 #define STR 1

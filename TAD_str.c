@@ -28,7 +28,7 @@ void append_str(str*cabeza,str nuevo){ //insertar lista de caracteres (por cola)
 
 str load(){ //insertar una cadena de caracteres por consola y se convierte en una lista enlazada de caracteres
 	str lis;// sera la cabeza de la lista de caracteres (puntero al primer nodo de la lista)
-	str nuevo; // sera el nodo único que contiene un caracter
+	str nuevo; // sera el nodo Ãºnico que contiene un caracter
 	lis=nuevo=NULL;
 	char c;	//se utilizara como variable para procesar cada caracter de la cadena
 	printf("\nIngrese la cadena a procesar: "); //el buffer de entrada queda en espera de el ingreso de una cadena 
@@ -95,11 +95,11 @@ int compare_str(str cad1, str cad2){
 			return 0;
 		}
 		
-		// si una es más larga
+		// si una es mÃ¡s larga
 		if(cad1==NULL){
-			return -1; //s1 es más corta
+			return -1; //s1 es mÃ¡s corta
 		} else {
-			return 1;  //s2 es más corta
+			return 1;  //s2 es mÃ¡s corta
 		}
 }
 void free_str(str c){ //libera memoria de str 
@@ -110,4 +110,14 @@ void free_str(str c){ //libera memoria de str
 		free(aux);
 		}
 }
-
+str copy_str(str original) {
+	str nueva_lista = NULL; 
+	str aux = original;     
+	str nuevo_nodo;
+	while (aux != NULL) {
+		nuevo_nodo = create_nodo(aux->data);
+		append_str(&nueva_lista, nuevo_nodo);
+		aux = aux->next;
+	}
+	return nueva_lista; 
+}

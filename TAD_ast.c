@@ -369,7 +369,7 @@ Tdata copy_list(Tdata list) {//Copia una lista y la retorna
 	}
 	Tdata nuevo = copia_ast(list);
 	if (list->nodeType == 1) {
-		nuevo->string = //copia(list->string);  //Necesito una funcion que copie cadenas, tal como lo hace el strcopy.
+		nuevo->string = //copy_str(list->string);  
 	} else { //Si el elemento es una lista o conjunto entonces tiene mas elementos por lo que llamo a la misma funcion con el sig elem anidado
 		nuevo->data = copy_list(list->data); 
 		nuevo->next = copy_list(list->next);

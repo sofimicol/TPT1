@@ -332,4 +332,70 @@ Tdata difference_set(Tdata A, Tdata B) {
 	}
 	return resultado;
 }
+int equals_node(Tdata n1, Tdata n2) {
+	if (n1 == NULL && n2 == NULL) 
+		return 1;
+	else {
+		if(n1 == NULL || n2 == NULL)
+			return 0;
+		else { 
+			if (n1->nodeType != n2->nodeType) 
+				return 0;
+			else {
+				if (n1->nodeType == 1) { 
+					return compare_str(n1->string, n2->string);
+				} else { // Comparación estructural para Listas/Conjuntos
+					return equals_node(n1->data, n2->data) && equals_node(n1->next, n2->next);
+				}
+			}
+		}
+	}
+}
+
+int search(Tdata list, Tdata elem) {
+	Tdata aux = list;
+	while (aux != NULL) {
+		if (equals_node(aux->data, elem)) { //Comparo los nodos
+			return 1; // El elemento se ecnontro en la lista
+		}
+		aux = aux->next; //Contuinua el ciclo hasta que se termine la lista
+	}
+	return 0; //El elemento no se encontro 
+}
+
+Tdata copy_list(Tdata list) {//Copia una lista y la retorna
+	if (list == NULL) { // Verifica que la lista no este vacia
+		return NULL;
+	}
+	Tdata nuevo = copia_ast(list);
+	if (list->nodeType == 1) {
+		nuevo->string = copia_ast(list->string); 
+	} else { //Si el elemento es una lista o conjunto entonces tiene mas elementos por lo que llamo a la misma funcion con el sig elem anidado
+		nuevo->data = copy_list(list->data); 
+		nuevo->next = copy_list(list->next);
+	}
+	return nuevo; //Retorno el nuevo arbol 
+}
+
+int subset(Tdata A, Tdata B) {
+	Tdata auxA = A;
+	while (auxA != NULL) {
+		if (search(B, auxA->data) == 0) {//Busca el elemento en la lista 
+			return 0;//El elemento no esta en el conjunto 
+		}
+		auxA = auxA->next;
+	}
+	return 1; //Todos los elementos de B estan en A
+}
+
+int equals_set(Tdata A, Tdata B) {
+	int a_en_b = subset(A, B);
+	int b_en_a = subset(B, A);
+	if (a_en_b == 1 && b_en_a == 1) {//Si A esta contenida en B y B esta contenida en A, entonces son iguales
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
 #endif

@@ -188,7 +188,31 @@ Tdata intersection_set(Tdata A, Tdata B) {
 	}
 	return resultado;
 }
-Tdata difference_set(Tdata A, Tdata B); // son los elementos que pertenecen al primer conjunto y no pertenecen al segundo conjunto
+Tdata difference_set(Tdata A, Tdata B) { // Tomando el encuenta orede de los parametros de tipo A - B
+	Tdata resultado crate_set();
+	Tdata aux1 = A;
+	Tdata aux2 = B;
+	Tdata fin;
+	
+	if(esvacio(A) == 0 || esvacio(B) == 0){
+		resultado = copia_ast(A);
+	}else {
+		resultado = copia_ast(A);
+		while(aux1 != NULL) {
+			while(aux2 != NULL && belong(aux1->data, aux2->data) == 1) {
+				aux2 = aux2->next;
+			}
+			nuevo = create_set();
+			nuevo->data= copia_ast(aux2->data);
+			
+			nuevo->next = resultado;
+			resultado = nuevo;
+			
+			aux1 = aux1->next;
+		}
+	}
+	return resultado;
+} // son los elementos que pertenecen al primer conjunto y no pertenecen al segundo conjunto
 int subset(Tdata A, Tdata B){ // {1,2} {1,3,4,5,6} o {1,2,3,4,5,6} {1,2} // crear un modulo que retorne el tamaño y se comparen, A debe ser mas pequeño de B
 	//suponiendo que la funcion pregunta que A contiene a B
 	int ban=0;

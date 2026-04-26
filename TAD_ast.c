@@ -462,7 +462,7 @@ int equals_node(Tdata n1, Tdata n2) {
 				if (n1->nodeType == 1) { 
 					return compare_str(n1->string, n2->string);
 				} else { // Comparación estructural para Listas/Conjuntos
-					return equals_node(n1->next, n2->next);
+					return equals_node(n1->data, n2->data) && equals_node(n1->next, n2->next);
 				}
 			}
 		}

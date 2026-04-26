@@ -158,7 +158,36 @@ Tdata union_set(Tdata A, Tdata B) {
 	}
 	return resultado;
 } 
-Tdata intersection_set(Tdata A, Tdata B); 
+Tdata intersection_set(Tdata A, Tdata B) {
+	Tdata resultado = create_set();
+	Tdata aux1 = A;
+	Tdata aux2 = B;
+	Tdata fin;
+	
+	if (esvacio(A == 0) {
+		resultado = copia_ast(A);
+	}else {
+		if(estavacio(B) == 0) {
+			resultado = copia_ast(B);
+		}else {
+			resultado = copia_ast(A);
+			while(aux1 != NULL) {
+				while(aux2 != NULL && belong(aux1->data, aux2->data) == 0) {
+					aux2 = aux2->next;
+				}
+				
+				nuevo = create_set();
+				nuevo->data = copia_ast(aux2->data);
+				
+				nuevo->next = resultado;
+				resultado = nuevo;
+				
+				aux1 = aux1->next;
+			}
+		}
+	}
+	return resultado;
+}
 Tdata difference_set(Tdata A, Tdata B); // son los elementos que pertenecen al primer conjunto y no pertenecen al segundo conjunto
 int subset(Tdata A, Tdata B){ // {1,2} {1,3,4,5,6} o {1,2,3,4,5,6} {1,2} // crear un modulo que retorne el tamaño y se comparen, A debe ser mas pequeño de B
 	//suponiendo que la funcion pregunta que A contiene a B

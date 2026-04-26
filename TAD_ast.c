@@ -124,10 +124,98 @@ void eliminarprimero(Tdata* set){
 	}
 }
 
-// Operaciones algebraicas
-Tdata union_set(Tdata A, Tdata B); 
-Tdata intersection_set(Tdata A, Tdata B); 
-Tdata difference_set(Tdata A, Tdata B); // son los elementos que pertenecen al primer conjunto y no pertenecen al segundo conjunto
+// Operaciones algebraicas.
+Tdata union_set(Tdata A, Tdata B) { // Crea un set y carga la unio de A y B
+	Tdata resultado = create_set(); // Declaro set
+	Tdata fin = resultado;
+	Tdata aux; 
+	Tdata nuevo;
+	
+	if(esvacio(A) == 1 && esvacio(B) == 1) {
+		resultado = copy_ast(A); // Copio los datos de set A a set resultado
+		aux = B;
+		
+		while(fin != NULL) {
+			fin = fin->next;
+		}
+		while(aux != NULL) {
+			if (belong(fin->data, aux->data) == 0) {
+				nuevo = create_set(); // Declaro nuevo set
+				//nuevo->data = copia_ast(aux->data); //Copio los datos de set B a set nuevo
+				
+				nuevo->next = fin; // Carga al final de la lista
+				fin = nuevo;
+			}
+			aux = aux->next;
+		}
+		
+	}else {
+		if(esvacio(A) == 1 && esvacio(B) == 0) {
+			resultado = copy_ast(A); // Copio los datos de set A a set resultado
+		}else {
+			resultado = copy_ast(B); // Copio los datos de set B a set resultado
+		}
+	}
+	return resultado;
+}
+
+Tdata intersection_set(Tdata A, Tdata B) { // Crea un set y lo carga con la interseccion de A y B
+	Tdata resultado = create_set();
+	Tdata aux1 = A;
+	Tdata aux2 = B;
+	Tdata fin;
+	
+	if (esvacio(A == 0) {
+		resultado = copia_ast(A);
+	}else {
+		if(estavacio(B) == 0) {
+			resultado = copia_ast(B);
+		}else {
+			resultado = copia_ast(A);
+			while(aux1 != NULL) {
+				while(aux2 != NULL && belong(aux1->data, aux2->data) == 0) {
+					aux2 = aux2->next;
+				}
+				
+				nuevo = create_set();
+				nuevo->data = copia_ast(aux2->data);
+				
+				nuevo->next = resultado;
+				resultado = nuevo;
+				
+				aux1 = aux1->next;
+			}
+		}
+	}
+	return resultado;
+}
+
+Tdata difference_set(Tdata A, Tdata B) { // Tomando el encuenta orede de los parametros de tipo A - B
+	Tdata resultado crate_set();
+	Tdata aux1 = A;
+	Tdata aux2 = B
+	Tdata fin;
+	
+	if(esvacio(A) == 0 || esvacio(B) == 0){
+		resultado = copia_ast(A);
+	}else {
+		resultado = copia_ast(A);
+		while(aux1 != NULL) {
+			while(aux2 != NULL && belong(aux1->data, aux2->data) == 1) {
+				aux2 = aux2->next;
+			}
+			nuevo = create_set();
+			nuevo->data= copia_ast(aux2->data);
+			
+			nuevo->next = resultado;
+			resultado = nuevo;
+			
+			aux1 = aux1->next;
+		}
+	}
+	return resultado;
+}
+
 int subset(Tdata A, Tdata B){ // {1,2} {1,3,4,5,6} o {1,2,3,4,5,6} {1,2} // crear un modulo que retorne el tamaño y se comparen, A debe ser mas pequeño de B
 	//suponiendo que la funcion pregunta que A contiene a B
 	int ban=0;

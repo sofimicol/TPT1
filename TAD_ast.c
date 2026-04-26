@@ -60,6 +60,38 @@ Tdata cargar_conjunto(){
 	} while(opcion!=0);
 	
 }
+Tdata concat(Tdata L1, Tdata L2) { 
+	Tdata resultado = creat_list(); // Declaro set
+	Tdata fin = resultado;
+	Tdata aux;
+	Tdata nuevo;
+	
+	if(esvacio(L1) == 1 && esvacio(L2) == 1) {
+		resultado = copia_ast(L1);
+		aux = L2;
+		
+		while(fin->next != NULL) {
+			fin = fin->next;
+		}
+		
+		while(L2 != NULL) {
+			nuevo = creat_list();
+			nuevo->data = copia_ast(L2, 2);
+			
+			fin->next = nuevo;
+			fin = nuevo;
+			
+			L2 = L2->next;
+		}
+	}else {
+		if(esvacio(L1) == 1 && esvacio(L2) == 0) {
+			resultado = copia_ast(L1);
+		}else {
+			resultado = copia_ast(L2); // Le copio el nuelo?
+		}
+	}
+	return resultado;
+}
 void insert_set(Tdata* set, Tdata elem){ //insertar un elemento en un conjunto sin duplicados
 	Tdata aux;
 	if(esvacio(*set)==1){

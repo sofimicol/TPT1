@@ -13,13 +13,13 @@ void insert_set(Tdata* set, Tdata elem){ //insertar un elemento en un conjunto s
 		aux->next=copia_ast(elem);
 	}
 }
-int belongs(Tdata set, Tdata elem){ //pertenece elem es str o set-list
+int belongs(Tdata set, Tdata elem) { //pertenece elem es str o set-list
 	Tdata aux;
 	if(esvacio(set)==1){
 		return 0;
 	}
 	aux=set;
-	while(aux->next!=NULL && compara(aux->data,elem->data)){  // crear una funcion que sea son distintos y se pasen los data?
+	while(aux->next!=NULL && compara(aux->data,elem->data)) {  // crear una funcion que sea son distintos y se pasen los data?
 		aux=aux->next;
 	}
 	if(aux->next==NULL){
@@ -27,6 +27,7 @@ int belongs(Tdata set, Tdata elem){ //pertenece elem es str o set-list
 	}
 	else{
 		return 1; //el elem pertenece al conjunto
+	}
 }
 	void remove_set(Tdata* set, Tdata elem){ //elem es str o set-list
 		Tdata actual;

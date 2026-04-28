@@ -71,12 +71,12 @@ Tdata union_set(Tdata A, Tdata B) {
 				nuevo->data = copia_ast(aux->data); // Copio los datos de  A a nuevo
 				append(&resultado, nuevo); // 
 				B = B->next;
-		}		
+			}
 		}else {
 			if(esvacio(A) == 1 && esvacio(B) == 0) {
-					resultado = copy_ast(A); // Copio los datos de set A a set resultado
+				resultado = copy_ast(A); // Copio los datos de set A a set resultado
 			}else {
-					resultado = copy_ast(B); // Copio los datos de set B a set resultado
+				resultado = copy_ast(B); // Copio los datos de set B a set resultado
 			}
 		}
 	return resultado;

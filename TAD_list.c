@@ -48,25 +48,19 @@ Tdata copy_list(Tdata list) {//Copia una lista y la retorna  [1,{0,1},[1]]
 }
 Tdata concatena_list(Tdata L1, Tdata L2) { 
 	Tdata resultado = creat_list(); // Declaro set
-	Tdata fin = resultado;
 	Tdata aux;
 	Tdata nuevo;
 	if(esvacio(L1) == 1 && esvacio(L2) == 1) {
 		resultado = copia_ast(L1);
 		aux = L2;
 		
-		while(fin->next != NULL) {
-			fin = fin->next;
-		}
 		while(L2 != NULL) {
 			nuevo = creat_list();
 			nuevo->data = copia_ast(L2, 2); //{0,1}
-			//append
-			fin->next = nuevo;
-			fin = nuevo;
-			
+			append(&nuevo, L2);
 			L2 = L2->next;
 		}
+		
 	}else {
 		if(esvacio(L1) == 1) {
 			resultado = copia_ast(L1);

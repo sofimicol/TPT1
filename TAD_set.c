@@ -56,41 +56,34 @@ int belongs(Tdata set, Tdata elem){ //pertenece elem es str o set-list
 // Operaciones algebraicas
 Tdata union_set(Tdata A, Tdata B) {
 	Tdata resultado = create_set(); // Declaro set
-	Tdata fin = resultado;
-			Tdata aux; 
-			Tdata nuevo;
+	Tdata aux;
+	Tdata nuevo;
 			
-			if(esvacio(A) == 1 && esvacio(B) == 1) {
-				resultado = copy_ast(A); // Copio los datos de set A a set resultado
-				aux = B;
-				
-				while(fin != NULL) {
-					fin = fin->next;
-				}
-				while(aux != NULL) {
-					if (belong(fin->data, aux->data) == 0) {
-						nuevo = create_set(); // Declaro nuevo set
-						//nuevo->data = copia_ast(aux->data); //Copio los datos de set B a set nuevo
-						
-						nuevo->next = fin; // Carga al final de la lista
-						fin = nuevo;
-					}
+	if(esvacio(A) == 1 && esvacio(B) == 1) {
+			resultado = copy_ast(A); // Copio los datos de A a set resultado
+			while(B != NULL) {
+				aux = A;
+				While(aux != NULL && belong(B->data, A->data) == 1) {
 					aux = aux->next;
 				}
-				
-			}else {
-				if(esvacio(A) == 1 && esvacio(B) == 0) {
+				nuevo = create_set(); // Declaro nuevo set
+				nuevo->data = copia_ast(aux->data); // Copio los datos de  A a nuevo
+				append(&resultado, nuevo); // 
+				B = B->next;
+		}		
+		}else {
+			if(esvacio(A) == 1 && esvacio(B) == 0) {
 					resultado = copy_ast(A); // Copio los datos de set A a set resultado
-				}else {
+			}else {
 					resultado = copy_ast(B); // Copio los datos de set B a set resultado
-				}
 			}
-			return resultado;
-		} 
+		}
+	return resultado;
+} 
 Tdata intersection_set(Tdata A, Tdata B) {
 	Tdata resultado = create_set();
-	Tdata aux1 = A;
-	Tdata aux2 = B;
+	Tdata aux1;
+	Tdata aux2;
 	Tdata nuevo=NULL;
 	
 	if (esvacio(A == 0)) {
@@ -100,17 +93,15 @@ Tdata intersection_set(Tdata A, Tdata B) {
 			resultado = copia_ast(B);
 		}else {
 			resultado = copia_ast(A);
+			aux1 = A;
 			while(aux1 != NULL) {
+				aux2 = B
 				while(aux2 != NULL && belong(aux1->data, aux2->data) == 0) {
 					aux2 = aux2->next;
 				}
-				
 				nuevo = create_set();
 				nuevo->data = copia_ast(aux2->data);
-				
-				nuevo->next = resultado;
-				resultado = nuevo;
-				
+				append(&rasultado, nuevo);
 				aux1 = aux1->next;
 			}
 		}
@@ -119,23 +110,22 @@ Tdata intersection_set(Tdata A, Tdata B) {
 }
 Tdata difference_set(Tdata A, Tdata B) { // Tomando el encuenta orede de los parametros de tipo A - B
 	Tdata resultado=create_set();
-	Tdata aux1 = A;
-	Tdata aux2 = B;
+	Tdata aux1;
+	Tdata aux2;
 	Tdata nuevo=NULL;
 	if(esvacio(A) == 0 || esvacio(B) == 0){
 		resultado = copia_ast(A);
 	}else {
 		resultado = copia_ast(A);
+		aux1 = A;
 		while(aux1 != NULL) {
+			aux2 = B;
 			while(aux2 != NULL && belong(aux1->data, aux2->data) == 1) {
 				aux2 = aux2->next;
 			}
 			nuevo = create_set();
 			nuevo->data= copia_ast(aux2->data);
-			
-			nuevo->next = resultado;
-			resultado = nuevo;
-			
+			append(&resultado, nuevo);
 			aux1 = aux1->next;
 		}
 	}

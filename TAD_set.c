@@ -63,7 +63,7 @@ Tdata union_set(Tdata A, Tdata B) {
 			resultado = copy_ast(A); // Copio los datos de A a set resultado
 			while(B != NULL) {
 				aux = A;
-				While(aux != NULL && belong(B->data, A->data) == 1) {
+				while(aux != NULL && belong(B->data, A->data) == 1) {
 					aux = aux->next;
 				}
 				nuevo = create_set(); // Declaro nuevo set

@@ -64,7 +64,7 @@ Tdata union_set(Tdata A, Tdata B) {
 			resultado = copy_ast(A); // Copio los datos de A a set resultado
 			while(B != NULL) {
 				aux = A;
-				while(aux != NULL && belong(B->data, A->data) == 1) {
+				while(aux != NULL && belongs(B->data, A->data) == 1) {
 					aux = aux->next;
 				}
 				nuevo = create_set(); // Declaro nuevo set
@@ -97,7 +97,7 @@ Tdata intersection_set(Tdata A, Tdata B) {
 			aux1 = A;
 			while(aux1 != NULL) {
 				aux2 = B
-				while(aux2 != NULL && belong(aux1->data, aux2->data) == 0) {
+				while(aux2 != NULL && belongs(aux1->data, aux2->data) == 0) {
 					aux2 = aux2->next;
 				}
 				nuevo = create_set();
@@ -121,7 +121,7 @@ Tdata difference_set(Tdata A, Tdata B) { // Tomando el encuenta orede de los par
 		aux1 = A;
 		while(aux1 != NULL) {
 			aux2 = B;
-			while(aux2 != NULL && belong(aux1->data, aux2->data) == 1) {
+			while(aux2 != NULL && belongs(aux1->data, aux2->data) == 1) {
 				aux2 = aux2->next;
 			}
 			nuevo = create_set();

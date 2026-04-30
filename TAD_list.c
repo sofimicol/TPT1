@@ -46,16 +46,16 @@ Tdata copy_list(Tdata list) {
 	}
 	return nuevo; // Retorno el nuevo arbol 
 }
-Tdata concat(Tdata L1, Tdata L2) {
+Tdata concat(Tdata list1, Tdata list2) {
     Tdata resultado = create_list();
     Tdata aux;
 	 // Copio los elementos de L1 a resultado
-    aux = L1;
+    aux = list1;
     while(aux != NULL){
         append(&resultado, aux->data);
         aux = aux->next;
     }
-    aux = L2; 
+    aux = list2; 
 	 // Copio los elementos de L2 al final de resultado
     while(aux != NULL){
         append(&resultado, aux->data);

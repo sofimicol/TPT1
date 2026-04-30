@@ -33,4 +33,5 @@ void eliminarprimero(Tdata* ast);
 void free_ast(Tdata ast);
 int equals_node(Tdata nodo, Tdata nodo);
 Tdata prod_cartesiano(Tdata ast, Tdata ast);
+
 #endif

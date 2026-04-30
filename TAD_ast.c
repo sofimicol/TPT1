@@ -2,9 +2,6 @@
 #include "TAD_set.h"
 #include "TAD_list.h"
 
-Tdata copia_ast(Tdata elemento);
-int esvacio(Tdata ast);
-
 Tdata create_str(){ 
 	Tdata str = malloc(sizeof(struct dataType));
 	str->nodeType = 1;
@@ -56,92 +53,6 @@ void mostrarArbol(Tdata arbol) {
 		printf("\nVacio");
 	} 
 }
-int equals_node(Tdata n1, Tdata n2) { // Retorna 1 si son iguales 
-	if (n1 == NULL && n2 == NULL){ 
-		return 1;
-	}else {
-		if(n1 == NULL || n2 == NULL){
-			return 0;
-		}else { 
-			if (n1->nodeType != n2->nodeType){
-				return 0;
-			}else {
-				if (n1->nodeType == 1) { 
-					return compare_str(n1->string, n2->string); 
-				} else {
-					
-					// Comparación estructural para Listas/Conjuntos
-					if(equals_node(n1->data, n2->data) && equals_node(n1->next, n2->next)){
-						return 1;
-					}
-					return 0;
-				}
-			}
-		}
-	}
-}
-void eliminarprimero(Tdata* ast) {
-	Tdata aux = (ast)->data;
-	(ast)->data = aux->next;
-	free_ast(aux);
-}
-void free_ast(Tdata ast) {
-	if (ast == NULL) return;
-	
-	if (ast->nodeType ==1) {
-		free_str(ast->string);
-	}
-	else {
-		Tdata aux = ast->data;
-		while (aux != NULL) {
-			Tdata next = aux->next;
-			free_ast(aux);
-			aux = next;
-		}
-	}
-	free(ast);
-}
-Tdata prod_cartesiano(Tdata a, Tdata b) {
-	if (a == NULL || b == NULL || a->data == NULL || b->data == NULL) return create_list();
-	Tdata prod = create_list();
-	Tdata auxa = a->data; // Recorremos los eslabones de la lista A
-	while (auxa != NULL) {
-		Tdata auxb = b->data; // Recorremos los eslabones de la lista B
-		while (auxb != NULL) {
-			
-			// Creamos un nuevo "par": [elementoA, elementoB]
-			Tdata par = create_list();
-			append(&par, auxa->data); // Metemos el elemento de A
-			append(&par, auxb->data); // Metemos el elemento de B
-			
-			// Añadimos ese par a la lista de resultados
-			append(&prod, par);
-			auxb = auxb->next;
-		}
-		auxa = auxa->next;
-	}
-	return prod;
-}
-void append(Tdata* list, Tdata elem) {
-	
-	if (elem != NULL){	
-		Tdata nuevo = create_list();          
-		nuevo->data = copy_ast(elem);         
-		nuevo->next = NULL;
-		if ((*list)->data == NULL) {
-			(*list)->data = nuevo;
-		}else {
-			Tdata aux = (*list)->data;
-				while (aux->next != NULL) {
-					aux = aux->next;
-				}
-			aux->next = nuevo;
-		}
-	}else {
-		printf("\nLista vacia");
-	}
-}
- // Funciones Preivadas
 Tdata copy_ast(Tdata list) { // Copia una lista y la retorna  [1,{0,1},[1]]
 	Tdata nuevo;
 	if (list == NULL) { // Verifica que la lista no este vacia
@@ -166,12 +77,97 @@ Tdata copy_ast(Tdata list) { // Copia una lista y la retorna  [1,{0,1},[1]]
 	}
 	return nuevo; // Retorno el nuevo arbol 
 }
+/*void append(Tdata* list, Tdata elem) {
+	
+	if (elem != NULL){	
+		Tdata nuevo = create_list();          
+		nuevo->data = copy_ast(elem);         
+		nuevo->next = NULL;
+		if ((*list)->data == NULL) {
+			(*list)->data = nuevo;
+		}else {
+			Tdata aux = (*list)->data;
+				while (aux->next != NULL) {
+					aux = aux->next;
+				}
+			aux->next = nuevo;
+		}
+	}else {
+		printf("\nLista vacia");
+	}
+}*/
 int esvacio(Tdata ast){
 	if (ast==NULL){
 		return 1; //1 si es vacio
 	}else{
 		return 0;
 	}
+}
+void eliminarprimero(Tdata* ast) {
+	Tdata aux = (ast)->data;
+	(ast)->data = aux->next;
+	free_ast(aux);
+}
+void free_ast(Tdata ast) {
+	if (ast == NULL) return;
+	
+	if (ast->nodeType ==1) {
+		free_str(ast->string);
+	}
+	else {
+		Tdata aux = ast->data;
+		while (aux != NULL) {
+			Tdata next = aux->next;
+			free_ast(aux);
+			aux = next;
+		}
+	}
+	free(ast);
+}
+int equals_node(Tdata n1, Tdata n2) { // Retorna 1 si son iguales 
+	if (n1 == NULL && n2 == NULL){ 
+		return 1;
+	}else {
+		if(n1 == NULL || n2 == NULL){
+			return 0;
+		}else { 
+			if (n1->nodeType != n2->nodeType){
+				return 0;
+			}else {
+				if (n1->nodeType == 1) { 
+					return compare_str(n1->string, n2->string); 
+				} else {
+					
+					// Comparación estructural para Listas/Conjuntos
+					if(equals_node(n1->data, n2->data) && equals_node(n1->next, n2->next)){
+						return 1;
+					}
+					return 0;
+				}
+			}
+		}
+	}
+}
+Tdata prod_cartesiano(Tdata a, Tdata b) {
+	if (a == NULL || b == NULL || a->data == NULL || b->data == NULL) return create_list();
+	Tdata prod = create_list();
+	Tdata auxa = a->data; // Recorremos los eslabones de la lista A
+	while (auxa != NULL) {
+		Tdata auxb = b->data; // Recorremos los eslabones de la lista B
+		while (auxb != NULL) {
+			
+			// Creamos un nuevo "par": [elementoA, elementoB]
+			Tdata par = create_list();
+			append(&par, auxa->data); // Metemos el elemento de A
+			append(&par, auxb->data); // Metemos el elemento de B
+			
+			// Añadimos ese par a la lista de resultados
+			append(&prod, par);
+			auxb = auxb->next;
+		}
+		auxa = auxa->next;
+	}
+	return prod;
 }
 	// funciones de carga por consola trash
 /*Tdata create_gen(int tipo){ // Selector de tipos de datos

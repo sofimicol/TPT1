@@ -25,18 +25,18 @@ Tdata create_list(){
 void mostrarArbol(Tdata arbol) {
 	if(arbol!=NULL){
 		switch (arbol->nodeType) {
-		case 1:
-			print(arbol->string);
+			case 1:
+				print(arbol->string);
 			break;
-		case 2:
-			printf("{");
-			Tdata aux1 = arbol->data;
-			while (aux1 != NULL) {
-				mostrarArbol(aux1->data);
-				aux1 = aux1->next;
-				if (aux1 != NULL) printf(",");
-			}
-			printf("}");
+			case 2:
+				printf("{");
+				Tdata aux1 = arbol->data;
+				while (aux1 != NULL) {
+					mostrarArbol(aux1->data);
+					aux1 = aux1->next;
+					if (aux1 != NULL) printf(",");
+				}
+				printf("}");
 			break;
 			case 3:
 				printf("[");
@@ -47,7 +47,7 @@ void mostrarArbol(Tdata arbol) {
 					if (aux != NULL) printf(",");
 				}
 				printf("]");
-				break;
+			break;
 		}
 	}else {
 		printf("\nVacio");
@@ -63,7 +63,6 @@ Tdata copy_ast(Tdata list) { // Copia una lista y la retorna  [1,{0,1},[1]]
 		nuevo=create_str();
 		nuevo->string = copy_str(list->string);  
 	} else {
-		
 		// Si el elemento es una lista o conjunto entonces tiene mas elementos por lo que llamo a la misma funcion con el sig elem anidado
 		if(list->nodeType == 2){
 			nuevo=create_set();
@@ -137,7 +136,6 @@ int equals_node(Tdata n1, Tdata n2) { // Retorna 1 si son iguales
 				if (n1->nodeType == 1) { 
 					return compare_str(n1->string, n2->string); 
 				} else {
-					
 					// Comparación estructural para Listas/Conjuntos
 					if(equals_node(n1->data, n2->data) && equals_node(n1->next, n2->next)){
 						return 1;
@@ -155,12 +153,10 @@ Tdata prod_cartesiano(Tdata a, Tdata b) {
 	while (auxa != NULL) {
 		Tdata auxb = b->data; // Recorremos los eslabones de la lista B
 		while (auxb != NULL) {
-			
 			// Creamos un nuevo "par": [elementoA, elementoB]
 			Tdata par = create_list();
 			append(&par, auxa->data); // Metemos el elemento de A
 			append(&par, auxb->data); // Metemos el elemento de B
-			
 			// Añadimos ese par a la lista de resultados
 			append(&prod, par);
 			auxb = auxb->next;

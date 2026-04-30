@@ -1,6 +1,7 @@
 #ifndef TAD_SET_H
 #define TAD_SET_H
 
+ // Prototipos
 void insert_set(Tdata* set, Tdata elem); // Pasa el conjunto por referencia y se inserta un nuevo elemento (sin duplicados)
 void remove_set(Tdata* set, Tdata elem); // Elimina un elemento del conjunto
 int belongs(Tdata set, Tdata elem); // Retorna 0 si no pertenece - 1 si pertenece el elemento al conjunto

@@ -57,16 +57,6 @@ int belongs(Tdata set, Tdata elem){ // Devuelve 1 si pertenece al conjunto
 	}else {
 		return 1;
 	}
-} 
-// Son los elementos que pertenecen al primer conjunto y no pertenecen al segundo conjunto
-int equals_set(Tdata A, Tdata B) {
-	int a_en_b = subset(A, B);
-	int b_en_a = subset(B, A);
-	if (a_en_b == 1 && b_en_a == 1) { // Si A esta contenida en B y B esta contenida en A, entonces son iguales
-		return 1;
-	} else {
-		return 0;
-	}
 }
 Tdata unionset(Tdata A, Tdata B) { 
 	Tdata resultado = create_set();
@@ -157,4 +147,13 @@ int subset(Tdata A, Tdata B) {
 	}
 	return 1;
 }
+// Son los elementos que pertenecen al primer conjunto y no pertenecen al segundo conjunto
+int equals_set(Tdata A, Tdata B) {
+	int a_en_b = subset(A, B);
+	int b_en_a = subset(B, A);
+	if (a_en_b == 1 && b_en_a == 1) { // Si A esta contenida en B y B esta contenida en A, entonces son iguales
+		return 1;
+	} else {
+		return 0;
+	}
 }

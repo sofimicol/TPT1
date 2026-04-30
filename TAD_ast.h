@@ -9,22 +9,28 @@
 #define SET 2
 #define LIST 3
 
-
-struct dataType{
-	int nodeType;   /* 1 STR, 2 SET, 3 LIST */
+typedef struct dataType{
+	int nodeType;    1 STR, 2 SET, 3 LIST /
 	union{
 		str string; 
 		struct{
-			struct dataType* data; // puntero a una estructura que contiene un dato
+			struct dataType data; // puntero a una estructura que contiene un dato
 			struct dataType* next; // puntero a siguiente
 		};
 	};
-};
-typedef struct dataType* Tdata; // Tdata es un Puntero a un arbol
+}TNodo;
+typedef TNodoTdata; // Tdata es un Puntero a un arbol
+
+ // Prototipos
 Tdata create_str();
 Tdata create_set();
-Tdata prod_cartesiano(Tdata a, Tdata b);
-Tdata cargar_conjunto();
-Tdata cargar_lista();
-Tdata create_list();
+Tdata carga_lista();
+void mostrarArbol(Tdata ast);
+Tdata copy_ast(Tdata ast);
+//void append(Tdata* Lista, Tdata elemento);
+int esvacio(Tdata);
+void eliminarprimero(Tdata* ast);
+void free_ast(Tdata ast);
+int equals_node(Tdata nodo, Tdata nodo);
+Tdata prod_cartesiano(Tdata ast, Tdata ast);
 #endif

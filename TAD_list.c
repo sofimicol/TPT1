@@ -46,7 +46,7 @@ Tdata copy_list(Tdata list) {
 	}
 	return nuevo; // Retorno el nuevo arbol 
 }
-Tdata concat(Tdata list1, Tdata list2) {
+Tdata concat_list(Tdata list1, Tdata list2) {
     Tdata resultado = create_list();
     Tdata aux;
 	 // Copio los elementos de L1 a resultado

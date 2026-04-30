@@ -11,7 +11,6 @@ Tdata create_str(){
 	str->string = NULL;
 	return str;
 }
-	
 Tdata create_set(){		
 	Tdata set =(Tdata)malloc(sizeof(TNodo));
 	set->nodeType = 2;

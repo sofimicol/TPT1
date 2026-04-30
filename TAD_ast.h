@@ -21,17 +21,21 @@ typedef struct dataType{
 }TNodo;
 typedef TNodoTdata; // Tdata es un Puntero a un arbol
 
- // Prototipos
+ // Funciones de creación
 Tdata create_str();
 Tdata create_set();
 Tdata carga_lista();
-void mostrarArbol(Tdata ast);
-Tdata copy_ast(Tdata ast);
-//void append(Tdata* Lista, Tdata elemento);
-int esvacio(Tdata);
+ // Funciones de eliminación
 void eliminarprimero(Tdata* ast);
 void free_ast(Tdata ast);
+ // Funciones de muestra
+void mostrarArbol(Tdata ast);
+ // Funciones propias
+Tdata copy_ast(Tdata ast);
+int esvacio(Tdata);
 int equals_node(Tdata nodo, Tdata nodo);
+ // Operacione algebraica
 Tdata prod_cartesiano(Tdata ast, Tdata ast);
+//void append(Tdata* Lista, Tdata elemento);
 
 #endif

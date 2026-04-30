@@ -4,10 +4,10 @@
 typedef struct dataType* Tdata;
 
  // Operaciones sobre LIST
-void append(Tdata* lista, Tdata elemento);
-int length(Tdata lista);
-Tdata copy_list(Tdata lista);
-Tdata concat(Tdata lista1, Tdata lista2);
-int search(Tdata lista, Tdata elemento);
+void append(Tdata* list, Tdata elemento);
+int length(Tdata list);
+Tdata copy_list(Tdata list);
+Tdata concat(Tdata list1, Tdata list2);
+int search(Tdata list, Tdata elemento);
 
 #endif

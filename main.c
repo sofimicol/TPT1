@@ -5,11 +5,9 @@
 
 int main() {
 	
-	printf("===== TEST TOTAL DE ESTRUCTURAS =====\n\n");
+	printf("===== TEST ESTRUCTURAS =====\n\n");
 	
-	// =========================================================
 	// STRINGS
-	// =========================================================
 	Tdata s1 = create_str(); s1->string = load2("1");
 	Tdata s2 = create_str(); s2->string = load2("2");
 	Tdata s3 = create_str(); s3->string = load2("3");
@@ -20,9 +18,7 @@ int main() {
 	Tdata s8 = create_str(); s8->string = load2("C");
 	Tdata s9 = create_str(); s9->string = load2("D");
 	
-	// =========================================================
 	// LISTAS
-	// =========================================================
 	Tdata L1 = create_list(); append(&L1, s1); append(&L1, s2);
 	Tdata L2 = create_list(); append(&L2, s3); append(&L2, s4);
 	Tdata L3 = create_list(); append(&L3, s6); append(&L3, s7); append(&L3, s8);append(&L3, s9);
@@ -35,10 +31,29 @@ int main() {
 	printf("L2 = "); mostrarArbol(L2); printf("\n");
 	printf("L3 = "); mostrarArbol(L3); printf("\n");
 	printf("Lista de lista = "); mostrarArbol(Ln); printf("\n\n");
+	printf("===== PRUEBA eliminarprimero =====\n\n");
 	
-	// =========================================================
+	Tdata L = create_list();
+	
+	Tdata a = create_str(); a->string = load2("1");
+	Tdata b = create_str(); b->string = load2("2");
+	Tdata c = create_str(); c->string = load2("3");
+	
+	append(&L, a);
+	append(&L, b);
+	append(&L, c);
+	
+	printf("Lista original = ");
+	mostrarArbol(L);
+	printf("\n");
+	
+	eliminarprimero(&L);
+	
+	printf("Despues de eliminarprimero = ");
+	mostrarArbol(L);
+	printf("\n\n");
+	
 	// LISTAS OPERACIONES
-	// =========================================================
 	Tdata Lconcat = concatena_list(L1, L2);
 	printf("concat(L1, L2) = "); mostrarArbol(Lconcat); printf("\n");
 	Tdata Lconcat1 = concatena_list(L1, Ln);
@@ -52,13 +67,12 @@ int main() {
 		printf("No pertenece");
 	}
 	printf("\n");
-	// =========================================================
+	
 	// CONJUNTOS
-	// =========================================================
-	printf("\n-------------CONJUNTOS-----------------\n");
+	printf("\n===== CONJUNTOS =====\n");
 	Tdata A = create_set();
 	insert_set(&A, s1);
-	//insert_set(&A, s2);
+	// insert_set(&A, s2);
 	insert_set(&A, L1);
 	insert_set(&A, s1); // duplicado
 	
@@ -66,11 +80,10 @@ int main() {
 	insert_set(&B, s1);
 	insert_set(&B, s3);
 	insert_set(&B, L1);
-	printf("A = "); mostrarArbol(A); printf("\n");
 	printf("B = "); mostrarArbol(B); printf("\n\n");
-	// =========================================================
+	printf("A = "); mostrarArbol(A); printf("\n");
+	
 	// OPERACIONES CONJUNTOS
-	// =========================================================
 	Tdata U = unionset(A, B);
 	printf("A U B = "); mostrarArbol(U); printf("\n");
 	
@@ -80,36 +93,26 @@ int main() {
 	Tdata D = difference_set(A, B);
 	printf("A - B = "); mostrarArbol(D); printf("\n\n");
 	
-	// =========================================================
 	// SUBSET / EQUALS
-	// =========================================================
-	printf("A ? B = %d\n", subset(A, B));
-	printf("B ? A = %d\n", subset(B, A));
+	printf("A es subset de B ? = %d\n", subset(A, B));
+	printf("B es subset de A ? = %d\n", subset(B, A));
 	
-	// =========================================================
-	// VACÕO
-	// =========================================================
+	// VAC√çO
 	Tdata V = create_set();
 	
-	printf("Vacio= "); mostrarArbol(V); printf("\n");
+	printf("Vacio = "); mostrarArbol(V); printf("\n");
 	
-	printf("Vacio ? A = %d\n", subset(V, A));
-	printf("A ? Vacio = %d\n", subset(A, V));
+	printf("Vacio es subset de A ? = %d\n", subset(V, A));
+	printf("A es subset de Vacio ? = %d\n", subset(A, V));
 	
 	printf("A U V = "); mostrarArbol(unionset(A, V)); printf("\n");
 	printf("A n V = "); mostrarArbol(intersection_set(A, V)); printf("\n\n");
 	
-	// =========================================================
 	// PRODUCTO CARTESIANO
-	// =========================================================
-	printf("A x B = ");
 	mostrarArbol(prod_cartesiano(A, B));
 	printf("\n\n");
 	
-	// =========================================================
 	// COPIAS
-	// =========================================================
-	Tdata original = create_set();
 	insert_set(&original, s1);
 	
 	Tdata copia = copy_ast(original);
@@ -122,9 +125,7 @@ int main() {
 	printf("Original modificado = "); mostrarArbol(original); printf("\n");
 	printf("Copia = "); mostrarArbol(copia); printf("\n\n");
 	
-	// =========================================================
 	// IGUALDAD ESTRUCTURAL
-	// =========================================================
 	Tdata set1 = create_set();
 	Tdata set2 = create_set();
 	
@@ -136,9 +137,7 @@ int main() {
 	
 	printf("equals(set1, set2) = %d\n\n", equals_node(set1, set2));
 	
-	// =========================================================
 	// CONJUNTOS ANIDADOS
-	// =========================================================
 	Tdata subA = create_set();
 	insert_set(&subA, s1);
 	insert_set(&subA, s2);
@@ -151,11 +150,9 @@ int main() {
 	insert_set(&setDeSets, subA);
 	insert_set(&setDeSets, subB);
 	
-	printf("setDeSets = "); mostrarArbol(setDeSets); printf("\n");
+	printf("conjunto de conjunto = "); mostrarArbol(setDeSets); printf("\n");
 	
-	// =========================================================
 	// MIXTOS
-	// =========================================================
 	Tdata mixto = create_set();
 	insert_set(&mixto, L1);
 	insert_set(&mixto, subA);
@@ -166,9 +163,7 @@ int main() {
 	printf("belongs(mixto, L1) = %d\n", belongs(mixto, L1));
 	printf("belongs(mixto, subA) = %d\n\n", belongs(mixto, subA));
 	
-	// =========================================================
 	// MIXTO OPERACIONES
-	// =========================================================
 	Tdata otroMixto = create_set();
 	insert_set(&otroMixto, subA);
 	insert_set(&otroMixto, s5);
@@ -181,9 +176,7 @@ int main() {
 	mostrarArbol(difference_set(mixto, otroMixto));
 	printf("\n\n");
 	
-	// =========================================================
 	// DUPLICADOS ESTRUCTURALES
-	// =========================================================
 	Tdata dupTest = create_set();
 	Tdata subA_copy = copy_ast(subA);
 	
@@ -192,16 +185,12 @@ int main() {
 	
 	printf("dupTest = "); mostrarArbol(dupTest); printf("\n\n");
 	
-	// =========================================================
 	// PRODUCTO CARTESIANO COMPLEJO
-	// =========================================================
 	printf("setDeSets x mixto = ");
 	mostrarArbol(prod_cartesiano(setDeSets, mixto));
 	printf("\n\n");
 	
-	// =========================================================
 	// LISTAS PROFUNDAS
-	// =========================================================
 	Tdata deepList = create_list();
 	append(&deepList, L1);
 	append(&deepList, Ln);

@@ -44,7 +44,7 @@ void insert_set(Tdata* set, Tdata elem) {
 		}
 	}
 }*/
-int belongs(Tdata set, Tdata elem){ // Devuelve 1 si pertenece al conjunto
+int belongs(Tdata set, Tdata elem) { // Devuelve 1 si pertenece al conjunto
 	Tdata aux;
 	if (set == NULL || set->data == NULL) return 0;
 	

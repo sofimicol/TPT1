@@ -383,3 +383,96 @@ void mostrar_automata(AF aut) {
 	mostrarArbol(aut->F);
 	printf("\n");
 }
+
+int validar_cadena(AF aut, str w) {
+    if (aut == NULL || w == NULL) return 0;
+
+    // 1. Inicializar el conjunto de estados actuales con el estado inicial q0
+    Tdata estados_actuales = create_set();
+    
+    // Obtenemos el nombre (str) del estado inicial
+    str str_q0 = indice_a_str(aut->Q, aut->q0); 
+    if (str_q0 != NULL) {
+        // Envolvemos el str en un nodo Tdata para poder insertarlo en el SET
+        Tdata nodo_q0 = create_str();
+        nodo_q0->string = copy_str(str_q0); 
+        insert_set(&estados_actuales, nodo_q0);
+        free_ast(nodo_q0); // Liberamos el envoltorio temporal (insert_set hace su propia copia)
+    }
+
+    str aux_cadena = w; // Puntero para recorrer la cadena de entrada
+
+    // 2. Procesar la cadena w símbolo por símbolo
+    while (aux_cadena != NULL) {
+        char c = aux_cadena->data;
+
+        // Convertimos char a str temporal
+        str temp_sym = create_nodo(c);
+        int sym_idx = simbolo_a_indice(aut, temp_sym);
+        free_str(temp_sym); // Limpieza inmediata
+
+        if (sym_idx == -1) {
+            printf("\nSímbolo '%c' no pertenece a Sigma. Cadena rechazada.\n", c);
+            free_ast(estados_actuales);
+            return 0; // Rechazo inmediato
+        }
+
+        Tdata proximos_estados = create_set();
+        Tdata iterador = obtener_data(estados_actuales);
+
+        // 3. Evaluar transiciones
+        while (iterador != NULL) {
+            Tdata estado_nodo = obtener_data(iterador);
+
+            if (estado_nodo != NULL && return_type(estado_nodo) == STR) {
+                // Sacamos el string y buscamos su índice
+                str nombre_estado = obtener_string(estado_nodo);
+                int q_actual = estado_a_indice(aut, nombre_estado);
+
+                if (q_actual != -1) {
+                    Tdata destino = transicion_por_indice(aut, q_actual, sym_idx);
+
+                    // Si hay estados de destino, iteramos sobre ellos para insertarlos
+                    if (destino != NULL && obtener_data(destino) != NULL) {
+                        Tdata it_dest = obtener_data(destino);
+                        while (it_dest != NULL) {
+                            if (obtener_data(it_dest) != NULL) {
+                                insert_set(&proximos_estados, obtener_data(it_dest));
+                            }
+                            it_dest = obtener_next(it_dest);
+                        }
+                    }
+                }
+            }
+            iterador = obtener_next(iterador);
+        }
+
+        // Actualizar estados actuales y limpiar memoria del paso anterior
+        free_ast(estados_actuales);
+        estados_actuales = proximos_estados;
+
+        // Optimización: Si el conjunto quedó vacío, rechazo temprano
+        if (esvacio(estados_actuales) == 1) {
+            free_ast(estados_actuales);
+            return 0;
+        }
+
+        aux_cadena = aux_cadena->next;
+    }
+
+    // 4. Verificación final: ¿Hay algún estado actual dentro del conjunto Final F?
+    int aceptada = 0;
+    Tdata iterador_final = obtener_data(estados_actuales);
+
+    while (iterador_final != NULL) {
+        Tdata estado_nodo = obtener_data(iterador_final);
+        if (estado_nodo != NULL && belongs(aut->F, estado_nodo) == 1) {
+            aceptada = 1; // Un solo camino exitoso
+            break;
+        }
+        iterador_final = obtener_next(iterador_final);
+    }
+
+    free_ast(estados_actuales); // Limpieza final de memoria
+    return aceptada;
+}

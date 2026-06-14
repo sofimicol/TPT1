@@ -55,4 +55,7 @@ Tdata transicion_por_indice(AF aut, int from, int symbol);   /* Si no hay transi
 /* ========== Determinismo ========== */
 int esDeterminista(AF aut);
 
+/* ========== Validacion de Cadena ========== */
+int validar_cadena(AF aut, str w);
+
 #endif

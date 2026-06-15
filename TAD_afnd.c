@@ -10,65 +10,48 @@ void procesar_linea_transiciones(AF aut, char* linea);
 int buscar_indice_en_conjunto(Tdata conjunto, str nombre);
 void inicializar_matriz(AF aut);
 void destruir_matriz(AF aut);
-
-/* ========== Creaci?n y destrucci?n ========== */
+int obtener_num_simbolos(AF aut);
+int obtener_num_estados(AF aut);
+void actualizar_contadores(AF aut);
 AF create_automata(void) {
-	AF nuevo;   /* declaraci?n al inicio */
-	/* Crea y devuelve un aut?mata vac?o */
+	AF nuevo;   /* declaracion al inicio */
+	/* Crea y devuelve un automata vacio */
 	nuevo = (AF)malloc(sizeof(Automata));
-	if (nuevo == NULL) {
-		return NULL;
+	if (nuevo != NULL) {
+		nuevo->Q = create_set();
+		nuevo->Sigma = create_set();
+		nuevo->delta = NULL;
+		nuevo->num_estados = 0;
+		nuevo->num_simbolos = 0;
+		nuevo->q0 = -1;
+		nuevo->F = create_set();
 	}
-	nuevo->Q = create_set();
-	nuevo->Sigma = create_set();
-	nuevo->delta = NULL;
-	nuevo->num_estados = 0;
-	nuevo->num_simbolos = 0;
-	nuevo->q0 = -1;
-	nuevo->F = create_set();
 	return nuevo;
 }
 
-/* ========== Inicializaci?n de la matriz (despu?s de conocer Q y Sigma) ========== */
 void inicializar_matriz(AF aut) {
-	Tdata aux;      /* auxiliar para recorrer conjuntos */
-	int i, j;       /* ?ndices para la reserva de memoria */
-	
-	/* Si ya est? inicializada, no hacer nada */
-	if (aut->delta != NULL) {
-		return;
-	}
-	/* Contar estados */
-	aut->num_estados = 0;
-	aux = obtener_data(aut->Q);
-	while (aux != NULL) {
-		aut->num_estados++;
-		aux = obtener_next(aux);
-	}
-	/* Contar s?mbolos */
-	aut->num_simbolos = 0;
-	aux = obtener_data(aut->Sigma);
-	while (aux != NULL) {
-		aut->num_simbolos++;
-		aux = obtener_next(aux);
-	}
-	/* Reservar matriz: filas = estados, columnas = s?mbolos */
-	aut->delta = (Tdata**)malloc(aut->num_estados * sizeof(Tdata*));
-	for (i = 0; i < aut->num_estados; i++) {
-		aut->delta[i] = (Tdata*)malloc(aut->num_simbolos * sizeof(Tdata));
-		for (j = 0; j < aut->num_simbolos; j++) {
-			aut->delta[i][j] = create_set();   /* conjunto vac?o */
+	int i, j;
+	/*Matriz no inicicializada */
+	if (aut->delta == NULL){
+		if (aut->num_estados != 0 || aut->num_simbolos != 0){ 
+			/*Reservar array de punteros a filas (punteros a Tdata)*/
+			aut->delta = (Tdata**)malloc(aut->num_estados * sizeof(Tdata*)); /*Reserva espacio para un array de num_estados punteros a Tdata. Cada puntero ocupará sizeof(Tdata*). Esto crea el array de filas (cada fila es un puntero).*/
+			for (i = 0; i < aut->num_estados; i++) {
+				/*Reservar cada fila: array de Tdata (punteros a conjuntos)*/
+				aut->delta[i] = (Tdata*)malloc(aut->num_simbolos * sizeof(Tdata)); /*reserva espacio para un array de num_simbolos elementos de tipo Tdata. Esto crea una fila con tantas columnas como símbolos.*/
+				for (j = 0; j < aut->num_simbolos; j++) {
+					aut->delta[i][j] = create_set();   // conjunto vacío
+				}
+			}
 		}
 	}
-}
+}/*Se reservo memoria de esta manera porque malloc pide el número total de bytes. Para un array de N elementos, necesitamos N * sizeof(elemento).*/
 
-/* ========== Destrucci?n de la matriz ========== */
+/* ========== Destruccion de la matriz ========== */
 void destruir_matriz(AF aut) {
-	int i, j;       /* ?ndices para recorrer la matriz */
+	int i, j;      
+	if (aut->delta != NULL) {
 	
-	if (aut->delta == NULL) {
-		return;
-	}
 	for (i = 0; i < aut->num_estados; i++) {
 		for (j = 0; j < aut->num_simbolos; j++) {
 			if (aut->delta[i][j] != NULL) {
@@ -79,28 +62,27 @@ void destruir_matriz(AF aut) {
 	}
 	free(aut->delta);
 	aut->delta = NULL;
-}
-
-/* ========== Liberaci?n completa del aut?mata ========== */
-void free_automata(AF aut) {
-	if (aut == NULL) {
-		return;
 	}
-	destruir_matriz(aut);
-	free_ast(aut->Q);
-	free_ast(aut->Sigma);
-	free_ast(aut->F);
-	free(aut);
+}
+/* ========== Liberacion completa del automata ========== */
+void free_automata(AF aut) {
+	if (aut != NULL) {
+		destruir_matriz(aut);
+		free_ast(aut->Q);
+		free_ast(aut->Sigma);
+		free_ast(aut->F);
+		free(aut);
+	}
 }
 
-/* ========== Funci?n auxiliar: busca un nombre (str) en un conjunto de Tdata ========== */
+/* ========== Funcion auxiliar: busca un nombre (str) en un conjunto de Tdata ========== */
 int buscar_indice_en_conjunto(Tdata conjunto, str nombre) {
 	Tdata actual;   /* puntero para recorrer la lista de elementos */
-	int indice;      /* ?ndice asociado al elemento actual */
+	int indice;      /* indice asociado al elemento actual */
 	
-	/* Verifica que el conjunto exista y no est? vac?o */
+	/* Verifica que el conjunto exista y no esta vacio */
 	if (conjunto == NULL || obtener_data(conjunto) == NULL) {
-		return -1;  /* Si no existe o est? vac?o, el nombre no puede encontrarse */
+		return -1;  /* Si no existe o esta vacio, el nombre no puede encontrarse */
 	}
 	/* Comienza el recorrido desde el primer elemento real */
 	actual = obtener_data(conjunto);
@@ -113,7 +95,7 @@ int buscar_indice_en_conjunto(Tdata conjunto, str nombre) {
 		if (dato != NULL && return_type(dato) == STR) {
 			/* Compara el nombre almacenado con el nombre buscado */
 			if (compare_str(obtener_string(dato), nombre) == 1) {
-				/* Devuelve la posici?n donde se encontr? */
+				/* Devuelve la posicion donde se encontro */
 				return indice;
 			}
 		}
@@ -121,13 +103,13 @@ int buscar_indice_en_conjunto(Tdata conjunto, str nombre) {
 		actual = obtener_next(actual);
 		indice++;
 	}
-	/* El nombre no se encontr? en el conjunto */
+	/* El nombre no se encontro en el conjunto */
 	return -1;
 }
 
-/* ========== Conversi?n nombre -> ?ndice usando str ========== */
+
 int estado_a_indice(AF aut, str nombre) {
-	/* Convierte el nombre de un estado (str) a su ?ndice num?rico (-1 si no existe) */
+	/* Convierte el nombre de un estado (str) a su indice numerico (-1 si no existe) */
 	if (aut == NULL) {
 		return -1;
 	}
@@ -135,40 +117,35 @@ int estado_a_indice(AF aut, str nombre) {
 }
 
 int simbolo_a_indice(AF aut, str nombre) {
-	/* Convierte el nombre de un s?mbolo (str) a su ?ndice num?rico (-1 si no existe) */
 	if (aut == NULL) {
 		return -1;
 	}
 	return buscar_indice_en_conjunto(aut->Sigma, nombre);
 }
 
-/* ========== Agregar transici?n (acceso O(1) mediante matriz) ========== */
+/* ========== Agregar transicion (acceso O(1) mediante matriz) ========== */
 void agregar_transicion(AF aut, str from, str symbol, str to) {
-	int i, j, k;        /* ?ndices de origen, s?mbolo y destino */
+	int i, j, k;        /* indices de origen, simbolo y destino */
 	Tdata dest_node;    /* nodo para almacenar el destino */
 	
-	/* Convertir nombres a ?ndices */
+	/* Convertir nombres a indices */
 	i = estado_a_indice(aut, from);
 	j = simbolo_a_indice(aut, symbol);
 	k = estado_a_indice(aut, to);
-	if (i == -1 || j == -1 || k == -1) {
-		return;
+	if (i != -1 || j != -1 || k != -1) {
+		if (aut->delta == NULL) {
+			inicializar_matriz(aut);
+		}
+		dest_node = create_str();
+		dest_node->string = copy_str(to);
+		
+		insert_set(&(aut->delta[i][j]), dest_node);
 	}
-	/* Asegurar que la matriz est? inicializada (por si se llama antes de terminar la carga) */
-	if (aut->delta == NULL) {
-		inicializar_matriz(aut);
-	}
-	dest_node = create_str();
-	dest_node->string = copy_str(to);
-	
-	insert_set(&(aut->delta[i][j]), dest_node);
 }
 
-/* ========== Consulta de transici?n por nombre (usa str) ========== */
 Tdata transicion_por_nombre(AF aut, str estado, str simbolo) {
-	int i, j;   /* ?ndices del estado y s?mbolo */
-	
-	/* Devuelve el conjunto de estados destino para el par (estado, s?mbolo) dado como str */
+	int i, j;   /* indices del estado y simbolo */
+	/* Devuelve el conjunto de estados destino para el par (estado, simbolo) dado como str */
 	i = estado_a_indice(aut, estado);
 	j = simbolo_a_indice(aut, simbolo);
 	if (i == -1 || j == -1) {
@@ -180,9 +157,9 @@ Tdata transicion_por_nombre(AF aut, str estado, str simbolo) {
 	return aut->delta[i][j];
 }
 
-/* ========== Consulta por ?ndice (acceso directo O(1)) ========== */
+/* ========== Consulta por indice (acceso directo O(1)) ========== */
 Tdata transicion_por_indice(AF aut, int from, int symbol) {
-	/* Devuelve el conjunto de estados destino (como Tdata) para un par de ?ndices */
+	/* Devuelve el conjunto de estados destino (como Tdata) para un par de indices */
 	if (aut == NULL || aut->delta == NULL) {
 		return create_set();
 	}
@@ -198,28 +175,27 @@ void leer_conjunto_desde_archivo(FILE* f, Tdata* conjunto) {
 	char* token;        /* token actual */
 	Tdata nodo;         /* nodo para insertar */
 	
-	/* Lee una l?nea del archivo, la divide por comas e inserta cada token en el conjunto */
-	if (fgets(linea, sizeof(linea), f) == NULL) {
-		return;
-	}
-	token = strtok(linea, ",\n");
-	while (token != NULL) {
-		while (*token == ' ') {
-			token++;
+	/* Lee una linea del archivo, la divide por comas e inserta cada token en el conjunto */
+	if (fgets(linea, sizeof(linea), f) != NULL) {
+		token = strtok(linea, ",\n");
+		while (token != NULL) {
+			while (*token == ' ') {
+				token++;
+			}
+			nodo = create_str();
+			nodo->string = load2(token);
+			insert_set(conjunto, nodo);
+			token = strtok(NULL, ",\n");
 		}
-		nodo = create_str();
-		nodo->string = load2(token);
-		insert_set(conjunto, nodo);
-		token = strtok(NULL, ",\n");
 	}
 }
 
 void procesar_linea_transiciones(AF aut, char* linea) {
 	char* token;                /* token de cada transici?n (separada por ';') */
-	char origen[100], simbolo[100], destino[100];   /* campos de una transici?n */
+	char origen[100], simbolo[100], destino[100];   /* campos de una transicion */
 	str from, sym, to;          /* strings temporales */
 	
-	/* Procesa la l?nea de transiciones separando por ';' y luego cada transici?n por coma */
+	/* Procesa la linea de transiciones separando por ';' y luego cada transicion por coma */
 	token = strtok(linea, ";\n");
 	while (token != NULL) {
 		if (sscanf(token, "%[^,],%[^,],%s", origen, simbolo, destino) == 3) {
@@ -244,9 +220,7 @@ int cargar_automata_desde_archivo(AF aut, const char* ruta) {
 	char* p;                /* puntero auxiliar para estado inicial */
 	str inicial_str;        /* string temporal para estado inicial */
 	int resultado;          /* valor de retorno */
-	
-	/* Lee un archivo de texto y carga los datos en el aut?mata.
-	Devuelve 1 si ?xito, 0 si error. */
+
 	f = fopen(ruta, "r");
 	if (f == NULL) {
 		printf("Error al abrir el archivo %s\n", ruta);
@@ -259,11 +233,11 @@ int cargar_automata_desde_archivo(AF aut, const char* ruta) {
 	
 	/* ----- Alfabeto Sigma ----- */
 	leer_conjunto_desde_archivo(f, &(aut->Sigma));
-	
+	actualizar_contadores(aut); 
 	/* ----- Inicializar la matriz ahora que conocemos Q y Sigma ----- */
 	inicializar_matriz(aut);
 	
-	/* ----- L?nea de transiciones (formato especial) ----- */
+	/* ----- Linea de transiciones (formato especial) ----- */
 	if (fgets(linea, sizeof(linea), f) == NULL) {
 		fclose(f);
 		return 0;
@@ -300,19 +274,18 @@ int cargar_automata_desde_archivo(AF aut, const char* ruta) {
 
 /* ========== Determinismo (recorre la matriz) ========== */
 int esDeterminista(AF aut) {
-	int i, j;       /* ?ndices para recorrer la matriz */
-	Tdata set;      /* conjunto de destinos en cada celda */
-	
-	/* Determina si el aut?mata es determinista (1) o no determinista (0) */
+	int i, j;    
+	Tdata set;     
+	/* Determina si el automata es determinista (1) o no determinista (0) */
 	if (aut == NULL || aut->delta == NULL) {
 		return 0;
 	}
 	for (i = 0; i < aut->num_estados; i++) {
 		for (j = 0; j < aut->num_simbolos; j++) {
 			set = aut->delta[i][j];
-			/* Si el conjunto tiene m?s de un elemento => no determinista */
+			/* Si el conjunto tiene mas de un elemento => no determinista */
 			if (set != NULL && obtener_data(set) != NULL && obtener_next(obtener_data(set)) != NULL) {
-				return 0;   /* m?ltiples destinos => no determinista */
+				return 0;   /* multiples destinos => no determinista */
 			}
 		}
 	}
@@ -324,64 +297,87 @@ void mostrar_automata(AF aut) {
 	int determinista;
 	str e, s;
 	
-	if (aut == NULL || aut->delta == NULL) {
-		printf("Aut?mata nulo o sin inicializar\n");
-		return;
-	}
-	determinista = esDeterminista(aut);
-	if (determinista == 1) {
-		printf("\n========== AUTOMATA AFD ==========");
-	} else {
-		printf("\n========== AUTOMATA AFND ==========");
-	}
-	printf("\nConjunto de estados Q:\n");
-	mostrarArbol(aut->Q);
-	printf("\nAlfabeto Sigma:\n");
-	mostrarArbol(aut->Sigma);
-	printf("\nMatriz de transiciones (delta[estado][s?mbolo]):\n\n");
-	
-	/* L?nea superior */
-	printf("+-------+");
-	for (j = 0; j < aut->num_simbolos; j++) {
-		printf("-----------+");
-	}
-	printf("\n|       |");
-	for (j = 0; j < aut->num_simbolos; j++) {
-		s = indice_a_str(aut->Sigma, j);
-		printf("    ");
-		if (s != NULL) print(s); else printf("?");
-		printf("    |");
-	}
-	printf("\n+-------+");
-	for (j = 0; j < aut->num_simbolos; j++) {
-		printf("-----------+");
-	}
-	printf("\n");
-	
-	for (i = 0; i < aut->num_estados; i++) {
-		e = indice_a_str(aut->Q, i);
-		printf("| ");
-		if (e != NULL) print(e); else printf("?");
-		printf("     |");
+	if (aut != NULL || aut->delta != NULL) {
+		determinista = esDeterminista(aut);
+		if (determinista == 1) {
+			printf("\n========== AUTOMATA AFD ==========");
+		} else {
+			printf("\n========== AUTOMATA AFND ==========");
+		}
+		printf("\nConjunto de estados Q:\n");
+		mostrarArbol(aut->Q);
+		printf("\nAlfabeto Sigma:\n");
+		mostrarArbol(aut->Sigma);
+		printf("\nMatriz de transiciones (delta[estado][simbolo]):\n\n");
+		printf("+-------+");
 		for (j = 0; j < aut->num_simbolos; j++) {
-			printf(" ");
-			mostrarArbol(aut->delta[i][j]);
-			printf("  |");
+			printf("-----------+");
+		}
+		printf("\n|       |");
+		for (j = 0; j < aut->num_simbolos; j++) {
+			s = indice_a_str(aut->Sigma, j);
+			printf("    ");
+			if (s != NULL) {
+				print(s);
+			} else {
+				printf("?");
+			}
+			printf("    |");
+		}
+		printf("\n+-------+");
+		for (j = 0; j < aut->num_simbolos; j++) {
+			printf("-----------+");
 		}
 		printf("\n");
+		
+		for (i = 0; i < aut->num_estados; i++) {
+			e = indice_a_str(aut->Q, i);
+			printf("| ");
+			if (e != NULL) {
+				print(e);
+			} else {
+				printf("?");
+			}
+			printf("     |");
+			for (j = 0; j < aut->num_simbolos; j++) {
+				printf(" ");
+				mostrarArbol(aut->delta[i][j]);
+				printf("  |");
+			}
+			printf("\n");
+		}
+		printf("+-------+");
+		for (j = 0; j < aut->num_simbolos; j++) {
+			printf("-----------+");
+		}
+		printf("\n");
+		printf("\nEstado inicial: ");
+		e = indice_a_str(aut->Q, aut->q0);
+		if (e != NULL) {
+			print(e);
+		} else {
+			printf("?");
+		}
+		printf("\nEstados finales:\n");
+		mostrarArbol(aut->F);
+		printf("\n");
+	}else{
+		printf("Aut?mata nulo o sin inicializar\n");}
+}
+
+/* ========== Actualizar contadores a partir de Q y Sigma ========== */
+void actualizar_contadores(AF aut) {
+	Tdata aux;
+	aux = obtener_data(aut->Q);
+	while (aux != NULL) {
+		aut->num_estados++;
+		aux = obtener_next(aux);
 	}
-	printf("+-------+");
-	for (j = 0; j < aut->num_simbolos; j++) {
-		printf("-----------+");
+	aux = obtener_data(aut->Sigma);
+	while (aux != NULL) {
+		aut->num_simbolos++;
+		aux = obtener_next(aux);
 	}
-	printf("\n");
-	
-	printf("\nEstado inicial: ");
-	e = indice_a_str(aut->Q, aut->q0);
-	if (e != NULL) print(e); else printf("?");
-	printf("\nEstados finales:\n");
-	mostrarArbol(aut->F);
-	printf("\n");
 }
 
 int validar_cadena(AF aut, str w) {

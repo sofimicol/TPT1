@@ -479,20 +479,28 @@ int validar_cadena(AF aut, str w) {
 
 #define MAX_DFA_STATES 100
 
-// Estructuras de apoyo para el algoritmo
 typedef struct {
-    Tdata conjunto_nfa;  // Conjunto de estados del NFA que forman este estado del DFA
-    char nombre[10];     // Nombre asignado (A, B, C...)
-    int procesado;       // Bandera: 0 = sin procesar, 1 = procesado
-} EstadoDFA;
+    Tdata estados_originales[MAX_DFA_STATES]; // Guarda los subconjuntos {q0, q1}
+    char nombres[MAX_DFA_STATES][10];         // Guarda los nombres "A", "B", "S26"
+    int procesado[MAX_DFA_STATES];            // 0 = sin procesar, 1 = procesado
+    int cantidad_actual;                      // Contador de estados descubritos
+} TablaMapeo;
 
+void inicializar_tabla(TablaMapeo* tabla) {
+    tabla->cantidad_actual = 0;
+    for(int i = 0; i < MAX_DFA_STATES; i++) {
+        tabla->estados_originales[i] = NULL;
+        tabla->procesado[i] = 0;
+    }
+}
+
+// Estructura de apoyo para guardar las transiciones temporales
 typedef struct {
     char origen[10];
     char simbolo[100];
     char destino[10];
 } TransicionDFA;
 
-/* Función auxiliar para contar elementos de un conjunto (para comparar tamaños) */
 int contar_elementos(Tdata conjunto) {
     if (conjunto == NULL || obtener_data(conjunto) == NULL) return 0;
     int c = 0;
@@ -504,33 +512,29 @@ int contar_elementos(Tdata conjunto) {
     return c;
 }
 
-/* Función auxiliar para comparar si dos conjuntos de estados son exactamente iguales */
 int conjuntos_iguales(Tdata c1, Tdata c2) {
     if (contar_elementos(c1) != contar_elementos(c2)) return 0;
     Tdata it1 = obtener_data(c1);
     while (it1 != NULL) {
         Tdata nodo1 = obtener_data(it1);
-        // belongs() ya existe en tu código (usada en validar_cadena)
         if (nodo1 != NULL && belongs(c2, nodo1) == 0) {
-            return 0; // Un elemento de c1 no está en c2
+            return 0; 
         }
         it1 = obtener_next(it1);
     }
     return 1;
 }
 
-/* Función auxiliar para extraer el texto de tu TAD 'str' a un char[] estándar de C */
 void extraer_cadena(str s, char* buffer) {
     int i = 0;
     str aux = s;
     while (aux != NULL) {
-        buffer[i++] = aux->data; // Extraemos cada caracter de la lista enlazada
+        buffer[i++] = aux->data; 
         aux = aux->next;
     }
     buffer[i] = '\0';
 }
 
-/* Calcula la UNION de destinos a partir de un conjunto de estados origen */
 Tdata obtener_destinos_dfa(AF afnd, Tdata conjunto_origen, str simbolo) {
     Tdata resultado = create_set();
     Tdata iterador = obtener_data(conjunto_origen);
@@ -548,7 +552,6 @@ Tdata obtener_destinos_dfa(AF afnd, Tdata conjunto_origen, str simbolo) {
                     Tdata it_dest = obtener_data(destino);
                     while (it_dest != NULL) {
                         if (obtener_data(it_dest) != NULL) {
-                            // insert_set se encarga de no duplicar
                             insert_set(&resultado, obtener_data(it_dest));
                         }
                         it_dest = obtener_next(it_dest);
@@ -561,16 +564,47 @@ Tdata obtener_destinos_dfa(AF afnd, Tdata conjunto_origen, str simbolo) {
     return resultado;
 }
 
-/* FUNCIÓN PRINCIPAL DE CONVERSIÓN */
+/* ==================================================================== */
+/* 2. FUNCIÓN DE RENOMBRAR ESTADOS                                      */
+/* ==================================================================== */
+int renombrar_estado(TablaMapeo* tabla, Tdata estado_generado) {
+    // Fase de Búsqueda
+    for (int i = 0; i < tabla->cantidad_actual; i++) {
+        if (conjuntos_iguales(tabla->estados_originales[i], estado_generado) == 1) {
+            free_ast(estado_generado); // Ya existe, liberamos memoria
+            return i;                  // Retornamos índice existente
+        }
+    }
+
+    // Es un estado nuevo
+    int id_nuevo = tabla->cantidad_actual;
+    
+    tabla->estados_originales[id_nuevo] = estado_generado; 
+    tabla->procesado[id_nuevo] = 0; 
+    
+    if (id_nuevo < 26) {
+        sprintf(tabla->nombres[id_nuevo], "%c", 'A' + id_nuevo);
+    } else {
+        sprintf(tabla->nombres[id_nuevo], "S%d", id_nuevo);
+    }
+    
+    tabla->cantidad_actual++; 
+    
+    return id_nuevo;
+}
+
+/* ==================================================================== */
+/* 3. FUNCIÓN PRINCIPAL DE CONVERSIÓN                                   */
+/* ==================================================================== */
 AF convertir_AFND_a_AFD(AF afnd) {
     if (afnd == NULL) return NULL;
 
-    EstadoDFA estados[MAX_DFA_STATES];
-    int num_estados = 0;
+    TablaMapeo diccionario;
+    inicializar_tabla(&diccionario);
+
     TransicionDFA trans[1000];
     int num_trans = 0;
 
-    // 1. Crear el primer estado del DFA: {q0}
     Tdata q0_set = create_set();
     str str_q0 = indice_a_str(afnd->Q, afnd->q0);
     if (str_q0 != NULL) {
@@ -580,19 +614,17 @@ AF convertir_AFND_a_AFD(AF afnd) {
         free_ast(nodo_q0);
     }
 
-    estados[0].conjunto_nfa = q0_set;
-    sprintf(estados[0].nombre, "A"); // Renombramos al Estado Inicial como "A"
-    estados[0].procesado = 0;
-    num_estados++;
+    // Registramos el estado inicial
+    renombrar_estado(&diccionario, q0_set); 
 
-    // 2. Procesamiento de subconjuntos (El corazón del algoritmo)
     int procesando = 1;
     while (procesando) {
         procesando = 0;
         int act = -1;
-        // Buscar el primer estado sin procesar
-        for (int i = 0; i < num_estados; i++) {
-            if (estados[i].procesado == 0) {
+        
+        // Buscar el primer estado sin procesar en la tabla
+        for (int i = 0; i < diccionario.cantidad_actual; i++) {
+            if (diccionario.procesado[i] == 0) {
                 act = i;
                 procesando = 1;
                 break;
@@ -600,62 +632,37 @@ AF convertir_AFND_a_AFD(AF afnd) {
         }
         if (!procesando) break;
 
-        estados[act].procesado = 1;
+        diccionario.procesado[act] = 1;
 
-        // Evaluar transiciones con cada símbolo del alfabeto
+        // Evaluar transiciones con cada símbolo
         Tdata it_sym = obtener_data(afnd->Sigma);
         while (it_sym != NULL) {
             Tdata nodo_sym = obtener_data(it_sym);
             str sym_str = obtener_string(nodo_sym);
 
-            // Obtener la unión de todos los destinos para este símbolo
-            Tdata destinos = obtener_destinos_dfa(afnd, estados[act].conjunto_nfa, sym_str);
+            Tdata destinos = obtener_destinos_dfa(afnd, diccionario.estados_originales[act], sym_str);
 
             if (esvacio(destinos) == 0) {
-                // Verificar si ya descubrimos este conjunto antes
-                int idx_existente = -1;
-                for (int k = 0; k < num_estados; k++) {
-                    if (conjuntos_iguales(estados[k].conjunto_nfa, destinos)) {
-                        idx_existente = k;
-                        break;
-                    }
-                }
+                
+                int idx_dest = renombrar_estado(&diccionario, destinos);
 
-                int idx_dest;
-                if (idx_existente == -1) {
-                    // Descubrimos un nuevo estado!
-                    estados[num_estados].conjunto_nfa = destinos;
-                    // Generar nombre: B, C, D... Si pasamos Z, usamos S26, S27...
-                    if (num_estados < 26) {
-                        sprintf(estados[num_estados].nombre, "%c", 'A' + num_estados);
-                    } else {
-                        sprintf(estados[num_estados].nombre, "S%d", num_estados);
-                    }
-                    estados[num_estados].procesado = 0;
-                    idx_dest = num_estados;
-                    num_estados++;
-                } else {
-                    idx_dest = idx_existente;
-                    free_ast(destinos); // Ya existía, liberamos la memoria
-                }
-
-                // Guardar la transición para construir la matriz luego
-                strcpy(trans[num_trans].origen, estados[act].nombre);
-                strcpy(trans[num_trans].destino, estados[idx_dest].nombre);
+                // Guardar transición temporal
+                strcpy(trans[num_trans].origen, diccionario.nombres[act]);
+                strcpy(trans[num_trans].destino, diccionario.nombres[idx_dest]);
                 extraer_cadena(sym_str, trans[num_trans].simbolo);
                 num_trans++;
             } else {
-                free_ast(destinos); // Transición vacía (sumidero implícito)
+                free_ast(destinos); 
             }
 
             it_sym = obtener_next(it_sym);
         }
     }
 
-    // 3. Ensamblar el nuevo Automata (AFD)
+    // Ensamblar el nuevo Automata (AFD)
     AF afd = create_automata();
 
-    // 3.1 Copiar alfabeto
+    // Copiar alfabeto
     Tdata it_sym = obtener_data(afnd->Sigma);
     while (it_sym != NULL) {
         Tdata copia_sym = create_str();
@@ -665,21 +672,20 @@ AF convertir_AFND_a_AFD(AF afnd) {
         it_sym = obtener_next(it_sym);
     }
 
-    // 3.2 Insertar Estados Q y determinar Estados Finales F
-    for (int i = 0; i < num_estados; i++) {
-        str nombre_str = load2(estados[i].nombre);
+    // Insertar Estados Q y F
+    for (int i = 0; i < diccionario.cantidad_actual; i++) {
+        str nombre_str = load2(diccionario.nombres[i]);
         Tdata nodo_estado = create_str();
         nodo_estado->string = nombre_str;
         insert_set(&(afd->Q), nodo_estado);
 
-        // Si el subconjunto contiene algún estado final del AFND, entonces este nuevo estado es FINAL
         int es_final = 0;
-        Tdata it_nfa = obtener_data(estados[i].conjunto_nfa);
+        Tdata it_nfa = obtener_data(diccionario.estados_originales[i]);
         while (it_nfa != NULL) {
             Tdata estado_nfa = obtener_data(it_nfa);
             if (estado_nfa != NULL && belongs(afnd->F, estado_nfa)) {
                 es_final = 1;
-                break; // Un solo estado final es suficiente
+                break; 
             }
             it_nfa = obtener_next(it_nfa);
         }
@@ -693,12 +699,12 @@ AF convertir_AFND_a_AFD(AF afnd) {
         free_ast(nodo_estado);
     }
 
-    // Asignar el estado inicial explícitamente (siempre es "A")
+    // Estado inicial siempre es "A"
     str str_A = load2("A");
     afd->q0 = estado_a_indice(afd, str_A);
     free_str(str_A);
 
-    // 3.3 Inicializar matriz e inyectar todas las transiciones recopiladas
+    // Inicializar matriz e inyectar transiciones
     inicializar_matriz(afd);
     for (int i = 0; i < num_trans; i++) {
         str o = load2(trans[i].origen);
@@ -711,9 +717,10 @@ AF convertir_AFND_a_AFD(AF afnd) {
     }
 
     // Limpieza de memoria temporal
-    for (int i = 0; i < num_estados; i++) {
-        free_ast(estados[i].conjunto_nfa);
+    for (int i = 0; i < diccionario.cantidad_actual; i++) {
+        free_ast(diccionario.estados_originales[i]);
     }
 
     return afd;
 }
+

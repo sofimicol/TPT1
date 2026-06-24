@@ -61,9 +61,9 @@ Tdata create_str(){
 						case 1:
 							data->string = load(); // solo strings
 							break;
-							/*case 2:
+						case 2:
 							data->data = cargar_conjunto(); // o lo que corresponda
-							break;*/
+							break;
 						case 3:
 							data->data = carga_lista();
 							break;

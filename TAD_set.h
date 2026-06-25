@@ -13,3 +13,4 @@ int subset(Tdata A, Tdata B);//retorna 1 si es subconjunto y 0 si no lo es
 int equals_set(Tdata A, Tdata B); //retorna 1 si son iguales y 0 si no lo son
 void insert_set(Tdata* set, Tdata elem);
 #endif
+

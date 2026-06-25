@@ -16,4 +16,6 @@ str concat(str,str);
 void free_str(str);
 int compare_str(str cad1, str cad2);
 str copy_str(str original);
+
+str create_nodo(char c);	
 #endif

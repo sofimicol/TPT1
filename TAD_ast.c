@@ -262,22 +262,6 @@ Tdata create_str(){
 									}
 									else return -1;
 								}
-									str indice_a_str(Tdata set, int indice){
-										Tdata actual=set->data;
-										int i;
-										if (set==NULL || set->data==NULL){
-											return NULL;
-										}
-										i=0;
-										while (actual!=NULL && i<indice) {
-											actual = actual->next;
-											i++;
-										}
-										if (actual && actual->data && return_type(actual->data)== 1) {
-											return obtener_string(actual->data);   // ahora s? encapsulado
-										}
-										return NULL;
-									}
 										str obtener_string(Tdata nodo) {
 											if (nodo && nodo->nodeType == 1)
 												return nodo->string;

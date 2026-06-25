@@ -57,5 +57,12 @@ int esDeterminista(AF aut);
 
 /* ========== Validacion de Cadena ========== */
 int validar_cadena(AF aut, str w);
+str indice_a_str(Tdata set, int indice); 
+void inicializar_matriz(AF aut);
+void destruir_matriz(AF aut);
+int obtener_num_simbolos(AF aut);
+int obtener_num_estados(AF aut);
+void actualizar_contadores(AF aut);
+AF convertir_AFND_a_AFD(AF afnd);
 
 #endif

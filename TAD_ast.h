@@ -37,4 +37,6 @@ void free_ast(Tdata ast);
 str indice_a_str(Tdata set, int indice);
 Tdata obtener_data(Tdata nodo);
 Tdata obtener_next(Tdata nodo);
+Tdata cargar_conjunto();
+void insert_set(Tdata* set, Tdata elem);
 #endif

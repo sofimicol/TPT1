@@ -1,3 +1,4 @@
+#include "TAD_str.h"
 #include "TAD_AFND.h"
 #include <stdio.h>
 #include <stdlib.h>

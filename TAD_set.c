@@ -1,4 +1,4 @@
-#include "TAD_AST.h"
+#include "TAD_ast.h"
 #include "TAD_set.h"
 void insert_set(Tdata* set, Tdata elem) {
 	if (set == NULL || *set == NULL || elem == NULL)
@@ -56,15 +56,15 @@ int belongs(Tdata set, Tdata elem){ // devuelve 1 si pertenece al conjunto
 			}
 		}
 	}
-		Tdata unionset(Tdata A, Tdata B) { 
+		Tdata unionset(Tdata A, Tdata B) {
 			Tdata resultado = create_set();
 			Tdata aux;
-			
+
 			if(esvacio(A) == 1 && esvacio(B) == 1) {
 				printf("\nConjuntos vacios ");
 				return NULL;
 			}
-			
+
 			if(esvacio(A) == 1 && esvacio(B) == 0) { // Si A es vacio y B no, devuelvo B
 				aux = B->data;
 				while(aux != NULL){
@@ -72,7 +72,7 @@ int belongs(Tdata set, Tdata elem){ // devuelve 1 si pertenece al conjunto
 					aux = aux->next;
 				}
 			}
-			
+
 			if(esvacio(B) == 1 && esvacio(A) == 0) { // Si B es vacio y A no, devuelvo A
 				aux = A->data;
 				while(aux != NULL){
@@ -80,13 +80,13 @@ int belongs(Tdata set, Tdata elem){ // devuelve 1 si pertenece al conjunto
 					aux = aux->next;
 				}
 			}
-			
+
 			aux = A->data;
 			while(aux != NULL){
 				insert_set(&resultado, aux->data);
 				aux = aux->next;
 			}
-			
+
 			// Agregar B sin duplicados
 			aux = B->data;
 			while(aux != NULL){
@@ -95,13 +95,13 @@ int belongs(Tdata set, Tdata elem){ // devuelve 1 si pertenece al conjunto
 				}
 				aux = aux->next;
 			}
-			
+
 			return resultado;
 		}
 		Tdata intersection_set(Tdata A, Tdata B) {
 			Tdata resultado = create_set();
 			Tdata aux;
-			
+
 			if(esvacio(A) == 1 || esvacio(B) == 1) { // Si A o B no tienen elementos
 				return NULL;
 			}
@@ -118,12 +118,12 @@ int belongs(Tdata set, Tdata elem){ // devuelve 1 si pertenece al conjunto
 		Tdata difference_set(Tdata A, Tdata B) { // Tomando el encuenta orede de los parametros de tipo A - B
 			Tdata resultado = create_set();
 			Tdata aux = A->data;
-			
+
 			if(esvacio(A) == 1) {
 				printf("\nConjunto vacio, NO se puede reslizar la diferencia");
 				return NULL;// Si A y B tiene elementos aplico porp. de diferencia
 			}
-			
+
 			if(esvacio(B) == 1) {
 				while(aux != NULL){
 					insert_set(&resultado,aux->data);
@@ -132,7 +132,7 @@ int belongs(Tdata set, Tdata elem){ // devuelve 1 si pertenece al conjunto
 				//inserter_set(&resultado, copy_ast(A));
 				return resultado;
 			}
-			
+
 			while(aux != NULL) {
 				if(belongs(B, aux->data) == 0) {
 					insert_set(&resultado, aux->data);
@@ -150,13 +150,13 @@ int belongs(Tdata set, Tdata elem){ // devuelve 1 si pertenece al conjunto
 				return 0;
 			}
 		}
-		
+
 		int subset(Tdata A, Tdata B) {
 			Tdata aux = A->data;
-			
+
 			// A vac?o ? cualquier conjunto
 			if(esvacio(A)) return 1;
-			
+
 			// A no vac?o ? vac?o
 			if(esvacio(B)) return 0;
 			while(aux != NULL) {
@@ -167,4 +167,4 @@ int belongs(Tdata set, Tdata elem){ // devuelve 1 si pertenece al conjunto
 			}
 			return 1;
 		}
-		
+

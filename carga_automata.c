@@ -7,8 +7,7 @@ Tdata build_list(str *);
 
 
 int main() {
-  // automaton_from_string(load2("{{q0 q1 q2 q3}{a b}{[q0 a q1][q1 a q2][q2 a q3][q0 b q4][q1 b q4][q2 b q4][q3 b q4][q4 b q4][q4 a q4]}q0{q3}}"));
-  automaton_from_string(load2("{[[q0 a q4]]}"));
+  automaton_from_string(load2("{{q0 q1 q2 q3}{a b}{[q0 a q1][q1 a q2][q2 a q3][q0 b q4][q1 b q4][q2 b q4][q3 b q4][q4 b q4][q4 a q4]}q0{q3}}"));
   return 0;
 }
 
@@ -24,8 +23,12 @@ Tdata build_set(str * entrada){
     str_caracter = pop(entrada);
     if(str_caracter->data == '{'){
       elemento = build_set(entrada);
+      insert_set(&set, copy_ast(elemento));
+
     } else if (str_caracter->data == '['){
       elemento = build_list(entrada);
+      insert_set(&set, copy_ast(elemento));
+
     } else {
       elemento = create_str();
       while(str_caracter->data != ' ' && str_caracter->data != '}'){
@@ -36,9 +39,13 @@ Tdata build_set(str * entrada){
         str_caracter = pop(entrada);
       }
 
-      if(str_caracter->data == '}'){ processing_set = 0; }
+      if(str_caracter->data == '}'){
+        processing_set = 0;
+      } else {
+        insert_set(&set, copy_ast(elemento));
+      }
+
     }
-    insert_set(&set, copy_ast(elemento));
     free_ast(elemento);
   }
 
@@ -57,8 +64,11 @@ Tdata build_list(str * entrada){
     str_caracter = pop(entrada);
     if(str_caracter->data == '{'){
       elemento = build_set(entrada);
+      append(&list, copy_ast(elemento));
+
     } else if (str_caracter->data == '['){
       elemento = build_list(entrada);
+      append(&list, copy_ast(elemento));
     } else {
       elemento = create_str();
       while(str_caracter->data != ' ' && str_caracter->data != ']'){
@@ -68,9 +78,13 @@ Tdata build_list(str * entrada){
         free_str(str_caracter);
         str_caracter = pop(entrada);
       }
-      if(str_caracter->data == ']'){ processing_list = 0; }
+      if(str_caracter->data == ']'){
+        processing_list = 0;
+      }  else {
+        append(&list, copy_ast(elemento));
+      }
+
     }
-    append(&list, copy_ast(elemento));
     free_ast(elemento);
   }
 
@@ -95,7 +109,6 @@ AF automaton_from_string(str entrada){
   }
 
   free_str(cadena);
-  mostrarArbol(set);
 
   // Q = obtener_data(set);
   // sigma = obtener_data(obtener_next(set));
@@ -105,5 +118,8 @@ AF automaton_from_string(str entrada){
 
   automata = create_automata();
 
+  mostrarArbol(set);
+
   return automata;
 }
+

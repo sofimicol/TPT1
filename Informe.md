@@ -1,7 +1,7 @@
 # 1. Introducción
 ## 1.1 Objetivo
 
-El objetivo principal del Trabajo Práctico Transversal es diseñar, desarrollar e implementar un intérprete funcional para un nuevo lenguaje de programación denominado Aleph, orientado al trabajo con Autómatas Finitos (AF) y vinculado con la Teoría de Conjuntos, que constituye uno de los pilares estructurales del lenguaje. La idea es que Aleph permita llevar a la práctica los conceptos y algoritmos estudiados en Teoría de la Computación I, brindando al usuario la posibilidad de definir, almacenar, representar, manipular y analizar autómatas, y de ejecutar sobre ellos los distintos algoritmos vistos durante la asignatura.
+El objetivo principal del Trabajo Práctico Transversal es diseñar, desarrollar e implementar un intérprete funcional para un nuevo lenguaje de programación denominado Aleph, orientado al trabajo con Autómatas Finitos (AF) y vinculado con la Teoría de Conjuntos, que constituye uno de los pilares estructurales del lenguaje. 
 
 En particular, el lenguaje deberá permitir representar Autómatas Finitos, convertir un Autómata Finito No Determinista (AFND) en un Autómata Finito Determinista (AFD), determinar si una cadena pertenece al lenguaje aceptado por un autómata, visualizar sus estructuras y obtener representaciones equivalentes. También se busca trabajar con las relaciones existentes entre Autómatas Finitos, Lenguajes Regulares (LR) y Gramáticas Regulares (GR), permitiendo, por ejemplo, obtener a partir de un autómata una Gramática Regular que genere el mismo lenguaje que este acepta.
 
@@ -11,7 +11,7 @@ A lo largo del proyecto también se busca analizar y fundamentar las decisiones 
 
 La construcción del lenguaje se desarrollará siguiendo las etapas clásicas de un proyecto de software: análisis, diseño e implementación, dejando fuera la etapa de mantenimiento.
 
-De esta forma, el proyecto permitirá vincular los conceptos teóricos estudiados con una implementación concreta, pasando de la definición formal de autómatas, lenguajes y gramáticas a un sistema capaz de representarlos y operar sobre ellos de manera práctica.
+En resumen, Aleph permitirá llevar a la práctica los conceptos y algoritmos estudiados en Teoría de la Computación I, brindando al usuario la posibilidad de definir, almacenar, representar, manipular y analizar autómatas, y de ejecutar sobre ellos los distintos algoritmos vistos durante la asignatura.
 
 ## 1.2. Sobre el nombre del lenguaje
 El lenguaje a desarrollar se denominará Aleph puesto que este nombre tiene una fuerte vinculación con la Teoría de Conjuntos, estructura que será el pilar del desarrollo del nuevo lenguaje.
@@ -44,8 +44,6 @@ Bison desciende de Yacc, un generador de analizadores sintácticos creado entre 
 
 Esto la hizo muy popular entre los usuarios de sistemas Unix, aunque la licencia restrictiva bajo la cual se distribuía Unix en ese entonces limitaba su uso fuera del mundo académico y del Bell System. Alrededor de 1985, Bob Corbett, un estudiante de posgrado en la Universidad de California, Berkeley, reimplementó Yacc usando algoritmos internos algo mejorados, lo que evolucionó a Berkeley Yacc. Como su versión era más rápida que la de Bell y se distribuía bajo la flexible licencia de Berkeley, rápidamente se convirtió en la versión más popular de Yacc.
 
-Richard Stallman, de la Free Software Foundation (FSF), adaptó el trabajo de Corbett para el proyecto GNU, donde ha crecido para incluir una gran cantidad de nuevas características mientras evolucionaba hasta convertirse en la versión actual de Bison. Bison ahora se mantiene como un proyecto de la FSF y se distribuye bajo la Licencia Pública de GNU.
-
 En 1975, Mike Lesk y Eric Schmidt escribieron Lex, un generador de analizadores léxicos, siendo la mayor parte de la programación realizada por Schmidt. Lo vieron tanto como una herramienta independiente como un compañero del Yacc de Johnson. Lex también se volvió bastante popular, a pesar de ser relativamente lento y tener errores. 
 
 Alrededor de 1987, Vern Paxson del Lawrence Berkeley Lab tomó una versión de Lex escrita en Ratfor (una versión extendida de Fortran popular en ese momento) y la tradujo a C, llamándola Flex, por “Fast Lexical Analyzer Generator” (Generador Rápido de Analizadores Léxicos).
@@ -65,6 +63,7 @@ Los programas pueden ser sintácticamente válidos pero semánticamente inválid
 Los sistemas de implementación de los primeros lenguajes de programación de alto nivel, construidos a finales de los años 50, fueron de los sistemas de software más complejos de esa época.
 
 En los años 60, se realizaron esfuerzos de investigación intensivos para entender y formalizar el proceso de construcción de estas implementaciones de lenguajes de alto nivel. El mayor éxito de esos esfuerzos se dio en el área del análisis de sintaxis, principalmente porque esa parte del proceso de implementación es una aplicación de partes de la teoría de autómatas y la teoría de lenguajes formales que en ese momento ya se comprendían bien. 
+
 Los lenguajes de programación se pueden implementar mediante cualquiera de tres métodos generales.
 ### Compilador
 Traduce programas a lenguaje de máquina, que se puede ejecutar directamente en la computadora.El lenguaje que un compilador traduce se llama lenguaje fuente.
@@ -120,16 +119,19 @@ En lugar de traducir el código del lenguaje intermedio a código máquina, simp
 
 Un ejemplo es Perl, se implementa con un sistema híbrido. Los programas en Perl se compilan parcialmente para detectar errores antes de la interpretación y simplificar el intérprete. Las implementaciones iniciales de Java eran todas híbridas. Su forma intermedia, llamada bytecode, proporciona portabilidad a cualquier máquina que tenga un intérprete de bytecode y un sistema de ejecución asociado. Juntos, esto se llama la Máquina Virtual de Java. 
 
-Hoy en día hay sistemas que traducen bytecode de Java a código máquina para una ejecución más rápida. Un sistema de implementación Just-in-Time (JIT) traduce inicialmente los programas a un lenguaje intermedio. Luego, durante la ejecución, compila los métodos del lenguaje intermedio a código máquina cuando se llaman. La versión en código máquina se guarda para llamadas posteriores. Los sistemas JIT se usan ahora ampliamente para programas Java. Además, todos los lenguajes .NET se implementan con un sistema JIT. A veces, un implementador puede proporcionar implementaciones tanto compiladas como interpretadas para un lenguaje. 
+Un sistema de implementación Just-in-Time (JIT) traduce inicialmente los programas a un lenguaje intermedio. Luego, durante la ejecución, compila los métodos del lenguaje intermedio a código máquina cuando se llaman. La versión en código máquina se guarda para llamadas posteriores.a. Java y todos los lenguajes .NET se implementan con un sistema JIT. 
 
-En estos casos, se usa el intérprete para desarrollar y depurar programas. Luego, después de alcanzar un estado (relativamente) libre de errores, los programas se compilan para aumentar su velocidad de ejecución.
+A veces, un implementador puede proporcionar implementaciones tanto compiladas como interpretadas para un lenguaje.  En estos casos, se usa el intérprete para desarrollar y depurar programas. Luego, después de alcanzar un estado (relativamente) libre de errores, los programas se compilan para aumentar su velocidad de ejecución.
 
 ## 1.4.1 Enfoque de implementación de Aleph
 
 El lenguaje Aleph se implementa mediante un enfoque híbrido de interpretación basado en Árboles de Sintaxis Abstracta (AST):
 
 Aleph no interpreta el archivo de texto línea por línea. El código fuente es procesado estáticamente por un analizador léxico (Flex) y un analizador sintáctico (Bison). Estas herramientas validan la gramática formal del lenguaje (definida en BNF) y traducen el flujo de caracteres en una representación intermedia estructurada en memoria llamado Árbol de Sintaxis Abstracta (AST).
+
 Aleph define una computadora virtual cuya representación de datos en tiempo de ejecución: el AST (para la estructura de control de las expresiones) y la Tabla de Símbolos  que actúa como el diccionario dinámico para asociar identificadores, variables de conjuntos, tipos y ámbitos en memoria.
+
 Dado el AST sin errores sintácticos, el motor semántico de Aleph actúa como un intérprete de software que evalúa las expresiones mediante algoritmos recursivos que realizan un recorrido del árbol. Al visitar los nodos del AST, se simulan por software las operaciones matemáticas de la Teoría de Conjuntos (unión, intersección, diferencia) y la lógica de control, interactuando con la Tabla de Símbolos en tiempo de ejecución.
+
 La arquitectura de Aleph utiliza la fase de compilación frontal con la manipulación interactiva de conjuntos y autómatas en memoria que brinda flexibilidad y control dinámico.
 

@@ -1,16 +1,14 @@
 # 1. Introducción
 ## 1.1 Objetivo
-Desarrollar un lenguaje para trabajar con autómatas finitos: Debe permitir 
-almacenar un AF, en caso de ser AFND convertirlo a AFD, dada una cadena 
-determinar si la cadena pertenece al lenguaje aceptado por el AF, mostrar el AF, 
-obtener el AF que acepta, LR , obtener la GR que genera el mismo lenguaje que 
-acepta el AF, etc.
-Formará parte de un trabajo práctico transversal que deberá concluir con el 
-lenguaje funcionando. 
-Este proyecto transversal sirve de base para el examen finalde la materia, en el 
-que deberá presentar el lenguaje y relacionar cada etapa en el desarrollo del 
-mismo con las unidades del programa analítico de la asignatura.
-La construcción del lenguaje transcurrirá por las etapas clásicas del desarrollo de 
-un sistema de software: análisis, diseño e implementación (dejamos fuera el 
-mantenimiento pues es un proyecto con punto final una vez aprobada la materia). 
-El lenguaje a desarrollar se denominará Aleph puesto que este nombre tiene una fuerte vinculación con la Teoría de Conjuntos, estructura que será el pilar del desarrollo del nuevo lenguaje.
+
+El objetivo principal del Trabajo Práctico Transversal es diseñar, desarrollar e implementar un intérprete funcional para un nuevo lenguaje de programación denominado Aleph, orientado al trabajo con Autómatas Finitos (AF) y vinculado con la Teoría de Conjuntos, que constituye uno de los pilares estructurales del lenguaje. La idea es que Aleph permita llevar a la práctica los conceptos y algoritmos estudiados en Teoría de la Computación I, brindando al usuario la posibilidad de definir, almacenar, representar, manipular y analizar autómatas, y de ejecutar sobre ellos los distintos algoritmos vistos durante la asignatura.
+
+En particular, el lenguaje deberá permitir representar Autómatas Finitos, convertir un Autómata Finito No Determinista (AFND) en un Autómata Finito Determinista (AFD), determinar si una cadena pertenece al lenguaje aceptado por un autómata, visualizar sus estructuras y obtener representaciones equivalentes. También se busca trabajar con las relaciones existentes entre Autómatas Finitos, Lenguajes Regulares (LR) y Gramáticas Regulares (GR), permitiendo, por ejemplo, obtener a partir de un autómata una Gramática Regular que genere el mismo lenguaje que este acepta.
+
+El desarrollo de Aleph permitirá, además, aplicar de manera concreta las distintas etapas involucradas en la construcción de un lenguaje de programación. Para ello se abordarán el análisis léxico, sintáctico y semántico, utilizando herramientas como Flex y Bison, y se diseñarán las estructuras de datos necesarias para representar y procesar la información durante la ejecución. Entre estas estructuras se contemplan los Árboles de Sintaxis Abstracta (AST) y la Tabla de Símbolos, junto con las estructuras necesarias para representar los autómatas, sus estados, alfabetos, transiciones y demás elementos relacionados con la Teoría de Conjuntos.
+
+A lo largo del proyecto también se busca analizar y fundamentar las decisiones tomadas durante el diseño del lenguaje, teniendo en cuenta aspectos como la legibilidad, capacidad de escritura, expresividad y confiabilidad, procurando que Aleph resulte suficientemente sencillo y claro para el usuario, pero al mismo tiempo preciso para su procesamiento computacional con objetivo final el abstraer la implementación realizada en el TPT de la asignatira anterior. Esto permitirá comprender no solo cómo se utilizan las herramientas para construir un lenguaje, sino también las dificultades, posibilidades y limitaciones que surgen al momento de diseñarlo e implementarlo.
+
+La construcción del lenguaje se desarrollará siguiendo las etapas clásicas de un proyecto de software: análisis, diseño e implementación, dejando fuera la etapa de mantenimiento.
+
+De esta forma, el proyecto permitirá vincular los conceptos teóricos estudiados con una implementación concreta, pasando de la definición formal de autómatas, lenguajes y gramáticas a un sistema capaz de representarlos y operar sobre ellos de manera práctica.

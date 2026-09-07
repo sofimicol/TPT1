@@ -135,3 +135,45 @@ Dado el AST sin errores sintácticos, el motor semántico de Aleph actúa como u
 
 La arquitectura de Aleph utiliza la fase de compilación frontal con la manipulación interactiva de conjuntos y autómatas en memoria que brinda flexibilidad y control dinámico.
 
+# 2. Análisis de requerimientos
+## 2.1. Un caso de estudio: Los Autómatas Finitos y sus algoritmos
+[PONER AQUÍ DEFINICIÓN DE AF (DETERMINISTA Y NO DETERMINISTA), EJEMPLO DE UN AF REPRESENTADO CON SU DTE, TABLA Y CON CONJUNTOS Y LISTAS.]
+lauti
+2.1.1 Aceptación de cadenas
+[PONER AQUI DEFINICIÓN DE LENGUAJE ACEPTADO Y ALGORITMO DE ACEPTACIÓN]
+lauti
+[PONER AQUÍ EL CÓDIGO DESARROLLADO CON LA LIBRERÍA (SOLO DE LA PARTE CENTRAL DEL ALGORITMO]
+lauti
+2.1.2 Algoritmo de conversión de AFND a AFD
+[PONER AQUÍ TEOREMA Y ALGORITMO DE CONVERSIÓN ENTRE AFND Y AFD]
+lauti
+[PONER AQUÍ EL CÓDIGO DESARROLLADO CON LA LIBRERÍA (SOLO DE LA PARTE CENTRAL DEL ALGORITMO]
+lauti
+[PONER AQUI UNA DESCRIPCIÓN DE LAS DIFICULATES EN EL DESARROLLO]
+lauti
+2.2. Conceptos sobre lenguajes de programación
+La implementación de los lenguajes de programación, como todo desarrollo de software, comienzan por el análisis del problema que requiere una solución informática y el diseño de una respuesta adecuada.
+lauti
+[PONER AQUÍ DEFINICIÓN DE LENGUAJE DE PROGRAMACIÓN]
+
+2.3. Abstracciones
+[PONER AQUÍ DEFINICONES DE ABSTRACCIÓN: TIPOS Y NIVELES]
+lauti 
+2.3.1. Abstracciones de Aleph
+[PONER AQUÍ DESCRIPCIÓN DE ABSTRACCIONES DE ALEPH]
+lauti
+2.4. Dominio de programación de Aleph
+[PONER AQUÍ EXPLICACIÓN DEL DOMINIO DE ALEPH ]
+sofi 
+3. Diseño e Implementación
+3.1. Sentencias
+[PONER AQUÍ DEFINICIÓN DE SENTENCIAS ]
+sofi 
+3.1.1. Un primer diseño de sentencias de Aleph
+[PONER AQUÍ ALGORITMO DE CONVERSIÓN PROGRAMADO EN POSIBLES SENTENCIAS DE ALEPH]
+los dos
+3.2. Reconocimiento de patrones. Tokens y Lexemas
+[PONER AQUÍ DEFINICIÓN DE TOKENS Y LEXEMAS]
+sofi
+3.2.1. Tokens y lexemas de Aleph
+[PONER AQUÍ TABLA CON TOKENS Y LEXEMAS DE ALEPH] los dos 

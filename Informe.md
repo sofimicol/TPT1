@@ -164,12 +164,29 @@ lauti
 lauti
 2.4. Dominio de programación de Aleph
 [PONER AQUÍ EXPLICACIÓN DEL DOMINIO DE ALEPH ]
-sofi 
-3. Diseño e Implementación
-3.1. Sentencias
-[PONER AQUÍ DEFINICIÓN DE SENTENCIAS ]
-sofi 
-3.1.1. Un primer diseño de sentencias de Aleph
+sofi
+
+# 3. Diseño e Implementación
+## 3.1. Sentencias
+Un lenguaje, ya sea natural (como el inglés) o artificial (como Java), es un conjunto de cadenas de caracteres de algún alfabeto. Las cadenas de un lenguaje se llaman sentencias o declaraciones. Las reglas de sintaxis de un lenguaje especifican qué cadenas de caracteres del alfabeto del lenguaje pertenecen al lenguaje. 
+
+En los lenguajes de programación imperativos, los cómputos se realizan principalmente evaluando expresiones y asignando los valores resultantes a variables. Sin embargo, para que un programa flexible, requiere de construcciones lingüísticas que controlen el flujo de ejecución.
+Las sentencias (enunciados o statements) se definen como las unidades sintácticas ejecutables que representan un paso individual en el proceso computacional de una máquina virtual.
+
+Aquellas instrucciones que permiten seleccionar entre rutas de flujo alternativas o repetir la ejecución de un grupo de sentencias reciben el nombre de sentencias de control.
+De acuerdo con el análisis formal de los lenguajes, las estructuras de secuenciación de sentencias se clasifican en tres grandes grupos estructurados:
+
+Composición (Secuenciación Implícita): Disposición de sentencias en una serie textual donde se ejecutan de manera estrictamente ordenada (una tras otra), asumiendo que cada instrucción tiene un único punto de entrada y uno de salida.
+
+Alternancia (Selección): Estructura de control que evalúa una condición lógica (guardia) para decidir cuál de dos o más secuencias de enunciados ejecutar, omitiendo el resto.
+El ejemplo es la sentencia condicional if-then-else.
+
+Iteración (Ciclos): Mecanismo que permite repetir la ejecución de un cuerpo de sentencias (bucle) de manera controlada bajo una condición lógica de parada (como la estructura while).
+La evolución histórica del diseño de lenguajes (respaldada por el Teorema de Estructura de Böhm y Jacopini) demostró que el uso indiscriminado de saltos incondicionales (goto) atenta contra la legibilidad y la confiabilidad del código.
+
+Por ello, las sentencias modernas se diseñan bajo la premisa de la programación estructurada, garantizando que cada sentencia de control posea un único punto de acceso y un único punto de salida.
+
+# 3.1.1. Un primer diseño de sentencias de Aleph
 [PONER AQUÍ ALGORITMO DE CONVERSIÓN PROGRAMADO EN POSIBLES SENTENCIAS DE ALEPH]
 los dos
 3.2. Reconocimiento de patrones. Tokens y Lexemas

@@ -13,10 +13,8 @@ La construcción del lenguaje se desarrollará siguiendo las etapas clásicas de
 
 De esta forma, el proyecto permitirá vincular los conceptos teóricos estudiados con una implementación concreta, pasando de la definición formal de autómatas, lenguajes y gramáticas a un sistema capaz de representarlos y operar sobre ellos de manera práctica.
 
-##1.2. Sobre el nombre del lenguaje
+## 1.2. Sobre el nombre del lenguaje
 El lenguaje a desarrollar se denominará Aleph puesto que este nombre tiene una fuerte vinculación con la Teoría de Conjuntos, estructura que será el pilar del desarrollo del nuevo lenguaje.
-
-Los números de Aleph
 
 En las matemáticas, particularmente en la teoría de conjuntos, los números de Aleph son una secuencia de números utilizados para representar la cardinalidad (o tamaño) de conjuntos infinitos que pueden ser bien ordenados. Fueron introducidos por el matemático Georg Cantor, quien se dio cuenta de que conjuntos infinitos pueden tener diferentes cardinalidades y son nombrados por el símbolo que usaba para denotarlos, la letra semita Aleph ($\aleph$).
 

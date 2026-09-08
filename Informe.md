@@ -1,7 +1,7 @@
 # 1. Introducción
 ## 1.1 Objetivo
 
-El objetivo principal del Trabajo Práctico Transversal es diseñar, desarrollar e implementar un intérprete funcional para un nuevo lenguaje de programación denominado Aleph, orientado al trabajo con Autómatas Finitos (AF) y vinculado con la Teoría de Conjuntos, que constituye uno de los pilares estructurales del lenguaje. 
+El objetivo principal del Trabajo Práctico Transversal es diseñar, desarrollar e implementar un intérprete funcional para un nuevo lenguaje de programación denominado Aleph, orientado al trabajo con Autómatas Finitos (AF) y vinculado con la Teoría de Conjuntos, que constituye uno de los pilares estructurales del lenguaje.
 
 En particular, el lenguaje deberá permitir representar Autómatas Finitos, convertir un Autómata Finito No Determinista (AFND) en un Autómata Finito Determinista (AFD), determinar si una cadena pertenece al lenguaje aceptado por un autómata, visualizar sus estructuras y obtener representaciones equivalentes. También se busca trabajar con las relaciones existentes entre Autómatas Finitos, Lenguajes Regulares (LR) y Gramáticas Regulares (GR), permitiendo, por ejemplo, obtener a partir de un autómata una Gramática Regular que genere el mismo lenguaje que este acepta.
 
@@ -38,13 +38,13 @@ Aleph, en nuestro contexto, integra el pensamiento de construir una jerarquía o
 
 Flex y Bison son herramientas diseñadas para escritores de compiladores e intérpretes, aunque también son útiles para muchas aplicaciones que podrían interesar a personas que no escriben compiladores. Cualquier aplicación que busque patrones en su entrada o que tenga un lenguaje de entrada o comandos es un buen candidato para Flex y Bison. Además, permiten un prototipado rápido de aplicaciones, modificaciones fáciles y un mantenimiento sencillo.
 
-¿De dónde vinieron Flex y Bison? 
+¿De dónde vinieron Flex y Bison?
 
 Bison desciende de Yacc, un generador de analizadores sintácticos creado entre 1975 y 1978 por Stephen C. Johnson en Bell Labs. Como su nombre, abreviatura de “Yet Another Compiler-Compiler” (otro compilador de compiladores más), sugiere, muchas personas estaban escribiendo generadores de analizadores sintácticos en esa época. La herramienta de Johnson combinaba una base teórica sólida gracias al trabajo de análisis de D. E. Knuth, lo que hacía que sus analizadores fueran extremadamente fiables, y una sintaxis de entrada conveniente.
 
 Esto la hizo muy popular entre los usuarios de sistemas Unix, aunque la licencia restrictiva bajo la cual se distribuía Unix en ese entonces limitaba su uso fuera del mundo académico y del Bell System. Alrededor de 1985, Bob Corbett, un estudiante de posgrado en la Universidad de California, Berkeley, reimplementó Yacc usando algoritmos internos algo mejorados, lo que evolucionó a Berkeley Yacc. Como su versión era más rápida que la de Bell y se distribuía bajo la flexible licencia de Berkeley, rápidamente se convirtió en la versión más popular de Yacc.
 
-En 1975, Mike Lesk y Eric Schmidt escribieron Lex, un generador de analizadores léxicos, siendo la mayor parte de la programación realizada por Schmidt. Lo vieron tanto como una herramienta independiente como un compañero del Yacc de Johnson. Lex también se volvió bastante popular, a pesar de ser relativamente lento y tener errores. 
+En 1975, Mike Lesk y Eric Schmidt escribieron Lex, un generador de analizadores léxicos, siendo la mayor parte de la programación realizada por Schmidt. Lo vieron tanto como una herramienta independiente como un compañero del Yacc de Johnson. Lex también se volvió bastante popular, a pesar de ser relativamente lento y tener errores.
 
 Alrededor de 1987, Vern Paxson del Lawrence Berkeley Lab tomó una versión de Lex escrita en Ratfor (una versión extendida de Fortran popular en ese momento) y la tradujo a C, llamándola Flex, por “Fast Lexical Analyzer Generator” (Generador Rápido de Analizadores Léxicos).
 
@@ -62,7 +62,7 @@ Los programas pueden ser sintácticamente válidos pero semánticamente inválid
 
 Los sistemas de implementación de los primeros lenguajes de programación de alto nivel, construidos a finales de los años 50, fueron de los sistemas de software más complejos de esa época.
 
-En los años 60, se realizaron esfuerzos de investigación intensivos para entender y formalizar el proceso de construcción de estas implementaciones de lenguajes de alto nivel. El mayor éxito de esos esfuerzos se dio en el área del análisis de sintaxis, principalmente porque esa parte del proceso de implementación es una aplicación de partes de la teoría de autómatas y la teoría de lenguajes formales que en ese momento ya se comprendían bien. 
+En los años 60, se realizaron esfuerzos de investigación intensivos para entender y formalizar el proceso de construcción de estas implementaciones de lenguajes de alto nivel. El mayor éxito de esos esfuerzos se dio en el área del análisis de sintaxis, principalmente porque esa parte del proceso de implementación es una aplicación de partes de la teoría de autómatas y la teoría de lenguajes formales que en ese momento ya se comprendían bien.
 
 Los lenguajes de programación se pueden implementar mediante cualquiera de tres métodos generales.
 ### Compilador
@@ -95,31 +95,31 @@ Toma las unidades léxicas producidas por el analizador léxico y las utiliza pa
 
 6. Generación de código: convierte el código intermedio optimizado en lenguaje máquina. La tabla de símbolos funciona como una base de datos para el proceso de compilación, sus contenidos principales son la información de tipo y atributos de cada nombre definido por el usuario en el programa. Esta información es colocada en la tabla de símbolos por los analizadores léxico y sintáctico y es utilizada por el analizador semántico y el generador de código.
 
-El compilador construye llamadas a los programas del sistema necesarios cuando el programa del usuario los requiere. Antes de que los programas en lenguaje de máquina producidos por un compilador puedan ejecutarse, los programas necesarios del sistema operativo deben ser encontrados y enlazados con el programa del usuario. La operación de enlace conecta el programa del usuario con los programas del sistema al colocar las direcciones de los puntos de entrada de los programas del sistema en las llamadas a ellos dentro del programa del usuario. El código del usuario y el del sistema juntos a veces se llaman módulo de carga o imagen ejecutable. 
+El compilador construye llamadas a los programas del sistema necesarios cuando el programa del usuario los requiere. Antes de que los programas en lenguaje de máquina producidos por un compilador puedan ejecutarse, los programas necesarios del sistema operativo deben ser encontrados y enlazados con el programa del usuario. La operación de enlace conecta el programa del usuario con los programas del sistema al colocar las direcciones de los puntos de entrada de los programas del sistema en las llamadas a ellos dentro del programa del usuario. El código del usuario y el del sistema juntos a veces se llaman módulo de carga o imagen ejecutable.
 
-El proceso de reunir los programas del sistema y enlazarlos con los programas de usuario se llama enlazado y carga, o a veces solo enlazado. Esto se realiza mediante un programa del sistema llamado enlazador. Además de los programas del sistema, los programas de usuario a menudo deben enlazarse con programas de usuario previamente compilados que residen en bibliotecas. Así que el enlazador no solo enlaza un programa dado con los programas del sistema, sino que también puede enlazarlo con otros programas de usuario. 
+El proceso de reunir los programas del sistema y enlazarlos con los programas de usuario se llama enlazado y carga, o a veces solo enlazado. Esto se realiza mediante un programa del sistema llamado enlazador. Además de los programas del sistema, los programas de usuario a menudo deben enlazarse con programas de usuario previamente compilados que residen en bibliotecas. Así que el enlazador no solo enlaza un programa dado con los programas del sistema, sino que también puede enlazarlo con otros programas de usuario.
 
-La velocidad de la conexión entre la memoria de una computadora y su procesador usualmente determina la velocidad de la computadora, porque las instrucciones a menudo pueden ejecutarse más rápido de lo que pueden trasladarse al procesador para su ejecución. Esta conexión se llama el cuello de botella de von Neumann; es el principal factor limitante en la velocidad de las computadoras con arquitectura de von Neumann. 
+La velocidad de la conexión entre la memoria de una computadora y su procesador usualmente determina la velocidad de la computadora, porque las instrucciones a menudo pueden ejecutarse más rápido de lo que pueden trasladarse al procesador para su ejecución. Esta conexión se llama el cuello de botella de von Neumann; es el principal factor limitante en la velocidad de las computadoras con arquitectura de von Neumann.
 
 ### Interpretación Pura
 Con este enfoque, los programas son interpretados por otro programa llamado intérprete, sin ninguna traducción.
 
-El programa intérprete actúa como una simulación de software de una máquina cuyo ciclo de búsqueda-ejecución se ocupa de declaraciones de programas en lenguaje de alto nivel en lugar de instrucciones de máquina. Esta simulación de software, obviamente, proporciona una máquina virtual para el lenguaje. 
+El programa intérprete actúa como una simulación de software de una máquina cuyo ciclo de búsqueda-ejecución se ocupa de declaraciones de programas en lenguaje de alto nivel en lugar de instrucciones de máquina. Esta simulación de software, obviamente, proporciona una máquina virtual para el lenguaje.
 
-La interpretación pura tiene la ventaja de permitir una fácil implementación de muchas operaciones de depuración a nivel de código fuente, porque todos los mensajes de error en tiempo de ejecución pueden referirse a unidades a nivel de fuente. Por ejemplo, si se encuentra que un índice de un arreglo está fuera de rango, el mensaje de error puede indicar fácilmente la línea de origen y el nombre del arreglo. 
+La interpretación pura tiene la ventaja de permitir una fácil implementación de muchas operaciones de depuración a nivel de código fuente, porque todos los mensajes de error en tiempo de ejecución pueden referirse a unidades a nivel de fuente. Por ejemplo, si se encuentra que un índice de un arreglo está fuera de rango, el mensaje de error puede indicar fácilmente la línea de origen y el nombre del arreglo.
 
 Por otro lado, este método tiene la seria desventaja de que la ejecución es de 10 a 100 veces más lenta que en los sistemas compilados. La fuente principal de esta lentitud es la decodificación de las declaraciones del lenguaje de alto nivel, que son mucho más complejas que las instrucciones de lenguaje de máquina (aunque puede haber menos declaraciones que instrucciones en código máquina equivalente). Además, sin importar cuántas veces se ejecute una declaración, debe decodificarse cada vez. Por lo tanto, la decodificación de declaraciones, más que la conexión entre el procesador y la memoria, es el cuello de botella de un intérprete puro.
 
 Otra desventaja de la interpretación pura es que a menudo requiere más espacio. Además del programa fuente, la tabla de símbolos debe estar presente durante la interpretación. Además, el programa fuente puede almacenarse de una forma diseñada para un acceso y modificación fáciles en lugar de una que proporcione tamaño mínimo. Aunque algunos lenguajes simples de los años 60 (APL, SNOBOL y LISP) eran puramente interpretados, para los años 80, el enfoque rara vez se usaba en lenguajes de alto nivel.
 
 ### Sistemas de Implementación Híbrida
-Este método es más rápido que la interpretación pura porque las instrucciones del lenguaje fuente se decodifican solo una vez. Tales implementaciones se llaman sistemas de implementación híbridos. 
+Este método es más rápido que la interpretación pura porque las instrucciones del lenguaje fuente se decodifican solo una vez. Tales implementaciones se llaman sistemas de implementación híbridos.
 
 En lugar de traducir el código del lenguaje intermedio a código máquina, simplemente interpreta el código intermedio.
 
-Un ejemplo es Perl, se implementa con un sistema híbrido. Los programas en Perl se compilan parcialmente para detectar errores antes de la interpretación y simplificar el intérprete. Las implementaciones iniciales de Java eran todas híbridas. Su forma intermedia, llamada bytecode, proporciona portabilidad a cualquier máquina que tenga un intérprete de bytecode y un sistema de ejecución asociado. Juntos, esto se llama la Máquina Virtual de Java. 
+Un ejemplo es Perl, se implementa con un sistema híbrido. Los programas en Perl se compilan parcialmente para detectar errores antes de la interpretación y simplificar el intérprete. Las implementaciones iniciales de Java eran todas híbridas. Su forma intermedia, llamada bytecode, proporciona portabilidad a cualquier máquina que tenga un intérprete de bytecode y un sistema de ejecución asociado. Juntos, esto se llama la Máquina Virtual de Java.
 
-Un sistema de implementación Just-in-Time (JIT) traduce inicialmente los programas a un lenguaje intermedio. Luego, durante la ejecución, compila los métodos del lenguaje intermedio a código máquina cuando se llaman. La versión en código máquina se guarda para llamadas posteriores.a. Java y todos los lenguajes .NET se implementan con un sistema JIT. 
+Un sistema de implementación Just-in-Time (JIT) traduce inicialmente los programas a un lenguaje intermedio. Luego, durante la ejecución, compila los métodos del lenguaje intermedio a código máquina cuando se llaman. La versión en código máquina se guarda para llamadas posteriores.a. Java y todos los lenguajes .NET se implementan con un sistema JIT.
 
 A veces, un implementador puede proporcionar implementaciones tanto compiladas como interpretadas para un lenguaje.  En estos casos, se usa el intérprete para desarrollar y depurar programas. Luego, después de alcanzar un estado (relativamente) libre de errores, los programas se compilan para aumentar su velocidad de ejecución.
 
@@ -158,7 +158,7 @@ lauti
 
 2.3. Abstracciones
 [PONER AQUÍ DEFINICONES DE ABSTRACCIÓN: TIPOS Y NIVELES]
-lauti 
+lauti
 2.3.1. Abstracciones de Aleph
 [PONER AQUÍ DESCRIPCIÓN DE ABSTRACCIONES DE ALEPH]
 lauti
@@ -168,7 +168,7 @@ sofi
 
 # 3. Diseño e Implementación
 ## 3.1. Sentencias
-Un lenguaje, ya sea natural (como el inglés) o artificial (como Java), es un conjunto de cadenas de caracteres de algún alfabeto. Las cadenas de un lenguaje se llaman sentencias o declaraciones. Las reglas de sintaxis de un lenguaje especifican qué cadenas de caracteres del alfabeto del lenguaje pertenecen al lenguaje. 
+Un lenguaje, ya sea natural (como el inglés) o artificial (como Java), es un conjunto de cadenas de caracteres de algún alfabeto. Las cadenas de un lenguaje se llaman sentencias o declaraciones. Las reglas de sintaxis de un lenguaje especifican qué cadenas de caracteres del alfabeto del lenguaje pertenecen al lenguaje.
 
 En los lenguajes de programación imperativos, los cómputos se realizan principalmente evaluando expresiones y asignando los valores resultantes a variables. Sin embargo, para que un programa flexible, requiere de construcciones lingüísticas que controlen el flujo de ejecución.
 Las sentencias (enunciados o statements) se definen como las unidades sintácticas ejecutables que representan un paso individual en el proceso computacional de una máquina virtual.
@@ -187,10 +187,144 @@ La evolución histórica del diseño de lenguajes (respaldada por el Teorema de 
 Por ello, las sentencias modernas se diseñan bajo la premisa de la programación estructurada, garantizando que cada sentencia de control posea un único punto de acceso y un único punto de salida.
 
 # 3.1.1. Un primer diseño de sentencias de Aleph
+
+## Creación + asignación de variables
+
+```
+  set a = { 1, 2, 3, 4 };
+  list b = [ 1 , 1 , 1 , 1 ];
+  val x = "1";
+  bool a = true;
+  bool b = false;
+```
+
+Sets, listas y valores toleran un largo indeterminado al tratarse de listas enlazadas en su implementación dentro del lenguaje.
+
+## Comentarios
+
+```
+set a = {1, 2, 3} // Comentario inline
+/ Comentario multilinea.
+  puede ocupar muchas lineas /
+```
+
+## Operaciones Elementales
+
+```
+// Operaciones de Conjuntos
+bool pregunta;
+
+set a = {"1", "2", "3", "5"};
+set b = {"1", "4", "5"};
+
+set c = a union b;
+print(c); // => { "1", "2", "3", "4", "5"}
+
+c = a intersect b;
+print(c); // => { "1", "5"}
+
+c = a triangledif b;
+print(c); // => { "2", "3", "4"}
+
+c = a dif b;
+print(c); // => { "2", "3"}
+
+pregunta = a == c
+print(pregunta); // => false
+
+pregunta = a within c // Pregunta si esta contenido (subset)
+print(pregunta); // => false
+
+pregunta = b any "1";
+print(pregunta); // => true
+
+a << "hola";
+print(a); // => { "1", "2", "3", "5", "hola"}
+a << "hola";
+print(a); // => { "1", "2", "3", "5", "hola"} No hay cambios (SET)
+
+b << a;
+print(b) // => {"1", "4", "5", { "1", "2", "3", "5", "hola"} }
+
+b << ["1", "1", "2"];
+print(b) // => {"1", "4", "5", { "1", "2", "3", "5", "hola"}, ["1", "1", "2"] }
+```
+
+```
+// Operaciones de Listas
+bool pregunta;
+
+list a = [ "1", "2", "3"];
+list b = ["1", "4", "5"];
+
+list c = a concat b;
+print(c); // => [ "1", "2", "3", "1", "4", "5"];
+
+pregunta = a == b
+print(pregunta); // => false
+
+pregunta = b any "1";
+print(pregunta); // => true
+
+pregunta = b all "1";
+print(pregunta); // => false
+
+b << "6";
+print(b) // => ["1", "4", "5", "6"]
+
+b << a;
+print(b) // => ["1", "4", "5", "6", [ "1", "2", "3"]]
+
+b << {"1"};
+print(b) // => ["1", "4", "5", "6", [ "1", "2", "3"], {"1"}]
+```
+
+```
+// Operaciones de Cadenas
+bool pregunta;
+val a = "1234";
+val b = "12345";
+val c;
+
+c = a concat b;
+print(c); // => "123412345";
+
+pregunta = a within b; // A es substring de b?
+print(pregunta); // => true
+
+```
+
+## Estructuras de control
+
+```
+// Condiciones
+if(expresion_booleana) do
+  //ejecuta ordenes
+end
+
+if(expresion_booleana) do
+  //ejecuta ordenes
+else do
+  //ejecuta ordenes
+end
+
+// Bucle for_each
+for a in B do
+  print(a);
+end
+
+// declaración de funciones
+set foo(set a, set b) do
+  //ejecuta acciones
+
+  return type_set;
+end
+```
+
 [PONER AQUÍ ALGORITMO DE CONVERSIÓN PROGRAMADO EN POSIBLES SENTENCIAS DE ALEPH]
 los dos
 3.2. Reconocimiento de patrones. Tokens y Lexemas
 [PONER AQUÍ DEFINICIÓN DE TOKENS Y LEXEMAS]
 sofi
 3.2.1. Tokens y lexemas de Aleph
-[PONER AQUÍ TABLA CON TOKENS Y LEXEMAS DE ALEPH] los dos 
+[PONER AQUÍ TABLA CON TOKENS Y LEXEMAS DE ALEPH] los dos

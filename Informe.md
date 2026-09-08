@@ -137,31 +137,73 @@ La arquitectura de Aleph utiliza la fase de compilación frontal con la manipula
 
 # 2. Análisis de requerimientos
 ## 2.1. Un caso de estudio: Los Autómatas Finitos y sus algoritmos
-[PONER AQUÍ DEFINICIÓN DE AF (DETERMINISTA Y NO DETERMINISTA), EJEMPLO DE UN AF REPRESENTADO CON SU DTE, TABLA Y CON CONJUNTOS Y LISTAS.]
-lauti
+Un autómata finito determinista (afd) A es una 5-upla definida por los siguientes elementos: 
+  Q es un conjunto finito no vacío de estados
+  Σ es un conjunto finito no vacío de símbolos llamado alfabeto de entrada 
+  δ : QxΣ → Q es una función completamente definida llamada función de transición
+  q0 ∈ Q es el estado inicial
+  F ⊆ Q es el conjunto de estados de aceptación. 
+Entonces el autómata queda definido así: A = (Q, Σ, δ, q0, F ).
+
+Por su parte, un autómata finito no determinista (afnd) A es una 5-upla definida por los siguientes elementos: 
+  Q es un conjunto finito no vacío de estados
+  Σ es un conjunto finito no vacío de símbolos llamados alfabeto de entrada
+  δ : QxΣxQ es una relación llamada relación de transición
+  q0 ∈ Q es el estado inicial
+  F ⊆ Q es el conjunto de estados de aceptación. 
+Entonces el autómata queda definido así: A = (Q, Σ, δ, q0, F ). 
+
+[PONER AQUÍ EJEMPLO DE UN AF REPRESENTADO CON SU DTE, TABLA Y CON CONJUNTOS Y LISTAS.]}
+
 2.1.1 Aceptación de cadenas
-[PONER AQUI DEFINICIÓN DE LENGUAJE ACEPTADO Y ALGORITMO DE ACEPTACIÓN]
-lauti
+La Función de Transición tiene como dominio pares ordenados formados por un estado y un caracter. Los afd procesan cadenas de caracteres para determinar si éstas pertenecen o no a un determinado lenguaje. Entonces es necesario generalizar la definición de Función de Transición para una cadena w de la siguiente manera: δˆ : QxΣ∗ → Q tal que: 
+  1. δˆ(q,ε) = q
+  2. δˆ(q,aw) = δ(δˆ(q,a),w).
+Una cadena w ∈ Σ∗ es aceptada por un afd ⇔ δˆ(q0,w) = p, p ∈ F. Es decir que w es aceptada por el afd si y solo si existe una sucesión de transiciones desde q0 hasta p ∈ F. El lenguaje L aceptado por un afd A es el conjunto L(A) = {w ∈ Σ∗|δˆ(q0,w) ∈ F}.
+
+Para un afnd, el lenguaje L aceptado por un afnd A es el conjunto L(A) = {w ∈ Σ∗|δ(q0,w) ∩ F ≠ ∅}. Para calcular δˆ(q,w) obtenemos primero δˆ(q,x) y luego seguimos todas las transiciones de estos estados que estén etiquetados con a, donde al menos un ri ∈ F cuando w ∈ L y ningún ri ∈ F cuando w ∉ L.
 [PONER AQUÍ EL CÓDIGO DESARROLLADO CON LA LIBRERÍA (SOLO DE LA PARTE CENTRAL DEL ALGORITMO]
-lauti
+
 2.1.2 Algoritmo de conversión de AFND a AFD
-[PONER AQUÍ TEOREMA Y ALGORITMO DE CONVERSIÓN ENTRE AFND Y AFD]
-lauti
+Teorema: Sea A un afnd que acepta el lenguaje L ⇒ ∃ un afd B que acepta el lenguaje L.
+Construcción: Sea A = (QA,Σ,δA,q0A,FA) un afnd que acepta el conjunto L, construimos el afd B = (QB,Σ,δB,q0B,FB) siguiendo los siguientes pasos. 
+  1. El conjunto de estados de B: Los estados del af determinista B serán conjuntos pertenecientes al conjunto de partes de QA, por lo tanto QB ⊆ 2QA. cuando estudiamos los afd denotamos a los estados con un nombre (una etiqueta, por ejemplo qi), ahora los estados que van a resultar de la conversión del afnd al afd son un conjunto de estados conformados a su vez por los subconjuntos procesados.
+  2. La Función de Transición de B: Para un estado q de B (que es un subconjunto de QA, es decir, q = {p1, p2, ..., pk}) y un símbolo a de Σ, la transición δB(q, a) se calcula como la unión de todas las transiciones posibles en el AFND original. Esto es, δB(q, a) = {r1, r2, ..., rm} donde ⋃ki=1 δA(pi, a) = {r1, r2, ..., rm}. El resultado es un nuevo estado en B.
+  3. El conjunto de estados de aceptación de B: FB es el conjunto de todos los estados en QB que contienen al menos un estado de aceptación de A. Es decir, FB = {q ∈ QB | q ∩ FA ≠ ∅}.
+  4. El Estado Inicial de B: q0B = {q0A}.
+  5. 
 [PONER AQUÍ EL CÓDIGO DESARROLLADO CON LA LIBRERÍA (SOLO DE LA PARTE CENTRAL DEL ALGORITMO]
-lauti
 [PONER AQUI UNA DESCRIPCIÓN DE LAS DIFICULATES EN EL DESARROLLO]
-lauti
+
 2.2. Conceptos sobre lenguajes de programación
 La implementación de los lenguajes de programación, como todo desarrollo de software, comienzan por el análisis del problema que requiere una solución informática y el diseño de una respuesta adecuada.
-lauti
-[PONER AQUÍ DEFINICIÓN DE LENGUAJE DE PROGRAMACIÓN]
+La definición de un lenguaje de programación se divide en tres partes fundamentales: sintaxis, semántica y pragmática.  
+  Sintaxis (Estructura): Determina cómo están constituidos los programas en dicho lenguaje. Es análoga a la gramática de un lenguaje natural; describe de qué manera se pueden combinar las partes para formar otras nuevas. Casi todos los lenguajes la definen mediante "gramáticas libres de contexto". Está íntimamente ligada a la estructura léxica, que es la ortografía de las palabras del lenguaje, conocidas formalmente como "tokens" (palabras clave, símbolos e identificadores).  
+  Semántica (Significado): Describe los efectos de la ejecución del código, es decir, el significado de las estructuras sintácticas. Es mucho más compleja y difícil de describir con precisión que la sintaxis, ya que el significado de un mecanismo suele interactuar con otros contextos del lenguaje. Aunque la mayoría de las veces se describe informalmente en manuales, existen sistemas de notación formal para definirla (semántica operacional, denotacional y axiomática).  
+  Pragmática: Se refiere a la utilidad práctica en dicho lenguaje, como el propósito para el que fue diseñado (por ejemplo, Pascal es de propósito general).
 
 2.3. Abstracciones
-[PONER AQUÍ DEFINICONES DE ABSTRACCIÓN: TIPOS Y NIVELES]
-lauti 
+Una Abstraccion es el proceso de análisis del mundo real para interpretar los aspectos esenciales de un problema y expresarlo en términos precisos. En los lenguajes de programación, el control de la complejidad es la meta prevaleciente de la abstracción. Dado que el ser humano tiene un límite para retener detalles, se elaboran abstracciones que esconden información y se establecen interfaces estándar para poder construir sistemas a gran escala.
+Las abstracciones se agrupan en dos grandes grupos: de datos y de control, cada una con distintos niveles (básicas, estructuradas y unitarias).  
+  1. Abstracción de datos:
+       - Abstracciones Básicas: Representación interna de valores de datos comunes en una computadora. El ejemplo más común son las variables, localizaciones en la memoria de la computadora que contienen valores y que se clasifican por tipo (int, integer, float, double).
+       - Abstracciones Estructuradas: Es el método principal para la abstracción de colecciones de valores relacionados entre sí, como registros de empleados o arrays.
+       - Abstracciones Unitarias: Son los que conocemos como Tipo Abstracto de Datos (TAD), una estructura o clase que permite el encapsulamiento de datos y la restricción de información. Es importante recalcar la capacidad de reutilización de la abstracción de datos en otros programas. Las abstracciones de datos unitarios se convierten en la base del mecanismos de bibliotecas de lenguaje.
+
+  2. Abstracción de control:
+       - Abstracciones Básicas: Son aquellos enunciados o sentencias que combinan instrucciones en una sentencia abstracta más comprensible (por ejemplo, una asignación como x = x + 3).
+       - Abstracciones Estructuradas: Dividen un programa en grupos de instrucciones que están anidadas dentro de pruebas que gobiernan su ejecución (if, case, switch). Una ventaja que tienen es que se pueden anidar una dentro de otra para seleccionar una trayectoria específica. Los mecanismos de bucles o ciclos estructurados se presentan de muchas formas, incluyendo el ciclo while, for y do.
+       - Abstracciones Unitarias: Consisten en una colección de procedimientos que proporcionan servicios lógicamente relacionados con otras partes del programa y que forman una parte unitaria o independiente del mismo. Permite que la unicidad se compile por separado y sea utilizado por una interfaz permitiendo entender el programa sin conocer los detalles internos. El mecanismo útil para estructurar el control es el procedimiento también conocido como método, en todas sus variantes, lo que le permite al programador considerar una secuencia de acciones como si fuese una sola.
 2.3.1. Abstracciones de Aleph
-[PONER AQUÍ DESCRIPCIÓN DE ABSTRACCIONES DE ALEPH]
-lauti
+Para que Aleph alcance su objetivo de ser un lenguaje legible y utilizable por el ser humano, requiere proporcionar abstracciones de las acciones de la computadora que sean fáciles de comprender. Un programador debe poder basarse en su comprensión para tener un discernimiento inmediato de la computación que se está describiendo. A medida que los programas en Aleph crezcan, se requerirán mecanismos de abstracción para reducir la cantidad de detalles y poder comprender el sistema como un todo.  En el diseño de Aleph se han considerado las siguientes implementaciones de los mecanismos de abstracción:
+  1. Abstracción de Datos:Aleph se apoya fuertemente en este tipo de abstracciones, ya que su dominio principal es la manipulación de elementos matemáticos.
+     -   Abstracciones Básicas: Aleph abstraerá la representación interna de valores de datos comunes en una computadora mediante el uso de variables. Estas variables actuarán como localizaciones en la memoria de la computadora (gestionadas a través de la Tabla de Símbolos en tiempo de ejecución) que contendrán valores.
+     -   Abstracciones Estructuradas: Dado que Aleph se basa en la Teoría de Conjuntos, este es su método principal para la abstracción de colecciones de valores relacionados entre sí. En lugar de lidiar con punteros de memoria, Aleph abstrae los tipos de datos permitiendo al usuario declarar estados, funciones de transición y alfabetos (que esencialmente son conjuntos) a un alto nivel. Estas abstracciones estructuradas son fundamentales para representar los elementos de la 5-upla que define a los autómatas.
+     -   Abstracciones Unitarias: Aleph implementa estructuras similares a un Tipo Abstracto de Datos (TAD) para encapsular la información referida a un autómata finito completo (sus estados, alfabeto, transiciones, etc.) y restringir el acceso a su información interna. Esto permite la reutilización de la abstracción de datos en distintos algoritmos (como la conversión de AFND a AFD o la verificación de aceptación de cadenas).
+  2. Astracción de Control:Aleph necesita construcciones lingüísticas que controlen el flujo de ejecución para poder implementar los algoritmos sobre autómatas.
+     -   Abstracciones Básicas: Se implementarán enunciados o sentencias que combinan instrucciones en una sentencia abstracta más comprensible, como por ejemplo, las asignaciones para definir transiciones o la unión de conjuntos en la construcción del algoritmo de conversión de AFND a AFD.
+     -   Abstracciones Estructuradas: Aleph divide los programas en grupos de instrucciones anidadas dentro de pruebas que gobiernan su ejecución (alternancia o selección) para decidir qué secuencias de enunciados ejecutar. Asimismo, utiliza mecanismos de bucles o ciclos estructurados (iteración) para repetir la ejecución de un cuerpo de sentencias. 
+
 2.4. Dominio de programación de Aleph
 [PONER AQUÍ EXPLICACIÓN DEL DOMINIO DE ALEPH ]
 sofi

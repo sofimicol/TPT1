@@ -156,6 +156,7 @@ Entonces el autómata queda definido así: A = (Q, Σ, δ, q0, F ).
 [PONER AQUÍ EJEMPLO DE UN AF REPRESENTADO CON SU DTE, TABLA Y CON CONJUNTOS Y LISTAS.]}
 
 2.1.1 Aceptación de cadenas
+
 La Función de Transición tiene como dominio pares ordenados formados por un estado y un caracter. Los afd procesan cadenas de caracteres para determinar si éstas pertenecen o no a un determinado lenguaje. Entonces es necesario generalizar la definición de Función de Transición para una cadena w de la siguiente manera: δˆ : QxΣ∗ → Q tal que: 
   1. δˆ(q,ε) = q
   2. δˆ(q,aw) = δ(δˆ(q,a),w).
@@ -165,6 +166,7 @@ Para un afnd, el lenguaje L aceptado por un afnd A es el conjunto L(A) = {w ∈ 
 [PONER AQUÍ EL CÓDIGO DESARROLLADO CON LA LIBRERÍA (SOLO DE LA PARTE CENTRAL DEL ALGORITMO]
 
 2.1.2 Algoritmo de conversión de AFND a AFD
+
 Teorema: Sea A un afnd que acepta el lenguaje L ⇒ ∃ un afd B que acepta el lenguaje L.
 Construcción: Sea A = (QA,Σ,δA,q0A,FA) un afnd que acepta el conjunto L, construimos el afd B = (QB,Σ,δB,q0B,FB) siguiendo los siguientes pasos. 
   1. El conjunto de estados de B: Los estados del af determinista B serán conjuntos pertenecientes al conjunto de partes de QA, por lo tanto QB ⊆ 2QA. cuando estudiamos los afd denotamos a los estados con un nombre (una etiqueta, por ejemplo qi), ahora los estados que van a resultar de la conversión del afnd al afd son un conjunto de estados conformados a su vez por los subconjuntos procesados.
@@ -176,6 +178,7 @@ Construcción: Sea A = (QA,Σ,δA,q0A,FA) un afnd que acepta el conjunto L, cons
 [PONER AQUI UNA DESCRIPCIÓN DE LAS DIFICULATES EN EL DESARROLLO]
 
 2.2. Conceptos sobre lenguajes de programación
+
 La implementación de los lenguajes de programación, como todo desarrollo de software, comienzan por el análisis del problema que requiere una solución informática y el diseño de una respuesta adecuada.
 La definición de un lenguaje de programación se divide en tres partes fundamentales: sintaxis, semántica y pragmática.  
   Sintaxis (Estructura): Determina cómo están constituidos los programas en dicho lenguaje. Es análoga a la gramática de un lenguaje natural; describe de qué manera se pueden combinar las partes para formar otras nuevas. Casi todos los lenguajes la definen mediante "gramáticas libres de contexto". Está íntimamente ligada a la estructura léxica, que es la ortografía de las palabras del lenguaje, conocidas formalmente como "tokens" (palabras clave, símbolos e identificadores).  
@@ -183,6 +186,7 @@ La definición de un lenguaje de programación se divide en tres partes fundamen
   Pragmática: Se refiere a la utilidad práctica en dicho lenguaje, como el propósito para el que fue diseñado (por ejemplo, Pascal es de propósito general).
 
 2.3. Abstracciones
+
 Una Abstraccion es el proceso de análisis del mundo real para interpretar los aspectos esenciales de un problema y expresarlo en términos precisos. En los lenguajes de programación, el control de la complejidad es la meta prevaleciente de la abstracción. Dado que el ser humano tiene un límite para retener detalles, se elaboran abstracciones que esconden información y se establecen interfaces estándar para poder construir sistemas a gran escala.
 Las abstracciones se agrupan en dos grandes grupos: de datos y de control, cada una con distintos niveles (básicas, estructuradas y unitarias).  
   1. Abstracción de datos:
@@ -195,6 +199,7 @@ Las abstracciones se agrupan en dos grandes grupos: de datos y de control, cada 
        - Abstracciones Estructuradas: Dividen un programa en grupos de instrucciones que están anidadas dentro de pruebas que gobiernan su ejecución (if, case, switch). Una ventaja que tienen es que se pueden anidar una dentro de otra para seleccionar una trayectoria específica. Los mecanismos de bucles o ciclos estructurados se presentan de muchas formas, incluyendo el ciclo while, for y do.
        - Abstracciones Unitarias: Consisten en una colección de procedimientos que proporcionan servicios lógicamente relacionados con otras partes del programa y que forman una parte unitaria o independiente del mismo. Permite que la unicidad se compile por separado y sea utilizado por una interfaz permitiendo entender el programa sin conocer los detalles internos. El mecanismo útil para estructurar el control es el procedimiento también conocido como método, en todas sus variantes, lo que le permite al programador considerar una secuencia de acciones como si fuese una sola.
 2.3.1. Abstracciones de Aleph
+
 Para que Aleph alcance su objetivo de ser un lenguaje legible y utilizable por el ser humano, requiere proporcionar abstracciones de las acciones de la computadora que sean fáciles de comprender. Un programador debe poder basarse en su comprensión para tener un discernimiento inmediato de la computación que se está describiendo. A medida que los programas en Aleph crezcan, se requerirán mecanismos de abstracción para reducir la cantidad de detalles y poder comprender el sistema como un todo.  En el diseño de Aleph se han considerado las siguientes implementaciones de los mecanismos de abstracción:
   1. Abstracción de Datos:Aleph se apoya fuertemente en este tipo de abstracciones, ya que su dominio principal es la manipulación de elementos matemáticos.
      -   Abstracciones Básicas: Aleph abstraerá la representación interna de valores de datos comunes en una computadora mediante el uso de variables. Estas variables actuarán como localizaciones en la memoria de la computadora (gestionadas a través de la Tabla de Símbolos en tiempo de ejecución) que contendrán valores.

@@ -7,7 +7,7 @@ Tdata build_list(str *);
 
 
 int main() {
-  automaton_from_string(load2("{{q0 q1 q2 q3}{a b}{[q0 a q1][q1 a q2][q2 a q3][q0 b q4][q1 b q4][q2 b q4][q3 b q4][q4 b q4][q4 a q4]}q0{q3}}"));
+  automaton_from_string(load2("{{q0 q1 q2 q3} {a b} {[q0 a {q1}] [q1 a {q2}] [q2 a {q3}] [q0 b {q4}] [q1 b {q4}] [q2 b {q4}] [q3 b {q4}] [q4 b {q4}] [q4 a {q4}]} q0 {q3}}"));
   return 0;
 }
 
@@ -41,10 +41,11 @@ Tdata build_set(str * entrada){
 
       if(str_caracter->data == '}'){
         processing_set = 0;
-      } else {
-        insert_set(&set, copy_ast(elemento));
       }
 
+      if(elemento->string != NULL){
+        insert_set(&set, copy_ast(elemento));
+      }
     }
     free_ast(elemento);
   }
@@ -80,10 +81,10 @@ Tdata build_list(str * entrada){
       }
       if(str_caracter->data == ']'){
         processing_list = 0;
-      }  else {
+      }
+      if(elemento->string != NULL){
         append(&list, copy_ast(elemento));
       }
-
     }
     free_ast(elemento);
   }
@@ -110,15 +111,27 @@ AF automaton_from_string(str entrada){
 
   free_str(cadena);
 
-  // Q = obtener_data(set);
-  // sigma = obtener_data(obtener_next(set));
-  // delta = obtener_data(obtener_next(obtener_next(set)));
-  // q0 = obtener_data(obtener_next(obtener_next(obtener_next(set))));
-  // F = obtener_data(obtener_next(obtener_next(obtener_next(obtener_next(set)))));
+  printf("\n Q: ");
+  Q = obtener_data(obtener_data(set));
+  mostrarArbol(Q);
+
+  printf("\n Sigma: ");
+  sigma = obtener_data(obtener_next(obtener_data(set)));
+  mostrarArbol(sigma);
+
+  printf("\n Delta: ");
+  delta = obtener_data(obtener_next(obtener_next(obtener_data(set))));
+  mostrarArbol(delta);
+
+  printf("\n q0: ");
+  q0 = obtener_data(obtener_next(obtener_next(obtener_next(obtener_data(set)))));
+  mostrarArbol(q0);
+
+  printf("\n F: ");
+  F = obtener_data(obtener_next(obtener_next(obtener_next(obtener_next(obtener_data(set))))));
+  mostrarArbol(F);
 
   automata = create_automata();
-
-  mostrarArbol(set);
 
   return automata;
 }

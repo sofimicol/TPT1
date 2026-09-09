@@ -236,8 +236,39 @@ Por ello, las sentencias modernas se diseñan bajo la premisa de la programació
 # 3.1.1. Un primer diseño de sentencias de Aleph
 [PONER AQUÍ ALGORITMO DE CONVERSIÓN PROGRAMADO EN POSIBLES SENTENCIAS DE ALEPH]
 los dos
-3.2. Reconocimiento de patrones. Tokens y Lexemas
-[PONER AQUÍ DEFINICIÓN DE TOKENS Y LEXEMAS]
-sofi
+# 3.2. Reconocimiento de patrones. Tokens y Lexemas
+
+Las descripciones formales de la sintaxis de los lenguajes de programación, por simplicidad, a menudo no incluyen descripciones de las unidades sintácticas de nivel más bajo. Estas pequeñas unidades se llaman lexemas.
+
+La descripción de los lexemas puede darse mediante una especificación léxica, que normalmente es independiente de la descripción sintáctica del lenguaje.
+
+Los lexemas de un lenguaje de programación incluyen sus literales numéricos, operadores y palabras especiales, entre otros. Se puede pensar en los programas como cadenas de lexemas en lugar de caracteres.
+
+Los lexemas se dividen en grupos; por ejemplo, los nombres de variables, métodos, clases, y demás, que en un lenguaje de programación, forman un grupo llamado identificadores.
+
+Cada grupo de lexemas se representa con un nombre, o token. Entonces, un token de un lenguaje es una categoría de sus lexemas.
+
+Por ejemplo, un identificador es un token que puede tener lexemas, o instancias, como sum y total.
+
+En algunos casos, un token tiene un único lexema posible. Por ejemplo, el token para el símbolo del operador aritmético + tiene solo un lexema posible.
+
+Ejemplo
+
+Considerando la siguiente instrucción en Java: index = 2 * count + 17;
+
+### Así se verá en GitHub
+
+| Lexema | Token | Descripción |
+|---|---|---|
+| `index` | `identificador` | Nombre utilizado para identificar una variable. |
+| `=` | `equal_sign` | Operador de asignación, utilizado para asignar un valor a una variable. |
+| `2` | `int_literal` | Literal entero que representa el número 2. |
+| `*` | `mult_op` | Operador de multiplicación. |
+| `count` | `identificador` | Nombre utilizado para identificar otra variable. |
+| `+` | `plus_op` | Operador de suma. |
+| `17` | `int_literal` | Literal entero que representa el número 17. |
+| `;` | `semicolon` | Símbolo que indica el final de la instrucción en Java. |
+
+
 3.2.1. Tokens y lexemas de Aleph
 [PONER AQUÍ TABLA CON TOKENS Y LEXEMAS DE ALEPH] los dos 

@@ -9,13 +9,14 @@ typedef struct Nodo{
 	struct Nodo*next;
 }Tnodo;
 typedef Tnodo*str;
-str load();//insertar una lista de caracteres por consola 
+str load();//insertar una lista de caracteres por consola
 str load2(const char*);
 void print (str);
 str concat(str,str);
 void free_str(str);
 int compare_str(str cad1, str cad2);
 str copy_str(str original);
+str pop(str *);
 
-str create_nodo(char c);	
+str create_nodo(char c);
 #endif

@@ -22,16 +22,16 @@ str create_nodo(char c){ //crear un nodo del tipo str con un dato pasado por par
 			aux->next=nuevo;// inserta el caracter en la ultima pos
 		}
 	}
-		
+
 		str load(){ //insertar una cadena de caracteres por consola y se convierte en una lista enlazada de caracteres
 			str lis;// sera la cabeza de la lista de caracteres (puntero al primer nodo de la lista)
 			str nuevo; // sera el nodo ?nico que contiene un caracter
 			lis=nuevo=NULL;
 			char c;	//se utilizara como variable para procesar cada caracter de la cadena
-			//printf("\nIngrese la cadena a procesar: "); //el buffer de entrada queda en espera de el ingreso de una cadena 
+			//printf("\nIngrese la cadena a procesar: "); //el buffer de entrada queda en espera de el ingreso de una cadena
 			fflush(stdin); //limpiar el buffer
 			c=getchar(); // se toma el primer elemento de la cadena
-			while(c!='\n'){ //n sera la condicion de parada pues es el salto de linea 
+			while(c!='\n'){ //n sera la condicion de parada pues es el salto de linea
 				nuevo=create_nodo(c); //el nodo tiene el valor del caracter actual
 				append_str(&lis,nuevo); // se agrega en una lista enlazada (por cola) el nuevo nodo con el caracter
 				c=getchar(); // se toma el caracter siguiente de la cadena de caracteres
@@ -39,7 +39,7 @@ str create_nodo(char c){ //crear un nodo del tipo str con un dato pasado por par
 			return lis; // se retorna la lista enlazada de caracteres
 		}
 			str load2(const char*c){ //insertar una cadena de caracteres predeterminado por el programador y se convierte en una lista enlazada de caracteres
-				str lis, nuevo; 
+				str lis, nuevo;
 				lis=nuevo=NULL;
 				int i; //indice de un array de caracteres
 				i=0; // se inicializa el indice en 0
@@ -50,6 +50,7 @@ str create_nodo(char c){ //crear un nodo del tipo str con un dato pasado por par
 				}
 				return lis;
 			}
+
 				void print (str cad){ // muestra la lista de caracteres
 					if(cad!=NULL){
 						while(cad!=NULL){
@@ -95,16 +96,33 @@ str create_nodo(char c){ //crear un nodo del tipo str con un dato pasado por par
 								free(aux);
 							}
 						}
-						str copy_str(str original) {		
-							str nueva_lista = NULL; 
-							str aux = original;     
+						str copy_str(str original) {
+							str nueva_lista = NULL;
+							str aux = original;
 							str nuevo_nodo;
 							while (aux != NULL) {
 								nuevo_nodo = create_nodo(aux->data);
 								append_str(&nueva_lista, nuevo_nodo);
 								aux = aux->next;
 							}
-							return nueva_lista; 
+							return nueva_lista;
 						}
-						
-						
+
+						str pop(str * cadena){
+							str toPop;
+							if((*cadena) == NULL){ return *cadena; }
+							else if((*cadena)->next == NULL) {
+								toPop = copy_str((*cadena));
+								(*cadena) = NULL;
+
+								return toPop;
+							} else {
+								toPop = *cadena;
+								*cadena = (*cadena)->next;
+								toPop->next = NULL;
+
+								return toPop;
+							}
+						}
+
+

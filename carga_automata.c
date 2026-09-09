@@ -4,10 +4,12 @@
 AF automaton_from_string(str);
 Tdata build_set(str *);
 Tdata build_list(str *);
+void load_transitions_from_digested_delta(AF, Tdata);
+
 
 
 int main() {
-  automaton_from_string(load2("{{q0 q1 q2 q3} {a b} {[q0 a {q1}] [q1 a {q2}] [q2 a {q3}] [q0 b {q4}] [q1 b {q4}] [q2 b {q4}] [q3 b {q4}] [q4 b {q4}] [q4 a {q4}]} q0 {q3}}"));
+  automaton_from_string(load2("{{q0 q1 q2 q3 q4} {a b} {[q0 a {q1 q2 q3}] [q1 a {q2}] [q2 a {q3}] [q3 a {q3}] [q0 b {q4}] [q1 b {q4}] [q2 b {q4}] [q3 b {q4}] [q4 b {q4}] [q4 a {q4}]} q0 {q3}}"));
   return 0;
 }
 
@@ -92,6 +94,27 @@ Tdata build_list(str * entrada){
   return list;
 }
 
+void load_transitions_from_digested_delta(AF automata, Tdata digested_delta){
+  Tdata from, symbol, to, aux1, aux2;
+
+  aux1 = obtener_data(digested_delta);
+
+  while(aux1 != NULL){
+
+    from = obtener_data(obtener_data(obtener_data(aux1)));
+    symbol = obtener_data(obtener_next(obtener_data(obtener_data(aux1))));
+    aux2 = obtener_data(obtener_data(obtener_next(obtener_next(obtener_data(obtener_data(aux1))))));
+
+    while(aux2 != NULL){
+      to = obtener_data(aux2);
+      agregar_transicion(automata, copy_str(obtener_string(from)), copy_str(obtener_string(symbol)), copy_str(obtener_string(to)));
+      aux2 = obtener_next(aux2);
+    }
+
+    aux1 = obtener_next(aux1);
+  }
+}
+
 AF automaton_from_string(str entrada){
   AF automata;
   str cadena, str_caracter;
@@ -111,28 +134,25 @@ AF automaton_from_string(str entrada){
 
   free_str(cadena);
 
-  printf("\n Q: ");
   Q = obtener_data(obtener_data(set));
-  mostrarArbol(Q);
-
-  printf("\n Sigma: ");
   sigma = obtener_data(obtener_next(obtener_data(set)));
-  mostrarArbol(sigma);
-
-  printf("\n Delta: ");
   delta = obtener_data(obtener_next(obtener_next(obtener_data(set))));
-  mostrarArbol(delta);
-
-  printf("\n q0: ");
   q0 = obtener_data(obtener_next(obtener_next(obtener_next(obtener_data(set)))));
-  mostrarArbol(q0);
-
-  printf("\n F: ");
   F = obtener_data(obtener_next(obtener_next(obtener_next(obtener_next(obtener_data(set))))));
-  mostrarArbol(F);
 
   automata = create_automata();
 
+  automata->Q = Q;
+  automata->Sigma = sigma;
+  automata->q0 = estado_a_indice(automata, obtener_string(q0));
+  automata->F = F;
+
+  load_transitions_from_digested_delta(automata, delta);
+
+  mostrar_automata(automata);
+
+  free_ast(q0);
+  free_ast(delta);
   return automata;
 }
 

@@ -9,7 +9,24 @@ void load_transitions_from_digested_delta(AF, Tdata);
 
 
 int main() {
-  automaton_from_string(load2("{{q0 q1 q2 q3 q4} {a b} {[q0 a {q1 q2 q3}] [q1 a {q2}] [q2 a {q3}] [q3 a {q3}] [q0 b {q4}] [q1 b {q4}] [q2 b {q4}] [q3 b {q4}] [q4 b {q4}] [q4 a {q4}]} q0 {q3}}"));
+  AF automata;
+  str palabra;
+  automata = automaton_from_string(load2("{{q0 q1 q2 q3 q4} {a b} {[q0 a {q1}] [q1 a {q2}] [q2 a {q3}] [q3 a {q3}] [q0 b {q4}] [q1 b {q4}] [q2 b {q4}] [q3 b {q3}] [q4 b {q4}] [q4 a {q4}]} q0 {q3}}"));
+
+  if(esDeterminista(automata)){
+    printf("\nAutomata es Determinista\n");
+  } else {
+    printf("\nAutomata no es Determinista\n");
+  }
+
+  palabra = load2("baaabbbbbbb");
+
+  if(validar_cadena(automata, palabra)){
+    printf("\nLa palabra pertenece al lenguaje\n");
+  } else {
+    printf("\nLa palabra no pertenece al lenguaje\n");
+  }
+
   return 0;
 }
 

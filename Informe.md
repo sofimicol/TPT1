@@ -153,7 +153,21 @@ Por su parte, un autómata finito no determinista (afnd) A es una 5-upla definid
   F ⊆ Q es el conjunto de estados de aceptación. 
 Entonces el autómata queda definido así: A = (Q, Σ, δ, q0, F ). 
 
-[PONER AQUÍ EJEMPLO DE UN AF REPRESENTADO CON SU DTE, TABLA Y CON CONJUNTOS Y LISTAS.]}
+Autómata finito Determinista que acepta cadenas terminadas en "01":
+A=(Q,Σ,δ,q0,F)
+Q (Estados): {q0, q1, q2}
+Σ (Alfabeto): {0, 1}
+q0 (Estado Inicial): q0
+F (Estados de Aceptación): {q2}
+δ (Transiciones representadas en tuplas origen, símbolo, destino):
+
+    Estado  |   0   |    1  |
+  →  q0     |  q1   |   q0  |
+     q1     |  q1   |   q2  |
+  *  q2     |  q1   |   q0  |
+
+q0 (Estado Inicial): q0
+F (Estados de Aceptación): {q2}
 
 2.1.1 Aceptación de cadenas
 
@@ -163,7 +177,47 @@ La Función de Transición tiene como dominio pares ordenados formados por un es
 Una cadena w ∈ Σ∗ es aceptada por un afd ⇔ δˆ(q0,w) = p, p ∈ F. Es decir que w es aceptada por el afd si y solo si existe una sucesión de transiciones desde q0 hasta p ∈ F. El lenguaje L aceptado por un afd A es el conjunto L(A) = {w ∈ Σ∗|δˆ(q0,w) ∈ F}.
 
 Para un afnd, el lenguaje L aceptado por un afnd A es el conjunto L(A) = {w ∈ Σ∗|δ(q0,w) ∩ F ≠ ∅}. Para calcular δˆ(q,w) obtenemos primero δˆ(q,x) y luego seguimos todas las transiciones de estos estados que estén etiquetados con a, donde al menos un ri ∈ F cuando w ∈ L y ningún ri ∈ F cuando w ∉ L.
-[PONER AQUÍ EL CÓDIGO DESARROLLADO CON LA LIBRERÍA (SOLO DE LA PARTE CENTRAL DEL ALGORITMO]
+Algoritmo de Aceptación de Cadenas:
+while (aux_cadena != NULL) {
+    char c = aux_cadena->data;
+    str temp_sym = create_nodo(c);
+    int sym_idx = simbolo_a_indice(aut, temp_sym);
+    free_str(temp_sym); 
+    if (sym_idx == -1) {
+        printf("\nSímbolo '%c' no pertenece a Sigma. Cadena rechazada.\n", c);
+        free_ast(estados_actuales);
+        return 0; // Rechazo inmediato
+    }
+    Tdata proximos_estados = create_set();
+    Tdata iterador = obtener_data(estados_actuales);
+    while (iterador != NULL) {
+        Tdata estado_nodo = obtener_data(iterador);
+        if (estado_nodo != NULL && return_type(estado_nodo) == STR) {
+            str nombre_estado = obtener_string(estado_nodo);
+            int q_actual = estado_a_indice(aut, nombre_estado);
+            if (q_actual != -1) {
+                Tdata destino = transicion_por_indice(aut, q_actual, sym_idx);
+                if (destino != NULL && obtener_data(destino) != NULL) {
+                    Tdata it_dest = obtener_data(destino);
+                    while (it_dest != NULL) {
+                        if (obtener_data(it_dest) != NULL) {
+                            insert_set(&proximos_estados, obtener_data(it_dest));
+                        }
+                        it_dest = obtener_next(it_dest);
+                    }
+                }
+            }
+        }
+        iterador = obtener_next(iterador);
+    }
+    free_ast(estados_actuales);
+    estados_actuales = proximos_estados;
+    if (esvacio(estados_actuales) == 1) {
+        free_ast(estados_actuales);
+        return 0;
+    }
+    aux_cadena = aux_cadena->next;
+}
 
 2.1.2 Algoritmo de conversión de AFND a AFD
 
@@ -173,9 +227,71 @@ Construcción: Sea A = (QA,Σ,δA,q0A,FA) un afnd que acepta el conjunto L, cons
   2. La Función de Transición de B: Para un estado q de B (que es un subconjunto de QA, es decir, q = {p1, p2, ..., pk}) y un símbolo a de Σ, la transición δB(q, a) se calcula como la unión de todas las transiciones posibles en el AFND original. Esto es, δB(q, a) = {r1, r2, ..., rm} donde ⋃ki=1 δA(pi, a) = {r1, r2, ..., rm}. El resultado es un nuevo estado en B.
   3. El conjunto de estados de aceptación de B: FB es el conjunto de todos los estados en QB que contienen al menos un estado de aceptación de A. Es decir, FB = {q ∈ QB | q ∩ FA ≠ ∅}.
   4. El Estado Inicial de B: q0B = {q0A}.
-  5. 
-[PONER AQUÍ EL CÓDIGO DESARROLLADO CON LA LIBRERÍA (SOLO DE LA PARTE CENTRAL DEL ALGORITMO]
-[PONER AQUI UNA DESCRIPCIÓN DE LAS DIFICULATES EN EL DESARROLLO]
+// 2. Procesamiento de subconjuntos (El corazón del algoritmo)
+int procesando = 1;
+while (procesando) {
+    procesando = 0;
+    int act = -1;
+    // Buscar el primer estado sin procesar
+    for (int i = 0; i < num_estados; i++) {
+        if (estados[i].procesado == 0) {
+            act = i;
+            procesando = 1;
+            break;
+        }
+    }
+    if (!procesando) break;
+    
+    estados[act].procesado = 1;
+    
+    // Evaluar transiciones con cada símbolo del alfabeto
+    Tdata it_sym = obtener_data(afnd->Sigma);
+    while (it_sym != NULL) {
+        Tdata nodo_sym = obtener_data(it_sym);
+        str sym_str = obtener_string(nodo_sym);
+        
+        // Obtener la unión de todos los destinos para este símbolo
+        Tdata destinos = obtener_destinos_dfa(afnd, estados[act].conjunto_nfa, sym_str);
+        
+        if (esvacio(destinos) == 0) {
+            // Verificar si ya descubrimos este conjunto antes
+            int idx_existente = -1;
+            for (int k = 0; k < num_estados; k++) {
+                if (conjuntos_iguales(estados[k].conjunto_nfa, destinos)) {
+                    idx_existente = k;
+                    break;
+                }
+            }
+            
+            int idx_dest;
+            if (idx_existente == -1) {
+                // Descubrimos un nuevo estado!
+                estados[num_estados].conjunto_nfa = destinos;
+                if (num_estados < 26) {
+                    sprintf(estados[num_estados].nombre, "%c", 'A' + num_estados);
+                } else {
+                    sprintf(estados[num_estados].nombre, "S%d", num_estados);
+                }
+                estados[num_estados].procesado = 0;
+                idx_dest = num_estados;
+                num_estados++;
+            } else {
+                idx_dest = idx_existente;
+                free_ast(destinos); // Ya existía, liberamos la memoria
+            }
+            
+            // Guardar la transición para construir la matriz luego
+            strcpy(trans[num_trans].origen, estados[act].nombre);
+            strcpy(trans[num_trans].destino, estados[idx_dest].nombre);
+            extraer_cadena(sym_str, trans[num_trans].simbolo);
+            num_trans++;
+        } else {
+            free_ast(destinos); // Transición vacía (sumidero implícito)
+        }
+        
+        it_sym = obtener_next(it_sym);
+    }
+}
 
 2.2. Conceptos sobre lenguajes de programación
 

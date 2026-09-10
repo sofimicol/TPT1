@@ -161,10 +161,10 @@ q0 (Estado Inicial): q0
 F (Estados de Aceptación): {q2}
 δ (Transiciones representadas en tuplas origen, símbolo, destino):
 
-   Estado  |   0   |    1  |
- →  q0     |  q1   |   q0  |
-    q1     |  q1   |   q2  |
- *  q2     |  q1   |   q0  |
+       Estado  |   0   |    1  |
+     →  q0     |  q1   |   q0  |
+        q1     |  q1   |   q2  |
+     *  q2     |  q1   |   q0  |
 
 q0 (Estado Inicial): q0
 F (Estados de Aceptación): {q2}
@@ -179,26 +179,35 @@ Una cadena w ∈ Σ∗ es aceptada por un afd ⇔ δˆ(q0,w) = p, p ∈ F. Es de
 Para un afnd, el lenguaje L aceptado por un afnd A es el conjunto L(A) = {w ∈ Σ∗|δ(q0,w) ∩ F ≠ ∅}. Para calcular δˆ(q,w) obtenemos primero δˆ(q,x) y luego seguimos todas las transiciones de estos estados que estén etiquetados con a, donde al menos un ri ∈ F cuando w ∈ L y ningún ri ∈ F cuando w ∉ L.
 Algoritmo de Aceptación de Cadenas:
 
+     while (aux_cadena != NULL) {
 
-while (aux_cadena != NULL) {
-    char c = aux_cadena->data;
+    char c = aux_cadena->data; 
+    
+    // Convertimos char a str temporal
     str temp_sym = create_nodo(c);
     int sym_idx = simbolo_a_indice(aut, temp_sym);
     free_str(temp_sym); 
+    
     if (sym_idx == -1) {
         printf("\nSímbolo '%c' no pertenece a Sigma. Cadena rechazada.\n", c);
         free_ast(estados_actuales);
         return 0; // Rechazo inmediato
     }
+    
     Tdata proximos_estados = create_set();
     Tdata iterador = obtener_data(estados_actuales);
+    
+    // 3. Evaluar transiciones
     while (iterador != NULL) {
         Tdata estado_nodo = obtener_data(iterador);
+        
         if (estado_nodo != NULL && return_type(estado_nodo) == STR) {
             str nombre_estado = obtener_string(estado_nodo);
             int q_actual = estado_a_indice(aut, nombre_estado);
+            
             if (q_actual != -1) {
                 Tdata destino = transicion_por_indice(aut, q_actual, sym_idx);
+                
                 if (destino != NULL && obtener_data(destino) != NULL) {
                     Tdata it_dest = obtener_data(destino);
                     while (it_dest != NULL) {
@@ -212,15 +221,18 @@ while (aux_cadena != NULL) {
         }
         iterador = obtener_next(iterador);
     }
+    
+    // Actualizar estados actuales
     free_ast(estados_actuales);
     estados_actuales = proximos_estados;
+    
     if (esvacio(estados_actuales) == 1) {
         free_ast(estados_actuales);
         return 0;
     }
+    
     aux_cadena = aux_cadena->next;
-}
-
+    }
 2.1.2 Algoritmo de conversión de AFND a AFD
 
 Teorema: Sea A un afnd que acepta el lenguaje L ⇒ ∃ un afd B que acepta el lenguaje L.
@@ -230,10 +242,10 @@ Construcción: Sea A = (QA,Σ,δA,q0A,FA) un afnd que acepta el conjunto L, cons
   3. El conjunto de estados de aceptación de B: FB es el conjunto de todos los estados en QB que contienen al menos un estado de aceptación de A. Es decir, FB = {q ∈ QB | q ∩ FA ≠ ∅}.
   4. El Estado Inicial de B: q0B = {q0A}.
 
+Algoritmo de Conversion: 
 
-// 2. Procesamiento de subconjuntos (El corazón del algoritmo)
-int procesando = 1;
-while (procesando) {
+    int procesando = 1;
+    while (procesando) {
     procesando = 0;
     int act = -1;
     // Buscar el primer estado sin procesar
@@ -245,7 +257,7 @@ while (procesando) {
         }
     }
     if (!procesando) break;
-     
+    
     estados[act].procesado = 1;
     
     // Evaluar transiciones con cada símbolo del alfabeto
@@ -295,7 +307,7 @@ while (procesando) {
         
         it_sym = obtener_next(it_sym);
     }
-}
+    }
 
 2.2. Conceptos sobre lenguajes de programación
 

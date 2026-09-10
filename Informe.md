@@ -341,9 +341,9 @@ Para que Aleph alcance su objetivo de ser un lenguaje legible y utilizable por e
      -   Abstracciones Básicas: Se implementarán enunciados o sentencias que combinan instrucciones en una sentencia abstracta más comprensible, como por ejemplo, las asignaciones para definir transiciones o la unión de conjuntos en la construcción del algoritmo de conversión de AFND a AFD.
      -   Abstracciones Estructuradas: Aleph divide los programas en grupos de instrucciones anidadas dentro de pruebas que gobiernan su ejecución (alternancia o selección) para decidir qué secuencias de enunciados ejecutar. Asimismo, utiliza mecanismos de bucles o ciclos estructurados (iteración) para repetir la ejecución de un cuerpo de sentencias. 
 
-2.4. Dominio de programación de Aleph
-[PONER AQUÍ EXPLICACIÓN DEL DOMINIO DE ALEPH ]
-sofi
+# 2.4. Dominio de programación de Aleph
+
+Aleph pertenece al dominio de aplicaciones científicas. Ya que su objetivo es procesar expresiones matemáticas y notaciones formales para modelar y manipular directamente la Teoría de Conjuntos y los autómatas finitos (como la conversión de AFND a AFD) mediante abstracciones de alto nivel como conjuntos, listas y mapas de transición.
 
 # 3. Diseño e Implementación
 ## 3.1. Sentencias
@@ -376,7 +376,7 @@ La descripción de los lexemas puede darse mediante una especificación léxica,
 
 Los lexemas de un lenguaje de programación incluyen sus literales numéricos, operadores y palabras especiales, entre otros. Se puede pensar en los programas como cadenas de lexemas en lugar de caracteres.
 
-Los lexemas se dividen en grupos; por ejemplo, los nombres de variables, métodos, clases, y demás, que en un lenguaje de programación, forman un grupo llamado identificadores.
+Estos se dividen en grupos; por ejemplo, los nombres de variables, métodos, clases, y demás, que en un lenguaje de programación, forman un grupo llamado identificadores.
 
 Cada grupo de lexemas se representa con un nombre, o token. Entonces, un token de un lenguaje es una categoría de sus lexemas.
 
@@ -386,7 +386,7 @@ En algunos casos, un token tiene un único lexema posible. Por ejemplo, el token
 
 Ejemplo
 
-Considerando la siguiente instrucción en Java: index = 2 * count + 17;
+Considerando la siguiente instrucción en Java: **index = 2 * count + 17;**
 
 ### Así se verá en GitHub
 
@@ -401,6 +401,22 @@ Considerando la siguiente instrucción en Java: index = 2 * count + 17;
 | `17` | `int_literal` | Literal entero que representa el número 17. |
 | `;` | `semicolon` | Símbolo que indica el final de la instrucción en Java. |
 
+Típicamente, la fase de análisis léxico (realizada por el analizador léxico o escáner) reúne secuencias de caracteres del código de entrada para formar tokens, los cuales son procesados posteriormente por la fase de análisis sintáctico (parser) para determinar la estructura sintáctica del programa.
 
-3.2.1. Tokens y lexemas de Aleph
+**Clasificación de los Tokens**
+
+Los tokens se clasifican habitualmente en las siguientes categorías:
+
+**Palabras reservadas** (reserved words) o palabras clave (keywords): Cadenas fijas como if y while. Se denominan reservadas porque un identificador definido por el usuario no puede utilizar la misma cadena de caracteres (por ejemplo, en C la declaración double if; es ilegal).
+
+**Identificadores** (identifiers): Nombres definidos por el programador o el sistema para variables, funciones o tipos (por ejemplo, x24, monthly_balance, putchar).
+
+**Literales o constantes**: Valores manifiestos como 42 (literal numérica) o "hello" (literal de cadena).
+
+**Símbolos especiales**: Operadores y delimitadores de puntuación como ;, <=, o +.
+
+Los patrones de los tokens suelen describirse formalmente mediante expresiones regulares utilizando las tres operaciones básicas de concatenación, repetición (*) y elección/selección (|).
+Y las utilidades como Lex y Flex que toman descripciones de tokens en formato de expresiones regulares y generan automáticamente el código en C de un analizador léxico basado en autómatas finitos.
+
+# 3.2.1. Tokens y lexemas de Aleph
 [PONER AQUÍ TABLA CON TOKENS Y LEXEMAS DE ALEPH] los dos 

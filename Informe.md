@@ -161,10 +161,10 @@ q0 (Estado Inicial): q0
 F (Estados de Aceptación): {q2}
 δ (Transiciones representadas en tuplas origen, símbolo, destino):
 
-    Estado  |   0   |    1  |
-  →  q0     |  q1   |   q0  |
-     q1     |  q1   |   q2  |
-  *  q2     |  q1   |   q0  |
+   Estado  |   0   |    1  |
+ →  q0     |  q1   |   q0  |
+    q1     |  q1   |   q2  |
+ *  q2     |  q1   |   q0  |
 
 q0 (Estado Inicial): q0
 F (Estados de Aceptación): {q2}
@@ -178,6 +178,8 @@ Una cadena w ∈ Σ∗ es aceptada por un afd ⇔ δˆ(q0,w) = p, p ∈ F. Es de
 
 Para un afnd, el lenguaje L aceptado por un afnd A es el conjunto L(A) = {w ∈ Σ∗|δ(q0,w) ∩ F ≠ ∅}. Para calcular δˆ(q,w) obtenemos primero δˆ(q,x) y luego seguimos todas las transiciones de estos estados que estén etiquetados con a, donde al menos un ri ∈ F cuando w ∈ L y ningún ri ∈ F cuando w ∉ L.
 Algoritmo de Aceptación de Cadenas:
+
+
 while (aux_cadena != NULL) {
     char c = aux_cadena->data;
     str temp_sym = create_nodo(c);
@@ -227,6 +229,8 @@ Construcción: Sea A = (QA,Σ,δA,q0A,FA) un afnd que acepta el conjunto L, cons
   2. La Función de Transición de B: Para un estado q de B (que es un subconjunto de QA, es decir, q = {p1, p2, ..., pk}) y un símbolo a de Σ, la transición δB(q, a) se calcula como la unión de todas las transiciones posibles en el AFND original. Esto es, δB(q, a) = {r1, r2, ..., rm} donde ⋃ki=1 δA(pi, a) = {r1, r2, ..., rm}. El resultado es un nuevo estado en B.
   3. El conjunto de estados de aceptación de B: FB es el conjunto de todos los estados en QB que contienen al menos un estado de aceptación de A. Es decir, FB = {q ∈ QB | q ∩ FA ≠ ∅}.
   4. El Estado Inicial de B: q0B = {q0A}.
+
+
 // 2. Procesamiento de subconjuntos (El corazón del algoritmo)
 int procesando = 1;
 while (procesando) {
@@ -241,7 +245,7 @@ while (procesando) {
         }
     }
     if (!procesando) break;
-    
+     
     estados[act].procesado = 1;
     
     // Evaluar transiciones con cada símbolo del alfabeto

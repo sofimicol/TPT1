@@ -366,8 +366,45 @@ La evolución histórica del diseño de lenguajes (respaldada por el Teorema de 
 Por ello, las sentencias modernas se diseñan bajo la premisa de la programación estructurada, garantizando que cada sentencia de control posea un único punto de acceso y un único punto de salida.
 
 # 3.1.1. Un primer diseño de sentencias de Aleph
-[PONER AQUÍ ALGORITMO DE CONVERSIÓN PROGRAMADO EN POSIBLES SENTENCIAS DE ALEPH]
-los dos
+    list afnd2afd(list A):
+        list A = [{q0, q1}, {'0', '1'}, Delta, q0, {q1}];
+        let A = (Q, Sigma, Delta, Q0, F);
+        set Q_B = {{q0}};
+        boolean Estadefinido = false;
+        set R = {q0};
+        list DeltaB = empty;
+    
+        while (Estadefinido == false) do
+            for (a in Sigma) do
+                list DeltaAux = [R, a];
+                if (DeltaAux in Delta) do
+                    Estadefinido = true;
+                else
+                    set destinos = empty;
+                    for (q in R) do
+                        destinos = destinos union DeltaA(q, a);
+                    end
+                    Q_B = Q_B union {destinos};
+                    list TransicionB = [R, a, destinos];
+                    append(DeltaB, TransicionB);
+                end
+                R = destinos;
+            end
+        end
+    
+        set F_B = empty;
+        for (s in Q_B) do
+            for (q in s) do
+                if (q in F_A) do
+                    insert(F_B, s);
+                end
+            end
+        end
+    
+        list B = [Q_B, Sigma, DeltaB, {q0}, F_B];
+    return B;
+    end
+    
 # 3.2. Reconocimiento de patrones. Tokens y Lexemas
 
 Las descripciones formales de la sintaxis de los lenguajes de programación, por simplicidad, a menudo no incluyen descripciones de las unidades sintácticas de nivel más bajo. Estas pequeñas unidades se llaman lexemas.
@@ -419,4 +456,38 @@ Los patrones de los tokens suelen describirse formalmente mediante expresiones r
 Y las utilidades como Lex y Flex que toman descripciones de tokens en formato de expresiones regulares y generan automáticamente el código en C de un analizador léxico basado en autómatas finitos.
 
 # 3.2.1. Tokens y lexemas de Aleph
-[PONER AQUÍ TABLA CON TOKENS Y LEXEMAS DE ALEPH] los dos 
+| Lexema / Patrón | Token (Categoría) | Descripción |
+| `set` | Tipo de dato / Palabra reservada | Define un conjunto de elementos no duplicados. |
+| `list` | Tipo de dato / Palabra reservada | Define una lista o secuencia ordenada. |
+| `boolean` | Tipo de dato / Palabra reservada | Define el tipo de dato booleano (`true`/`false`). |
+| `while` | Palabra clave de control | Inicia un ciclo condicionado. |
+| `for` | Palabra clave de control | Inicia un ciclo iterativo. |
+| `if` | Palabra clave de control | Inicia una estructura condicional. |
+| `else` | Palabra clave de control | Alternativa en una estructura condicional. |
+| `do` | Delimitador de bloque | Indica el comienzo del cuerpo de un bloque, ciclo o condicional. |
+| `end` | Delimitador de bloque | Indica el cierre de un bloque, ciclo o función. |
+| `break` | Palabra clave de control | Interrumpe la ejecución de un ciclo. |
+| `return` | Palabra clave de retorno | Permite devolver un valor desde una función. |
+| `let` | Palabra clave de declaración | Permite asignar nombres a elementos internos (ej. renombrar en tuplas). |
+| `in` | Palabra clave de pertenencia | Operador relacional que evalúa si un elemento pertenece a una colección (o usado en for). |
+| `where` | Palabra clave de control | Condiciona la iteración dentro de un ciclo `for`. |
+| `empty` | Palabra reservada | Representa un conjunto o lista vacía. Reemplaza el uso de `?`. |
+| `union` | Operador algebraico / Unión | Combina los elementos de dos conjuntos (convierte la función en operador). |
+| `any` | Instrucción nativa | Verifica la existencia de un elemento en una estructura (operador existe). |
+| `append` | Instrucción nativa | Agrega un elemento al final de una lista. |
+| `insert` | Instrucción nativa | Inserta un elemento dentro de un conjunto o estructura. |
+| `:` | Símbolo especial / Delimitador | Indica la apertura del bloque de instrucciones de una función. |
+| `=` | Operador de asignación | Permite asignar un valor o colección a una variable. |
+| `==` | Operador relacional | Compara si dos valores o colecciones son exactamente iguales. |
+| `!=` | Operador relacional | Compara si dos valores o colecciones son distintos. |
+| `;` | Delimitador de instrucción | Indica el final de una sentencia o instrucción. |
+| `,` | Separador de elementos | Separa los elementos dentro de una lista, conjunto o los parámetros. |
+| `(` | Símbolo de apertura / Paréntesis | Delimitan expresiones, parámetros de funciones, tuplas o condiciones. |
+| `)` | Símbolo de cierre / Paréntesis | Cierran expresiones, parámetros de funciones, tuplas o condiciones. |
+| `{` | Símbolo de apertura / Llaves | Delimitan la declaración de los elementos de un conjunto (`set`). |
+| `}` | Símbolo de cierre / Llaves | Cierran la declaración de los elementos de un conjunto (`set`). |
+| `[` | Símbolo de apertura / Corchetes | Delimitan la declaración de los elementos de una lista (`list`). |
+| `]` | Símbolo de cierre / Corchetes | Cierran la declaración de los elementos de una lista (`list`). |
+| `true` / `false` | Literal booleano | Representa un valor verdadero o falso nativo del lenguaje. |
+| `'0'`, `'1'`, `'a'` | Literal de carácter | Representa un único carácter o símbolo. |
+| Identificadores (ej. `Q`, `Sigma`) | Identificador | Nombres de variables. En Aleph deben comenzar con mayúscula. |

@@ -2,7 +2,7 @@
 
 ## 1.1 Objetivo
 
-Nuestro objetivo principal en este Trabajo Práctico Transversal consiste en diseñar, desarrollar e implementar un intérprete funcional para un nuevo lenguaje de programación denominado Aleph [Louden, 2004, p. 11]. En el diseño de Aleph nos enfocamos en proporcionar abstracciones generales de alto nivel para el programador, priorizando la manipulación declarativa y algorítmica de colecciones de datos —específicamente conjuntos no ordenados y listas ordenadas— mediante operaciones algebraicas nativas, junto con estructuras de control estructuradas que nos permitan modelar, anidar y recorrer datos de forma sistemática y legible [Louden, 2004, p. 11].
+Nuestro objetivo principal en este Trabajo Práctico Transversal consiste en diseñar, desarrollar e implementar un intérprete funcional para un nuevo lenguaje de programación denominado Aleph [Louden, 2004, p. 11]. En el diseño de Aleph nos enfocamos en proporcionar abstracciones generales de alto nivel para el programador, priorizando la manipulación declarativa y algorítmica de colecciones de datos, específicamente conjuntos no ordenados y listas ordenadas, mediante operaciones algebraicas nativas, junto con estructuras de control estructuradas que nos permitan modelar, anidar y recorrer datos de forma sistemática y legible [Louden, 2004, p. 11].
 
 Para evaluar la expresividad, legibilidad y confiabilidad del lenguaje, tomamos casos de estudio concretos provenientes de la Teoría de la Computación. En particular, nuestro lenguaje Aleph debe permitir expresar la definición formal de Autómatas Finitos (AF), ejecutar la conversión de un Autómata Finito No Determinista (AFND) a un Autómata Finito Determinista (AFD), evaluar la aceptación o rechazo de cadenas de entrada y vincular las representaciones estructurales entre Lenguajes Regulares y Gramáticas Regulares.
 
@@ -14,7 +14,7 @@ Nuestro proyecto abarca las fases de análisis, diseño e implementación de sof
 
 Denominamos al lenguaje Aleph debido a su relación conceptual con la Teoría de Conjuntos, marco fundacional de su modelo de datos.
 
-En la matemática formal, la secuencia de los números Álef ($\aleph$) nos permite denotar la cardinalidad —concepto que define el tamaño cuantitativo o cantidad de elementos— de conjuntos transfinitos bien ordenados. Georg Cantor desarrolló esta formulación al demostrar que no todos los conjuntos infinitos poseen la misma magnitud cardinal:
+En la matemática formal, la secuencia de los números Álef ($\aleph$) nos permite denotar la cardinalidad, concepto que define el tamaño cuantitativo o cantidad de elemento, de conjuntos transfinitos bien ordenados. Georg Cantor desarrolló esta formulación al demostrar que no todos los conjuntos infinitos poseen la misma magnitud cardinal:
 
 * **Álef cero ($\aleph_0$):** Representa la menor cardinalidad transfinita, correspondiente a los conjuntos infinitos numerables, tales como el conjunto de los números naturales ($\mathbb{N}$), los números enteros ($\mathbb{Z}$) o los números racionales ($\mathbb{Q}$).
 * **Álef uno ($\aleph_1$):** Representa, bajo la Hipótesis del Continuo de Cantor, el cardinal inmediato superior que describe la potencia del continuo matemático, correspondiente al conjunto de los números reales ($\mathbb{R}$).

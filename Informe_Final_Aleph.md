@@ -95,7 +95,7 @@ Tabla de Transiciones:
 
 ### 2.1.1 Aceptación de cadenas
 
-Para evaluar una cadena $w \in \Sigma^*$ en un AFD, generalizamos formalmente la función de transición a una función de transición extendida $\hat{\delta}: Q \times \Sigma^* \to Q$, definida inductivamente por:
+Para evaluar una cadena $w \\in \\Sigma^{\\ast}$ en un AFD, generalizamos formalmente la función de transición a una función de transición extendida $\\hat{\\delta}: Q \\times \\Sigma^{\\ast} \\to Q$, definida inductivamente por:
 * $\hat{\delta}(q, \varepsilon) = q$, donde $\varepsilon$ es la cadena vacía.
 * $\hat{\delta}(q, aw) = \hat{\delta}(\delta(q, a), w)$, para todo símbolo $a \in \Sigma$ y cadena $w \in \Sigma^*$.
 

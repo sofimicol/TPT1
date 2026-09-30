@@ -188,11 +188,11 @@ La EBNF (Forma de Backus-Naur Extendida) optimiza esta notación incorporando me
 A continuación, presentamos un subconjunto general en BNF que abarca las estructuras de control principales y la definición de funciones diseñadas en nuestro primer prototipo algorítmico de Aleph:
 
 ```c
-<programa>      ::= <funcion> | <funcion> <programa>
+<programa>      ::= 
 
-<funcion>       ::= <tipo_dato> <id> "(" <parametros> ")" ":" <cuerpo> "return" <expresion> ";" "end"
+<funcion>       ::= 
 
-<cuerpo>        ::= <sentencia> | <sentencia> <cuerpo>
+<cuerpo>        ::=
 
 <sentencia>     ::= <declaracion> ";" 
                   | <asignacion> ";" 
@@ -200,7 +200,7 @@ A continuación, presentamos un subconjunto general en BNF que abarca las estruc
                   | <bucle_for> 
                   | <condicional_if>
 
-<bucle_while>   ::= "while" "(" <expresion> ")" "do" <cuerpo> "end"
+<bucle_while>   ::=
 
-<bucle_for>     ::= "for" "(" <id> "in" <expresion> ")" "do" <cuerpo> "end"
+<bucle_for>     ::= 
 ```

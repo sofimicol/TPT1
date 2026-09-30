@@ -42,11 +42,12 @@ Las tareas fundamentales de un analizador léxico (scanner) incluyen:
 "insert"    { printf("TOKEN_INSERT\n"); }
 "true"      { printf("TOKEN_TRUE\n"); }
 "false"     { printf("TOKEN_FALSE\n"); }
-
-":"         { printf("TOKEN_COLON\n"); }
+/*OPERADORES*/
 "=="        { printf("TOKEN_EQ\n"); }
 "!="        { printf("TOKEN_NEQ\n"); }
 "="         { printf("TOKEN_ASSIGN\n"); }
+/*SIMBOLOS DE PUNTUACINO*/
+":"         { printf("TOKEN_COLON\n"); }
 ";"         { printf("TOKEN_SEMICOLON\n"); }
 ","         { printf("TOKEN_COMMA\n"); }
 "("         { printf("TOKEN_LPAREN\n"); }

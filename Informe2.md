@@ -30,51 +30,51 @@ LETRA_MAY [A-Z]
 ID  {LETRA_MAY}({LETRA_MAY}|{LETRA_MIN}|{DIGITO}|_)*
 
 %%
+  /* PALABRAS RESERVADAS (KW) */
+"set"       { printf("KW_SET: %s\n", yytext); }
+"list"      { printf("KW_LIST: %s\n", yytext); }
+"boolean"   { printf("KW_BOOLEAN: %s\n", yytext); }
+"while"     { printf("KW_WHILE: %s\n", yytext); }
+"for"       { printf("KW_FOR: %s\n", yytext); }
+"if"        { printf("KW_IF: %s\n", yytext); }
+"else"      { printf("KW_ELSE: %s\n", yytext); }
+"break"     { printf("KW_BREAK: %s\n", yytext); }
+"return"    { printf("KW_RETURN: %s\n", yytext); }
+"let"       { printf("KW_LET: %s\n", yytext); }
+"where"     { printf("KW_WHERE: %s\n", yytext); }
+"empty"     { printf("KW_EMPTY: %s\n", yytext); }
+"any"       { printf("KW_ANY: %s\n", yytext); }
+"append"    { printf("KW_APPEND: %s\n", yytext); }
+"insert"    { printf("KW_INSERT: %s\n", yytext); }
 
-    /* TOKENS */
-"set"       { printf("TOKEN_SET\n"); }
-"list"      { printf("TOKEN_LIST\n"); }
-"boolean"   { printf("TOKEN_BOOLEAN\n"); }
-"while"     { printf("TOKEN_WHILE\n"); }
-"for"       { printf("TOKEN_FOR\n"); }
-"if"        { printf("TOKEN_IF\n"); }
-"else"      { printf("TOKEN_ELSE\n"); }
-"do"        { printf("TOKEN_DO\n"); }
-"end"       { printf("TOKEN_END\n"); }
-"break"     { printf("TOKEN_BREAK\n"); }
-"return"    { printf("TOKEN_RETURN\n"); }
-"let"       { printf("TOKEN_LET\n"); }
-"in"        { printf("TOKEN_IN\n"); }
-"where"     { printf("TOKEN_WHERE\n"); }
-"empty"     { printf("TOKEN_EMPTY\n"); }
-"union"     { printf("TOKEN_UNION\n"); }
-"any"       { printf("TOKEN_ANY\n"); }
-"append"    { printf("TOKEN_APPEND\n"); }
-"insert"    { printf("TOKEN_INSERT\n"); }
-"true"      { printf("TOKEN_TRUE\n"); }
-"false"     { printf("TOKEN_FALSE\n"); }
+  /* OPERADORES (OP) */
+"in"        { printf("OP_IN: %s\n", yytext); }
+"union"     { printf("OP_UNION: %s\n", yytext); }
+"=="        { printf("OP_EQUAL: %s\n", yytext); }
+"!="        { printf("OP_NOT_EQUAL: %s\n", yytext); }
+"="         { printf("OP_ASSIGN: %s\n", yytext); }
 
-    /*OPERADORES*/
-"=="        { printf("TOKEN_EQ\n"); }
-"!="        { printf("TOKEN_NEQ\n"); }
-"="         { printf("TOKEN_ASSIGN\n"); }
+  /* DELIMITADORES (DELIM) */
+"do"        { printf("DELIM_DO: %s\n", yytext); }
+"end"       { printf("DELIM_END: %s\n", yytext); }
+":"         { printf("DELIM_COLON: %s\n", yytext); }
+";"         { printf("DELIM_SEMICOLON: %s\n", yytext); }
+","         { printf("DELIM_COMMA: %s\n", yytext); }
+"("         { printf("DELIM_LPAREN: %s\n", yytext); }
+")"         { printf("DELIM_RPAREN: %s\n", yytext); }
+"{"         { printf("DELIM_LBRACE: %s\n", yytext); }
+"}"         { printf("DELIM_RBRACE: %s\n", yytext); }
+"["         { printf("DELIM_LBRACKET: %s\n", yytext); }
+"]"         { printf("DELIM_RBRACKET: %s\n", yytext); }
 
-    /*SIMBOLOS DE PUNTUACINO*/
-":"         { printf("TOKEN_COLON\n"); }
-";"         { printf("TOKEN_SEMICOLON\n"); }
-","         { printf("TOKEN_COMMA\n"); }
-"("         { printf("TOKEN_LPAREN\n"); }
-")"         { printf("TOKEN_RPAREN\n"); }
-"{"         { printf("TOKEN_LBRACE\n"); }
-"}"         { printf("TOKEN_RBRACE\n"); }
-"["         { printf("TOKEN_LBRACKET\n"); }
-"]"         { printf("TOKEN_RBRACKET\n"); }
+  /* LITERALES (LIT) E IDENTIFICADORES */
+"true"|"false" { printf("LIT_BOOLEAN: %s\n", yytext); }
+\'[^\']\'      { printf("LIT_CHAR: %s\n", yytext); }
+[A-Z][a-zA-Z0-9_]* { printf("IDENTIFIER: %s\n", yytext); }
 
-\'[^\']\'   { printf("TOKEN_CHAR_LITERAL: %s\n", yytext); }
-{ID}        { printf("TOKEN_IDENTIFIER: %s\n", yytext); }
+  /* ESPACIOS Y ERRORES */
 [ \t\n\r]+  { /* ignorar espacios en blanco */ }
 .           { printf("Error lexico: Caracter no reconocido %s\n", yytext); }
-
 %%
 
 int main(int argc, char **argv) {

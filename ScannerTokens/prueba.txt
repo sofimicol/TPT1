@@ -1,0 +1,28 @@
+list Validar ( set Admins, list Logs ) :
+    boolean HayPeligro = false ;
+    set Bloqueados = { 'x', 'y' } ;
+    set Inicial = empty ;
+    list Registro = [ 'a', 'b' ] ;
+    
+    let GrupoSeguro = Admins union Inicial ;
+    
+    insert ( Bloqueados, 'z' ) ;
+    append ( Registro, 'c' ) ;
+    
+    if ( HayPeligro == false ) do
+        for ( Usuario in Logs ) where ( Usuario != 'w' ) do
+            if ( any ( Usuario, Bloqueados ) ) do
+                HayPeligro = true ;
+                break ;
+            else
+                append ( Registro, Usuario ) ;
+            end
+        end
+    end
+
+    while ( HayPeligro != true ) do
+        return Registro ;
+    end
+    
+    return empty ;
+end

@@ -90,8 +90,9 @@ int yywrap() {
 ### [PONER AQUI scanner que usa enumerados]
 
 ```c
-/* Primer analizador léxico de Aleph - Usando enumerados */
 %{
+#include <stdio.h>
+
 enum yytokentype {
     TOKEN_SET = 258,
     TOKEN_LIST = 259,
@@ -154,6 +155,7 @@ enum yytokentype {
 "true"      { return TOKEN_TRUE; }
 "false"     { return TOKEN_FALSE; }
 
+    /* OPERADORES Y PUNTUACION */
 ":"         { return TOKEN_COLON; }
 "=="        { return TOKEN_EQ; }
 "!="        { return TOKEN_NEQ; }
@@ -167,7 +169,7 @@ enum yytokentype {
 "["         { return TOKEN_LBRACKET; }
 "]"         { return TOKEN_RBRACKET; }
 
-'[^']'             { return TOKEN_CHAR_LITERAL; }
+\'[^\']\'             { return TOKEN_CHAR_LITERAL; }
 [A-Z][a-zA-Z0-9_]* { return TOKEN_IDENTIFIER; }
 
 [ \t\n\r]+  { /* ignorar espacios en blanco */ }
@@ -176,11 +178,166 @@ enum yytokentype {
 
 int main(int argc, char **argv) {
     int tok;
-    /* La función actuará como una corrutina retornando los códigos enteros */
-    while(tok = yylex()) {
-        printf("Token numerico devuelto: %d\n", tok);
+    printf("Iniciando escanear con enumerados. Presione Ctrl+Z para salir.\n");
+    
+    while ((tok = yylex()) != 0) {
+        printf("Token numerico devuelto: %d (Lexema: %s)\n", tok, yytext);
     }
+    
     return 0;
+}
+
+int yywrap() {
+    return 1;
+}
+```
+## segunda opcion mas visual para scanner de enumerados
+```c
+%{
+#include <stdio.h>
+
+enum yytokentype {
+    TOKEN_SET = 258,
+    TOKEN_LIST = 259,
+    TOKEN_BOOLEAN = 260,
+    TOKEN_WHILE = 261,
+    TOKEN_FOR = 262,
+    TOKEN_IF = 263,
+    TOKEN_ELSE = 264,
+    TOKEN_DO = 265,
+    TOKEN_END = 266,
+    TOKEN_BREAK = 267,
+    TOKEN_RETURN = 268,
+    TOKEN_LET = 269,
+    TOKEN_IN = 270,
+    TOKEN_WHERE = 271,
+    TOKEN_EMPTY = 272,
+    TOKEN_UNION = 273,
+    TOKEN_ANY = 274,
+    TOKEN_APPEND = 275,
+    TOKEN_INSERT = 276,
+    TOKEN_TRUE = 277,
+    TOKEN_FALSE = 278,
+    TOKEN_COLON = 279,
+    TOKEN_EQ = 280,
+    TOKEN_NEQ = 281,
+    TOKEN_ASSIGN = 282,
+    TOKEN_SEMICOLON = 283,
+    TOKEN_COMMA = 284,
+    TOKEN_LPAREN = 285,
+    TOKEN_RPAREN = 286,
+    TOKEN_LBRACE = 287,
+    TOKEN_RBRACE = 288,
+    TOKEN_LBRACKET = 289,
+    TOKEN_RBRACKET = 290,
+    TOKEN_CHAR_LITERAL = 291,
+    TOKEN_IDENTIFIER = 292
+};
+%}
+
+%%
+"set"       { return TOKEN_SET; }
+"list"      { return TOKEN_LIST; }
+"boolean"   { return TOKEN_BOOLEAN; }
+"while"     { return TOKEN_WHILE; }
+"for"       { return TOKEN_FOR; }
+"if"        { return TOKEN_IF; }
+"else"      { return TOKEN_ELSE; }
+"do"        { return TOKEN_DO; }
+"end"       { return TOKEN_END; }
+"break"     { return TOKEN_BREAK; }
+"return"    { return TOKEN_RETURN; }
+"let"       { return TOKEN_LET; }
+"in"        { return TOKEN_IN; }
+"where"     { return TOKEN_WHERE; }
+"empty"     { return TOKEN_EMPTY; }
+"union"     { return TOKEN_UNION; }
+"any"       { return TOKEN_ANY; }
+"append"    { return TOKEN_APPEND; }
+"insert"    { return TOKEN_INSERT; }
+"true"      { return TOKEN_TRUE; }
+"false"     { return TOKEN_FALSE; }
+
+    /* OPERADORES Y PUNTUACION */
+":"         { return TOKEN_COLON; }
+"=="        { return TOKEN_EQ; }
+"!="        { return TOKEN_NEQ; }
+"="         { return TOKEN_ASSIGN; }
+";"         { return TOKEN_SEMICOLON; }
+","         { return TOKEN_COMMA; }
+"("         { return TOKEN_LPAREN; }
+")"         { return TOKEN_RPAREN; }
+"{"         { return TOKEN_LBRACE; }
+"}"         { return TOKEN_RBRACE; }
+"["         { return TOKEN_LBRACKET; }
+"]"         { return TOKEN_RBRACKET; }
+
+\'[^\']\'             { return TOKEN_CHAR_LITERAL; }
+[A-Z][a-zA-Z0-9_]* { return TOKEN_IDENTIFIER; }
+
+[ \t\n\r]+  { /* ignorar espacios en blanco */ }
+.           { printf("Error lexico: Caracter no reconocido %s\n", yytext); }
+%%
+
+const char* obtener_nombre_token(int token) {
+    switch(token) {
+        case 258: return "TOKEN_SET";
+        case 259: return "TOKEN_LIST";
+        case 260: return "TOKEN_BOOLEAN";
+        case 261: return "TOKEN_WHILE";
+        case 262: return "TOKEN_FOR";
+        case 263: return "TOKEN_IF";
+        case 264: return "TOKEN_ELSE";
+        case 265: return "TOKEN_DO";
+        case 266: return "TOKEN_END";
+        case 267: return "TOKEN_BREAK";
+        case 268: return "TOKEN_RETURN";
+        case 269: return "TOKEN_LET";
+        case 270: return "TOKEN_IN";
+        case 271: return "TOKEN_WHERE";
+        case 272: return "TOKEN_EMPTY";
+        case 273: return "TOKEN_UNION";
+        case 274: return "TOKEN_ANY";
+        case 275: return "TOKEN_APPEND";
+        case 276: return "TOKEN_INSERT";
+        case 277: return "TOKEN_TRUE";
+        case 278: return "TOKEN_FALSE";
+        case 279: return "TOKEN_COLON";
+        case 280: return "TOKEN_EQ";
+        case 281: return "TOKEN_NEQ";
+        case 282: return "TOKEN_ASSIGN";
+        case 283: return "TOKEN_SEMICOLON";
+        case 284: return "TOKEN_COMMA";
+        case 285: return "TOKEN_LPAREN";
+        case 286: return "TOKEN_RPAREN";
+        case 287: return "TOKEN_LBRACE";
+        case 288: return "TOKEN_RBRACE";
+        case 289: return "TOKEN_LBRACKET";
+        case 290: return "TOKEN_RBRACKET";
+        case 291: return "TOKEN_CHAR_LITERAL";
+        case 292: return "TOKEN_IDENTIFIER";
+        default: return "DESCONOCIDO";
+    }
+}
+
+int main(int argc, char **argv) {
+    int token;
+
+    printf("\nIniciando analizador lexico. Ingrese codigo y presione Ctrl+Z para finalizar.\n");
+    printf("\n==============================================================\n");
+    printf(" %-22s | %-12s | %s\n", "NOMBRE DEL TOKEN", "ID NUMERICO", "LEXEMA RECONOCIDO");
+    printf("==============================================================\n");
+
+    while ((token = yylex()) != 0) {
+        printf(" %-22s | %-12d | '%s'\n", obtener_nombre_token(token), token, yytext);
+    }
+
+    printf("==============================================================\n\n");
+    return 0;
+}
+
+int yywrap() {
+    return 1;
 }
 ```
 

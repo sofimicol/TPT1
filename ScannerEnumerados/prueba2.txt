@@ -1,0 +1,28 @@
+list ProcesarCarrito ( set Catalogo, list Carrito ) :
+    boolean HayStock = true ;
+    set Favoritos = { 'a', 'b' } ;
+    set SinStock = empty ;
+    list Comprados = [ 'c' ] ;
+    
+    let Disponibles = Catalogo union Favoritos ;
+    
+    insert ( SinStock, 'd' ) ;
+    append ( Comprados, 'e' ) ;
+    
+    if ( HayStock == true ) do
+        for ( Producto in Carrito ) where ( Producto != 'x' ) do
+            if ( any ( Producto, SinStock ) ) do
+                HayStock = false ;
+                break ;
+            else
+                append ( Comprados, Producto ) ;
+            end
+        end
+    end
+
+    while ( HayStock != false ) do
+        return Comprados ;
+    end
+    
+    return empty ;
+end

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe Técnico – Autómata AFND/AFD con Matriz Dispersa</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #eef2f5;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            line-height: 1.5;
+            padding: 2rem;
+            color: #1e2a3a;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
+            overflow: hidden;
+            padding: 2rem 2.5rem;
+        }
+        h1 {
+            font-size: 2.3rem;
+            background: linear-gradient(135deg, #0b3b5f, #1b6b8f);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.75rem;
+            border-left: 5px solid #1b6b8f;
+            padding-left: 1.2rem;
+        }
+        .subtitulo {
+            color: #2c5a74;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #cbdbe0;
+            padding-bottom: 0.6rem;
+        }
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #0f4c5f;
+            border-left: 4px solid #2c9b9b;
+            padding-left: 1rem;
+        }
+        h3 {
+            font-size: 1.3rem;
+            margin: 1.5rem 0 0.8rem 0;
+            color: #1e5a6e;
+        }
+        pre {
+            background: #1e2a2e;
+            color: #e4eef2;
+            padding: 1rem 1.2rem;
+            border-radius: 16px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+            box-shadow: inset 0 0 0 1px #3a4a50;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        code {
+            font-family: inherit;
+        }
+        .code-inline {
+            background: #eef2f5;
+            font-family: monospace;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #c7254e;
+        }
+        .tabla-funciones {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2rem 0;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .tabla-funciones th {
+            background: #e0edf2;
+            color: #0b3b5f;
+            padding: 12px 8px;
+            font-weight: 700;
+            border: 1px solid #ccdbe2;
+        }
+        .tabla-funciones td {
+            border: 1px solid #dce5ea;
+            padding: 10px 8px;
+            vertical-align: top;
+        }
+        .ventaja {
+            background: #e0f7f0;
+            border-left: 6px solid #1f7a5a;
+            padding: 1.2rem;
+            border-radius: 20px;
+            margin: 1rem 0;
+        }
+        .nota {
+            background: #fff3e0;
+            border-left: 6px solid #e67e22;
+            padding: 1rem;
+            border-radius: 16px;
+            margin: 1rem 0;
+        }
+        footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #5e7e8f;
+            border-top: 1px solid #ccdbe2;
+            padding-top: 1.5rem;
+        }
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .container { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📐 Autómata Finito (AFND/AFD)<br>con Matriz Dispersa – Propuesta 3</h1>
+    <div class="subtitulo">Implementación en C – Acceso O(1), encapsulamiento, carga desde archivo .txt</div>
+
+    <h2>1. Estructura final del autómata</h2>
+    <pre><code>typedef struct {
+    Tdata Q;                // conjunto de estados (cada uno Tdata STR)
+    Tdata Sigma;            // alfabeto (conjunto de símbolos)
+    Tdata** delta;          // matriz dinámica [num_estados][num_simbolos]
+    int num_estados;
+    int num_simbolos;
+    int q0;                 // índice del estado inicial
+    Tdata F;                // conjunto de estados finales
+} Automata;
+typedef Automata* AF;</code></pre>
+    <p><code>delta</code> es una matriz de <code>Tdata</code>. Cada celda <code>delta[i][j]</code> es un conjunto que guarda los nombres de los estados destino. Esto permite representar tanto AFD (un solo destino) como AFND (múltiples destinos).</p>
+
+    <h2>2. Cambios estructurales clave respecto a la versión inicial</h2>
+    <div class="ventaja">
+        <strong>Versión inicial (lista de transiciones):</strong> se usaba un arreglo lineal de <code>TransitionEntry</code> con campos <code>from, symbol, to</code>. La consulta <code>δ(qᵢ, aⱼ)</code> requería una búsqueda secuencial <strong>O(n)</strong>.<br><br>
+        <strong>Versión final (matriz dispersa):</strong> se eliminó <code>TransitionEntry</code> y se incorporó <code>Tdata** delta</code> con dimensiones <code>num_estados × num_simbolos</code>. El acceso es directo por índices → <strong>O(1)</strong>.
+    </div>
+    <p><strong>¿Cómo se garantiza O(1)?</strong> Una vez que convertimos el nombre de un estado a su índice (0,1,2…) y el símbolo a su índice, la operación <code>aut->delta[estado][simbolo]</code> se traduce en una indexación de arreglo de dos dimensiones, de costo constante.</p>
+
+    <h2>3. Manejo de cadenas: TAD_str (lista enlazada de caracteres)</h2>
+    <p>Todas las operaciones sobre nombres de estados/símbolos se realizan mediante funciones propias, no con la biblioteca estándar de cadenas C (<code>strcmp</code>, <code>strcpy</code>, etc.).</p>
+    <table class="tabla-funciones">
+        <thead><tr><th>Función TAD_str</th><th>Propósito</th><th>Uso en el proyecto</th></tr></thead>
+        <tbody>
+            <tr><td><code>load2(const char*)</code></td><td>Convierte cadena C → <code>str</code> (lista enlazada)</td><td>En <code>leer_conjunto_desde_archivo</code> y <code>procesar_linea_transiciones</code></td></tr>
+            <tr><td><code>compare_str(str, str)</code></td><td>Compara dos listas enlazadas (1 si iguales)</td><td>En <code>buscar_indice_en_conjunto</code> (para obtener índice de un estado/símbolo)</td></tr>
+            <tr><td><code>copy_str(str)</code></td><td>Duplica una lista enlazada</td><td>En <code>agregar_transicion</code> para guardar el destino sin compartir memoria</td></tr>
+            <tr><td><code>free_str(str)</code></td><td>Libera memoria de una lista enlazada</td><td>En <code>procesar_linea_transiciones</code> (libera temporales) y en <code>free_ast</code></td></tr>
+            <tr><td><code>print(str)</code></td><td>Imprime la cadena en consola</td><td>En <code>mostrar_automata</code></td></tr>
+        </tbody>
+    </table>
+    <div class="nota">✅ <strong>Ventaja:</strong> encapsulamiento total, independencia de la representación interna y facilidad de integración con <code>TAD_set</code> y <code>TAD_ast</code>.</div>
+
+    <h2>4. Funciones de la biblioteca estándar de C (usadas para archivo y parseo)</h2>
+    <p>El proyecto utiliza funciones clásicas de <code>&lt;stdio.h&gt;</code> y <code>&lt;string.h&gt;</code> exclusivamente para la interacción con el sistema de archivos y el parseo inicial de líneas (cadenas C).</p>
+    <table class="tabla-funciones">
+        <thead><tr><th>Función estándar</th><th>Propósito</th><th>Dónde se aplica</th></tr></thead>
+        <tbody>
+            <tr><td><code>fopen / fclose</code></td><td>Abrir/cerrar el archivo <code>automata.txt</code></td><td><code>cargar_automata_desde_archivo</code></td></tr>
+            <tr><td><code>fgets</code></td><td>Leer línea por línea</td><td><code>cargar_automata_desde_archivo</code> y <code>leer_conjunto_desde_archivo</code></td></tr>
+            <tr><td><code>strtok</code></td><td>Dividir cadenas por comas o punto y coma</td><td><code>leer_conjunto_desde_archivo</code> (tokens de estados/símbolos) y <code>procesar_linea_transiciones</code> (separar transacciones por ';')</td></tr>
+            <tr><td><code>sscanf</code></td><td>Extraer <code>origen, símbolo, destino</code> de una transacción</td><td><code>procesar_linea_transiciones</code> (formato <code>"%[^,],%[^,],%s"</code>)</td></tr>
+            <tr><td><code>strcspn</code></td><td>Eliminar el salto de línea (<code>\n</code>)</td><td><code>cargar_automata_desde_archivo</code> (estado inicial)</td></tr>
+            <tr><td><code>malloc / realloc</code></td><td>Reserva dinámica de la matriz <code>delta</code></td><td><code>inicializar_matriz</code></td></tr>
+        </tbody>
+    </table>
+    <p><strong>Nota:</strong> No se utiliza <code>strlen</code> ni <code>strcmp</code> porque las cadenas internas son listas enlazadas (<code>str</code>) y su comparación la realiza <code>compare_str</code>.</p>
+
+    <h2>5. Carga desde archivo de texto (formato 5 líneas)</h2>
+    <pre><code>q0,q1,q2,q3
+a,b
+q0,a,q0;q0,a,q1;q0,a,q2;q0,b,q0;q1,a,q2;q2,b,q3;q3,a,q3;q3,b,q3
+q0
+q3</code></pre>
+    <ul>
+        <li><strong>Línea 1:</strong> estados (separados por coma).</li>
+        <li><strong>Línea 2:</strong> alfabeto (símbolos separados por coma).</li>
+        <li><strong>Línea 3:</strong> transiciones. Cada transacción: <code>origen,símbolo,destino</code>. Las transacciones se separan por coma, y los destinos múltiples se separan con <code>;</code> (ej: <code>q0,a,q1;q2</code>).</li>
+        <li><strong>Línea 4:</strong> estado inicial.</li>
+        <li><strong>Línea 5:</strong> estados finales (separados por coma).</li>
+    </ul>
+    <h3>🔹 Flujo de <code>cargar_automata_desde_archivo</code></h3>
+    <ol>
+        <li><code>fopen(ruta, "r")</code> – abre el archivo.</li>
+        <li><code>leer_conjunto_desde_archivo</code> para poblar <code>aut->Q</code> (estados).</li>
+        <li><code>leer_conjunto_desde_archivo</code> para poblar <code>aut->Sigma</code> (alfabeto).</li>
+        <li><code>inicializar_matriz(aut)</code> – cuenta estados y símbolos, reserva <code>delta</code> y llena cada celda con <code>create_set()</code>.</li>
+        <li><code>procesar_linea_transiciones(aut, linea)</code> – parsea la línea de transiciones.</li>
+        <li>Lee estado inicial, limpia espacios, obtiene su índice con <code>estado_a_indice</code> y asigna a <code>aut->q0</code>.</li>
+        <li><code>leer_conjunto_desde_archivo</code> para poblar <code>aut->F</code>.</li>
+        <li><code>fclose</code> – cierra el archivo.</li>
+    </ol>
+
+    <h2>6. Conversión nombre ↔ índice</h2>
+    <ul>
+        <li><strong>Nombre → índice:</strong> <code>estado_a_indice(AF aut, str nombre)</code> recorre el conjunto <code>aut->Q</code> usando <code>obtener_data</code>/<code>obtener_next</code> y compara con <code>compare_str</code>. Ídem para <code>simbolo_a_indice</code> sobre <code>aut->Sigma</code>.</li>
+        <li><strong>Índice → nombre:</strong> <code>str indice_a_str(Tdata set, int indice)</code> recorre la lista hasta la posición <code>indice</code> y devuelve la cadena. Se usa en <code>mostrar_automata</code> para imprimir la tabla.</li>
+    </ul>
+
+    <h2>7. Agregar transición: <code>agregar_transicion</code></h2>
+    <pre><code>void agregar_transicion(AF aut, str from, str symbol, str to) {
+    int i = estado_a_indice(aut, from);
+    int j = simbolo_a_indice(aut, symbol);
+    int k = estado_a_indice(aut, to);
+    if (i == -1 || j == -1 || k == -1) return;
+    if (aut->delta == NULL) inicializar_matriz(aut);
+    Tdata dest_node = create_str();
+    dest_node->string = copy_str(to);
+    insert_set(&(aut->delta[i][j]), dest_node);
+}</code></pre>
+    <p>Explicación paso a paso:</p>
+    <ol>
+        <li>Convierte los nombres a índices enteros (búsqueda en los conjuntos).</li>
+        <li>Inicializa la matriz si aún no existe.</li>
+        <li>Crea un nodo <code>Tdata</code> de tipo STR con una <strong>copia independiente</strong> de la cadena destino (<code>copy_str</code>).</li>
+        <li>Inserta el nodo en el conjunto <code>aut->delta[i][j]</code> (si ya existe, <code>insert_set</code> evita duplicados).</li>
+    </ol>
+
+    <h2>8. Funciones principales – resumen</h2>
+    <table class="tabla-funciones">
+        <thead><tr><th>Función</th><th>Propósito</th><th>Complejidad</th></tr></thead>
+        <tbody>
+            <tr><td><code>create_automata</code></td><td>Inicializa estructura vacía</td><td>O(1)</td></tr>
+            <tr><td><code>inicializar_matriz</code></td><td>Crea la matriz <code>delta</code> (reserva memoria y conjuntos vacíos)</td><td>O(|Q|·|Σ|)</td></tr>
+            <tr><td><code>transicion_por_indice</code></td><td>Acceso directo <code>delta[from][symbol]</code></td><td>O(1)</td></tr>
+            <tr><td><code>transicion_por_nombre</code></td><td>Convierte nombres a índices y llama a la versión por índice</td><td>O(|Q|+|Σ|)+O(1)</td></tr>
+            <tr><td><code>esDeterminista</code></td><td>Recorre la matriz comprobando si alguna celda tiene >1 elemento</td><td>O(|Q|·|Σ|)</td></tr>
+            <tr><td><code>mostrar_automata</code></td><td>Imprime tabla con bordes usando <code>indice_a_str</code></td><td>O(|Q|·|Σ|)</td></tr>
+            <tr><td><code>free_automata</code></td><td>Destruye la matriz, libera conjuntos y la estructura</td><td>O(|Q|·|Σ|)</td></tr>
+        </tbody>
+    </table>
+
+    <h2>9. Ejemplo de salida (con el archivo de ejemplo)</h2>
+    <pre><code>+-------+-----------+-----------+
+|       |    a      |    b      |
++-------+-----------+-----------+
+| q0    | {q0,q1,q2}  | {q0}      |
+| q1    | {q2}        | {}        |
+| q2    | {}          | {q3}      |
+| q3    | {q3}        | {q3}      |
++-------+-----------+-----------+
+
+Estado inicial: q0
+Estados finales: {q3}</code></pre>
+
+    <h2>10. Conclusión</h2>
+    <p>El proyecto implementa completamente un autómata AFND/AFD con matriz dispersa de transiciones, logrando acceso <strong>O(1)</strong> y una representación clara. Se han diferenciado claramente las funciones de la biblioteca estándar (para archivos y parseo inicial) de las funciones propias del TAD_str (manejo de cadenas como listas enlazadas). La estructura final (matriz bidimensional) mejora drásticamente la eficiencia respecto a la versión con lista de transiciones. El código es modular, bien encapsulado y listo para ser extendido (conversión a AFD, minimización, etc.).</p>
+
+    <footer>
+        📌 Informe técnico – Teoría de la Computación<br>
+        Autora: Sofía Micol – Repositorio: <a href="https://github.com/sofimicol/TPT1" target="_blank">github.com/sofimicol/TPT1</a><br>
+        Implementación completa de autómatas con matriz dispersa, acceso O(1) y manejo de cadenas estilo TAD.
+    </footer>
+</div>
+</body>
+</html>

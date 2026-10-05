@@ -148,14 +148,14 @@ enum yytokentype {
 "append"    { return KW_APPEND; }
 "insert"    { return KW_INSERT; }
 
-  /* OPERADORES (OP) */
+  /* OPERADORES */
 "in"        { return OP_IN; }
 "union"     { return OP_UNION; }
 "=="        { return OP_EQUAL; }
 "!="        { return OP_NOT_EQUAL; }
 "="         { return OP_ASSIGN; }
 
-  /* DELIMITADORES (DELIM) */
+  /* DELIMITADORES */
 "do"        { return DELIM_DO; }
 "end"       { return DELIM_END; }
 ":"         { return DELIM_COLON; }
@@ -168,7 +168,7 @@ enum yytokentype {
 "["         { return DELIM_LBRACKET; }
 "]"         { return DELIM_RBRACKET; }
 
-  /* LITERALES (LIT) E IDENTIFICADORES */
+  /* LITERALES E IDENTIFICADORES */
 "true"|"false"     { return LIT_BOOLEAN; }
 \'[^\']\'          { return LIT_CHAR; }
 [A-Z][a-zA-Z0-9_]* { return IDENTIFIER; }

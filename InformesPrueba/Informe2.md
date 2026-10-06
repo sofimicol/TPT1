@@ -227,27 +227,16 @@ La EBNF (Forma de Backus-Naur Extendida) optimiza esta notación incorporando me
 A continuación, presentamos un subconjunto general en BNF que abarca las estructuras de control principales y la definición de funciones diseñadas en nuestro primer prototipo algorítmico de Aleph:
 
 ```c
-<programa> ::= <tipo> IDENTIFIER "(" <lts_parametros> ")" ":" <lts_sentencias> "end"
-
-<lts_parametros> ::= <parametro> 
-                | <parametro> "," <lts_parametros> 
-                | ε
-
-<paramtro> ::= <tipo> IDENTIFIER
+<programa> ::= <lts_sentencias>
 
 <lts_sentencias> ::= <sent_simple> ";" 
-               | <sent_simple> ";" <lts_sentencias> 
-               | <estruc_control> 
-               | <estruc_control> <lts_sentencias>
+                   | <sent_simple> ";" <lts_sentencias> 
+                   | <estruc_control> 
+                   | <estruc_control> <lts_sentencias>
 
-<sent_simple> ::= <declaracion> 
-                | <asignacion> 
-                | <llamada_rutina> 
+<sent_simple> ::= <asignacion> 
                 | "return" <expresion> 
                 | "break"
-
-<declaracion> ::= <tipo> IDENTIFIER "=" <expresion> 
-                | "let" IDENTIFIER "=" <expresion>
 
 <asignacion> ::= IDENTIFIER "=" <expresion>
 
@@ -255,37 +244,29 @@ A continuación, presentamos un subconjunto general en BNF que abarca las estruc
                    | <sent_while> 
                    | <sent_for>
 
-<sent_if> ::= "if" "(" <condicion> ")" "do" <lista_sent> "end"
-            | "if" "(" <condicion> ")" "do" <lista_sent> "else" <lista_sent> "end"
+<sent_if> ::= "if" "(" <condicion> ")" "do" <lts_sentencias> "end"
+            | "if" "(" <condicion> ")" "do" <lts_sentencias> "else" <lts_sentencias> "end"
 
-<sent_while> ::= "while" "(" <condicion> ")" "do" <lista_sent> "end"
+<sent_while> ::= "while" "(" <condicion> ")" "do" <lts_sentencias> "end"
 
-<sent_for> ::= "for" "(" IDENTIFIER "in" IDENTIFIER ")" "do" <lista_sent> "end"
-             | "for" "(" IDENTIFIER "in" IDENTIFIER ")" "where" "(" <condicion> ")" "do" <lista_sent> "end"
+<sent_for> ::= "for" "(" IDENTIFIER "in" IDENTIFIER ")" "do" <lts_sentencias> "end"
 
 <condicion> ::= <expresion> "==" <expresion> 
               | <expresion> "!=" <expresion> 
-              | "any" "(" <lts_exprsiones> ")"
 
-<expresion> ::= <termino> 
-         | <termino> "union" <termino>
+<expresion> ::= <expresion> "+" <expresion>
+              | <expresion> "-" <expresion>
+              | <expresion> "*" <expresion>
+              | <expresion> "/" <expresion>
+              | IDENTIFIER
+              | LIT_NUMBER
+              | <lts_lista> 
+              | <lts_conjunto>
 
-<termino> ::= IDENTIFIER 
-            | LIT_BOOLEAN 
-            | LIT_CHAR 
-            | "empty" 
-            | <lts_lista> 
-            | <lts_conjunto>
+<lts_lista> ::= "[" <lts_expresiones> "]"
 
-<lts_lista> ::= "[" <lts_expresino> "]"
-
-<lts_conjunto> ::= "{" <lts_expresion> "}"
+<lts_conjunto> ::= "{" <lts_expresiones> "}"
 
 <lts_expresiones> ::= <expresion> 
-               | <expr> "," <lts_expresion>
-
-<llamada_rutina> ::= "insert" "(" <lts_expresiones> ")" 
-                   | "append" "(" <lts_expresiones> ")"
-
-<tipo> ::= "set" | "list" | "boolean"
+                    | <expresion> "," <lts_expresiones>
 ```

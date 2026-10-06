@@ -397,7 +397,7 @@ El analizador léxico procesa el texto plano aplicando las expresiones regulares
 | `'0'`, `'1'`, `'a'` | LIT_CHAR | Literales primitivos: caracteres constantes atómicos. |
 | `[A-Z][a-zA-Z0-9_]*` | IDENTIFIER | Identificadores: nombres de variables definidos por el usuario iniciados en mayúscula. |
 
-## 3.3 Análisis Léxico
+#### 3.3 Análisis Léxico
 
 Un analizador léxico realiza, técnicamente, un análisis sintáctico al nivel más bajo de la estructura del programa. Su función principal consiste en reconocer agrupaciones lógicas de caracteres (al identificar subcadenas) mediante la coincidencia de patrones sobre el código de entrada. Dichas agrupaciones se denominan lexemas, mientras que las categorías sintácticas o códigos internos asignados a ellas corresponden a los tokens.
 
@@ -412,7 +412,7 @@ Las tareas fundamentales de un analizador léxico (scanner) incluyen:
 
 * Llevar el registro de la posición actual en el código fuente (número de línea y columna) para facilitar la emisión de mensajes de error precisos durante el análisis.
 
-## 3.3.1 Primer analizador léxico de Aleph
+#### 3.3.1 Primer analizador léxico de Aleph
 
 ```c
 %{
@@ -599,7 +599,7 @@ int yywrap() {
 }
 ```
 
-## 3.4. Descripción Formal de la Sintaxis
+#### 3.4. Descripción Formal de la Sintaxis
 Los lenguajes de programación requieren una interpretación de sus sentencias sin ambigüedades, su descripción, a los fines de comunicar su funcionamiento, tanto a los usuarios de los mismos como a quienes realizan su implementación, requiere herramientas formales.
 
 

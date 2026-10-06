@@ -23,11 +23,6 @@ Las tareas fundamentales de un analizador léxico (scanner) incluyen:
 #include <stdio.h>
 %}
 
-DIGITO  [0-9]
-LETRA_MIN [a-z]
-LETRA_MAY [A-Z]
-ID  {LETRA_MAY}({LETRA_MAY}|{LETRA_MIN}|{DIGITO}|_)*
-
 %%
   /* PALABRAS RESERVADAS */
 "set"       { printf("KW_SET: %s\n", yytext); }

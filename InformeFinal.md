@@ -613,7 +613,7 @@ La Forma de Backus-Naur (BNF) es la notación metalingüística estándar emplea
 
 La EBNF (Forma de Backus-Naur Extendida) optimiza esta notación incorporando metacaracteres que evitan la sobrecarga de reglas recursivas simples: utiliza corchetes `[...]` para marcar elementos opcionales, llaves `{...}` para representar la repetición de un elemento (cero o más veces), y paréntesis `(...)` para la agrupación de símbolos lógicos.
 
-## 3.3.1. Primera descripción formal de Aleph
+#### 3.3.1. Primera descripción formal de Aleph
 
 A continuación, presentamos un subconjunto general en BNF que abarca las estructuras de control principales y la definición de funciones diseñadas en nuestro primer prototipo algorítmico de Aleph:
 

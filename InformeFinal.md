@@ -623,7 +623,8 @@ A continuación, presentamos un subconjunto general en BNF que abarca las estruc
 <lts_sentencias> ::= <sent_simple> ";" 
                    | <sent_simple> ";" <lts_sentencias>
 
-<sent_simple> ::= <asignacion> 
+<sent_simple> ::= <asignacion>
+                | <expresion>
                 | "return" <expresion>
                 | <estruc_control>
                 | "break"

@@ -1,4 +1,4 @@
-# 1. Introducción
+j# 1. Introducción
 
 ## 1.1 Objetivo
 
@@ -621,12 +621,11 @@ A continuación, presentamos un subconjunto general en BNF que abarca las estruc
 <programa> ::= <lts_sentencias>
 
 <lts_sentencias> ::= <sent_simple> ";" 
-                   | <sent_simple> ";" <lts_sentencias> 
-                   | <estruc_control> 
-                   | <estruc_control> <lts_sentencias>
+                   | <sent_simple> ";" <lts_sentencias>
 
 <sent_simple> ::= <asignacion> 
-                | "return" <expresion> 
+                | "return" <expresion>
+                | <estruc_control>
                 | "break"
 
 <asignacion> ::= IDENTIFIER "=" <expresion>
@@ -650,7 +649,7 @@ A continuación, presentamos un subconjunto general en BNF que abarca las estruc
               | <expresion> "*" <expresion>
               | <expresion> "/" <expresion>
               | IDENTIFIER
-              | LIT_NUMBER
+              | LIT_ELEMENTO
               | <lts_lista> 
               | <lts_conjunto>
 

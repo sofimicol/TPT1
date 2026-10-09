@@ -42,7 +42,7 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 ### Expresiones: Operaciones con Conjuntos y Listas
 [poner aquí la BNF de Operaciones con Conjuntos y Listas]
 ```C
-<operaciones> ::= <lts_conjunto> "contencion" <lts_conjunto>
+<op_lts_cjt> ::= <lts_conjunto> "contencion" <lts_conjunto>
                 | <lts_conjunto> "prtenece" <lts_conjunto>
                 | <lit_lista> "union" <lit_lista>
                 | <lit_lista> "intereccion" <lit_lista>

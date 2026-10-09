@@ -54,6 +54,10 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 
 ### Expresiones: Operaciones Lógicas
 [Def evaluación perezosa e ingenuas]
+```c
+<op_log> ::= <expresion> "==" <expresion> 
+              | <expresion> "!=" <expresion>
+```
 
 [poner aquí la BNF de Operaciones Lógicas]
 
@@ -64,9 +68,20 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 [Explique sobre la ambigüedad de la sentencia if]
 
 [poner aquí la BNF y EBNF del if y explque sobre la ambiguedad o no de su propuesta]
-
+```c
+<sent_if> ::= "if" "(" <op_log> ")" "do" <lts_sentencias> "end"
+            | "if" "(" <op_log> ")" "do" <lts_sentencias> "else" <lts_sentencias> "end"
+            | "if" "(" <op_log> "")" "do" <sen_if> "else" <lts_sentencias> "end"
+            | "if" "(" <op_log> "")" "do" <sen_if> "else" <sen_if> "end"
+```
 ### Ciclos
 [poner aquí las BNF de las estructuras de control de ciclos que hayan definido]
+```c
+<sent_while> ::= "while" "(" <op_log> ")" "do" <lts_sentencias> "end"
+                | "while" "(" <op_log> ")" "do" <sent_while> "end"
+<sent_for> ::= "for" "(" IDENTIFIER "in" IDENTIFIER ")" "do" <lts_sentencias> "end"
+              | "for" "(" IDENTIFIER "in" IDENTIFIER ")" "do" <sent_for> "end"
+```
 
 ## 3.5.5 Subrutinas
 Las subrutinas permiten la modularización de un programa, de manera que no deba repetir código cada vez que deseo obtener un resultado aplicando argumentos a un algoritmo bien determinado, al que podemos llamar función o procedimiento, dependiendo de si el mismo devuelve o no algún dato simple o estructurado.

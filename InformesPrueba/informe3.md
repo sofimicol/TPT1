@@ -8,8 +8,19 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 
 [poner aquí la BNF de la asignación y borrar esto]
 
+```c
+<asignacion> ::= INDETIFIER = <esprecion>
+              | <asignacino_mult>
+```
+
 ## 3.5.2 Asignación Múltiple
 [poner aquí la BNF de la asignación múltiple y borrar esto]
+
+```C
+<asignacin_mult> ::= (funcion de multiples asignaciones ej. LET o ¤) IDENTIFIRE = <lts_id>
+<lts_id> ::= INDETIFIRE
+            | INDENTIFIRE "," <lts_id>
+```
 
 ## 3.5.3 Asociatividad y Precendencia de operadores
 Para transformar valores y observar relaciones entre ellos debemos contar con expresiones que puedan evaluarse. Se presentan a continuación las expresiones de Aleph.

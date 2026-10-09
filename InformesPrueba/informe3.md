@@ -71,16 +71,12 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 ```c
 <sent_if> ::= "if" "(" <op_log> ")" "do" <lts_sentencias> "end"
             | "if" "(" <op_log> ")" "do" <lts_sentencias> "else" <lts_sentencias> "end"
-            | "if" "(" <op_log> "")" "do" <sen_if> "else" <lts_sentencias> "end"
-            | "if" "(" <op_log> "")" "do" <sen_if> "else" <sen_if> "end"
 ```
 ### Ciclos
 [poner aquí las BNF de las estructuras de control de ciclos que hayan definido]
 ```c
 <sent_while> ::= "while" "(" <op_log> ")" "do" <lts_sentencias> "end"
-                | "while" "(" <op_log> ")" "do" <sent_while> "end"
 <sent_for> ::= "for" "(" IDENTIFIER "in" IDENTIFIER ")" "do" <lts_sentencias> "end"
-              | "for" "(" IDENTIFIER "in" IDENTIFIER ")" "do" <sent_for> "end"
 ```
 
 ## 3.5.5 Subrutinas

@@ -17,7 +17,7 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 [poner aquí la BNF de la asignación múltiple y borrar esto]
 
 ```C
-<asignacin_mult> ::= (funcion de multiples asignaciones ej. LET o ¤) IDENTIFIRE = <lts_id>
+<asignacin_mult> ::= (funcion de multiples asignaciones ej. LET o "¤") IDENTIFIRE = <lts_id>
 <lts_id> ::= INDETIFIRE
             | INDENTIFIRE "," <lts_id>
 ```

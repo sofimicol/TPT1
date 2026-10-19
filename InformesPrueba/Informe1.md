@@ -1,189 +1,113 @@
 # 1. Introducción
+
 ## 1.1 Objetivo
 
-El objetivo principal del Trabajo Práctico Transversal es diseñar, desarrollar e implementar un intérprete funcional para un nuevo lenguaje de programación denominado Aleph, orientado al trabajo con Autómatas Finitos (AF) y vinculado con la Teoría de Conjuntos, que constituye uno de los pilares estructurales del lenguaje. 
+Nuestro objetivo principal en este Trabajo Práctico Transversal consiste en diseñar, desarrollar e implementar un intérprete funcional para un nuevo lenguaje de programación denominado Aleph [Louden, 2004, p. 11]. En el diseño de Aleph nos enfocamos en proporcionar abstracciones generales de alto nivel para el programador, priorizando la manipulación declarativa y algorítmica de colecciones de datos, específicamente conjuntos no ordenados y listas ordenadas, mediante operaciones algebraicas nativas, junto con estructuras de control estructuradas que nos permitan modelar, anidar y recorrer datos de forma sistemática y legible [Louden, 2004, p. 11].
 
-En particular, el lenguaje deberá permitir representar Autómatas Finitos, convertir un Autómata Finito No Determinista (AFND) en un Autómata Finito Determinista (AFD), determinar si una cadena pertenece al lenguaje aceptado por un autómata, visualizar sus estructuras y obtener representaciones equivalentes. También se busca trabajar con las relaciones existentes entre Autómatas Finitos, Lenguajes Regulares (LR) y Gramáticas Regulares (GR), permitiendo, por ejemplo, obtener a partir de un autómata una Gramática Regular que genere el mismo lenguaje que este acepta.
+Para evaluar la expresividad, legibilidad y confiabilidad del lenguaje, tomamos casos de estudio concretos provenientes de la Teoría de la Computación. En particular, nuestro lenguaje Aleph debe permitir expresar la definición formal de Autómatas Finitos (AF), ejecutar la conversión de un Autómata Finito No Determinista (AFND) a un Autómata Finito Determinista (AFD), evaluar la aceptación o rechazo de cadenas de entrada y vincular las representaciones estructurales entre Lenguajes Regulares y Gramáticas Regulares.
 
-El desarrollo de Aleph permitirá, además, aplicar de manera concreta las distintas etapas involucradas en la construcción de un lenguaje de programación. Para ello se abordarán el análisis léxico, sintáctico y semántico, utilizando herramientas como Flex y Bison, y se diseñarán las estructuras de datos necesarias para representar y procesar la información durante la ejecución. Entre estas estructuras se contemplan los Árboles de Sintaxis Abstracta (AST) y la Tabla de Símbolos, junto con las estructuras necesarias para representar los autómatas, sus estados, alfabetos, transiciones y demás elementos relacionados con la Teoría de Conjuntos.
+Consideramos fundamental recalcar que estos algoritmos formales no constituyen primitivas ni tipos de datos predefinidos en la sintaxis de Aleph; representan el dominio de prueba sobre el cual evaluamos la potencia representativa de las abstracciones de datos y de control que hemos diseñado.
 
-A lo largo del proyecto también se busca analizar y fundamentar las decisiones tomadas durante el diseño del lenguaje, teniendo en cuenta aspectos como la legibilidad, capacidad de escritura, expresividad y confiabilidad, procurando que Aleph resulte suficientemente sencillo y claro para el usuario, pero al mismo tiempo preciso para su procesamiento computacional con objetivo final el abstraer la implementación realizada en el TPT de la asignatira anterior. Esto permitirá comprender no solo cómo se utilizan las herramientas para construir un lenguaje, sino también las dificultades, posibilidades y limitaciones que surgen al momento de diseñarlo e implementarlo.
+Nuestro proyecto abarca las fases de análisis, diseño e implementación de software de sistemas, abordando formalmente el análisis léxico, el análisis sintáctico y la interpretación semántica basada en estructuras de datos dinámicas en memoria.
 
-La construcción del lenguaje se desarrollará siguiendo las etapas clásicas de un proyecto de software: análisis, diseño e implementación, dejando fuera la etapa de mantenimiento.
+## 1.2 Sobre el nombre del lenguaje
 
-En resumen, Aleph permitirá llevar a la práctica los conceptos y algoritmos estudiados en Teoría de la Computación I, brindando al usuario la posibilidad de definir, almacenar, representar, manipular y analizar autómatas, y de ejecutar sobre ellos los distintos algoritmos vistos durante la asignatura.
+Denominamos al lenguaje Aleph debido a su relación conceptual con la Teoría de Conjuntos, marco fundacional de su modelo de datos.
 
-## 1.2. Sobre el nombre del lenguaje
-El lenguaje a desarrollar se denominará Aleph puesto que este nombre tiene una fuerte vinculación con la Teoría de Conjuntos, estructura que será el pilar del desarrollo del nuevo lenguaje.
+En la matemática formal, la secuencia de los números Álef ($\aleph$) nos permite denotar la cardinalidad, concepto que define el tamaño cuantitativo o cantidad de elemento, de conjuntos transfinitos bien ordenados. Georg Cantor desarrolló esta formulación al demostrar que no todos los conjuntos infinitos poseen la misma magnitud cardinal:
 
-En las matemáticas, particularmente en la teoría de conjuntos, los números de Aleph son una secuencia de números utilizados para representar la cardinalidad (o tamaño) de conjuntos infinitos que pueden ser bien ordenados. Fueron introducidos por el matemático Georg Cantor, quien se dio cuenta de que conjuntos infinitos pueden tener diferentes cardinalidades y son nombrados por el símbolo que usaba para denotarlos, la letra semita Aleph ($\aleph$).
+* **Álef cero ($\aleph_0$):** Representa la menor cardinalidad transfinita, correspondiente a los conjuntos infinitos numerables, tales como el conjunto de los números naturales ($\mathbb{N}$), los números enteros ($\mathbb{Z}$) o los números racionales ($\mathbb{Q}$).
+* **Álef uno ($\aleph_1$):** Representa, bajo la Hipótesis del Continuo de Cantor, el cardinal inmediato superior que describe la potencia del continuo matemático, correspondiente al conjunto de los números reales ($\mathbb{R}$).
 
-Los números Aleph difieren del infinito ($\infty$) comúnmente encontrado en álgebra y cálculo, en que los Alephs miden los tamaños de conjuntos, mientras que el infinito será un punto extremo de la línea de números reales extendida.
+En la computación teórica, las propiedades demostradas por Cantor posibilitan que un sistema lógico formal con reglas de derivación finitas sea capaz de definir y procesar conjuntos infinitos de cadenas (lenguajes formales). Asimismo, en la literatura hispanoamericana, Jorge Luis Borges en su obra *El Aleph* (1949) conceptualiza el término como un punto en el espacio que concentra, sin superponerse, la totalidad del universo. En el diseño del lenguaje, buscamos que Aleph sintetice esta propiedad: dotar a la computadora de una sintaxis finita y rigurosa capaz de manipular estructuras jerárquicas y universos de estados formales.
 
-Se denominan cardinalidades de conjuntos transfinitos:
+## 1.3 Sobre las herramientas a utilizar en el desarrollo
 
-Álef cero ($\aleph_0$): Representa el primer y más pequeño número cardinal transfinito, correspondiente al tamaño exacto de los conjuntos infinitamente numerables, como el de los números naturales ($\mathbb{N}$), los números enteros ($\mathbb{Z}$) o las fracciones racionales ($\mathbb{Q}$).
+Para la construcción del procesador del lenguaje Aleph empleamos las herramientas de generación automática Flex y Bison [Levine, 2009, p. 1]:
 
-Álef uno ($\aleph_1$): El siguiente cardinal que describe el tamaño del continuo numérico (el conjunto de los números reales $\mathbb{R}$ o la cantidad infinita de puntos en un segmento de recta), de acuerdo con la clásica Hipótesis del Continuo.
+* **Flex (Fast Lexical Analyzer Generator):** Herramienta que recibe como especificación de entrada un archivo de texto con pares formados por expresiones regulares y bloques de acciones en código C [Levine, 2009, p. 3]. Su salida es un programa en C que implementa un analizador léxico (scanner o autómata finito determinista subyacente). Su función es procesar el flujo continuo de caracteres del programa fuente en Aleph, agruparlos en unidades mínimas válidas (lexemas) y retornar secuencialmente su categoría sintáctica abstracta (tokens).
+* **Bison (GNU Parser Generator):** Generador de analizadores sintácticos que toma como entrada una especificación formal basada en una Gramática Libre de Contexto descrita en notación BNF (Backus-Naur Form) [Levine, 2009, p. 53]. Como salida, genera un programa en C que implementa un analizador sintáctico algorítmico LALR(1) (parser). Su función consiste en verificar que la secuencia lineal de tokens satisfaga las reglas de derivación de la gramática y dirigir la construcción de una estructura jerárquica en memoria: el Árbol de Sintaxis Abstracta (AST).
 
-En la teoría cantoriana, surge la propiedad de que en conjuntos infinitos "el todo no es mayor que alguna de sus partes". Un conjunto infinito puede tener una correspondencia biunívoca (uno a uno) con un subconjunto propio de sí mismo (por ejemplo, hay tantos números pares como números naturales en su totalidad, compartiendo ambos la cardinalidad $\aleph_0$), rompiendo con el axioma clásico de Euclides y dando origen a una nueva aritmética lógica útil para la computación formal.
+**Comunicación e Interacción Operativa:**
 
-También Jorge Luis Borges, en "El Aleph" (1949), traslada al campo literario y cultural esta idea.
+Bison gobierna la interacción entre ambas herramientas. Durante el proceso de análisis, cada vez que la lógica del parser requiere consumir un símbolo terminal para realizar una operación de desplazamiento (shift) o reducción (reduce), invoca a la función generada por Flex, `yylex()`. Esta rutina reanuda el escaneo de caracteres, consume el lexema correspondiente y devuelve un valor entero representativo del token, comunicando opcionalmente sus atributos semánticos a través de la variable global de comunicación `yylval`.
 
-En el relato, el Aleph es descrito como una pequeña esfera de apenas unos centímetros que se encuentra en el sótano de una casa, pero que contiene a todos los demás puntos del universo de manera simultánea e indistinta, objeto capaz de alojar el todo en una parte.
-
-Aleph, en nuestro contexto, integra el pensamiento de construir una jerarquía ordenada de cardinales de algo pensado como un infinito singular y la capacidad de un lenguaje de programación de describir infinitos mundos lógicos mediante sintaxis finita.
-
-## 1.3. Sobre las herramientas a utilizar en el desarrollo
-
-Flex y Bison son herramientas diseñadas para escritores de compiladores e intérpretes, aunque también son útiles para muchas aplicaciones que podrían interesar a personas que no escriben compiladores. Cualquier aplicación que busque patrones en su entrada o que tenga un lenguaje de entrada o comandos es un buen candidato para Flex y Bison. Además, permiten un prototipado rápido de aplicaciones, modificaciones fáciles y un mantenimiento sencillo.
-
-¿De dónde vinieron Flex y Bison? 
-
-Bison desciende de Yacc, un generador de analizadores sintácticos creado entre 1975 y 1978 por Stephen C. Johnson en Bell Labs. Como su nombre, abreviatura de “Yet Another Compiler-Compiler” (otro compilador de compiladores más), sugiere, muchas personas estaban escribiendo generadores de analizadores sintácticos en esa época. La herramienta de Johnson combinaba una base teórica sólida gracias al trabajo de análisis de D. E. Knuth, lo que hacía que sus analizadores fueran extremadamente fiables, y una sintaxis de entrada conveniente.
-
-Esto la hizo muy popular entre los usuarios de sistemas Unix, aunque la licencia restrictiva bajo la cual se distribuía Unix en ese entonces limitaba su uso fuera del mundo académico y del Bell System. Alrededor de 1985, Bob Corbett, un estudiante de posgrado en la Universidad de California, Berkeley, reimplementó Yacc usando algoritmos internos algo mejorados, lo que evolucionó a Berkeley Yacc. Como su versión era más rápida que la de Bell y se distribuía bajo la flexible licencia de Berkeley, rápidamente se convirtió en la versión más popular de Yacc.
-
-En 1975, Mike Lesk y Eric Schmidt escribieron Lex, un generador de analizadores léxicos, siendo la mayor parte de la programación realizada por Schmidt. Lo vieron tanto como una herramienta independiente como un compañero del Yacc de Johnson. Lex también se volvió bastante popular, a pesar de ser relativamente lento y tener errores. 
-
-Alrededor de 1987, Vern Paxson del Lawrence Berkeley Lab tomó una versión de Lex escrita en Ratfor (una versión extendida de Fortran popular en ese momento) y la tradujo a C, llamándola Flex, por “Fast Lexical Analyzer Generator” (Generador Rápido de Analizadores Léxicos).
-
-Los programas de Bison tienen (no por coincidencia) la misma estructura de tres partes que los programas de Flex, con declaraciones, reglas y código C.
-
-Por otra parte, La técnica de coincidencia de patrones que usa flex es bastante rápida y suele tener aproximadamente la misma velocidad que un escáner hecho a mano. Para escáneres más complejos con muchos patrones, un escáner flex podría incluso ser más rápido, ya que el código escrito a mano generalmente hará muchas comparaciones por carácter, mientras que flex siempre hace una sola. La versión de flex de un escáner es invariablemente mucho más corta que el C equivalente, lo que lo hace mucho más fácil de depurar. En general, si las reglas para dividir un flujo de entrada en tokens pueden describirse mediante expresiones regulares, flex es la herramienta a elegir.
-
-Aunque usamos Flex para generar nuestros analizadores léxicos, mientras que Flex reconoce expresiones regulares, Bison reconoce gramáticas completas. Flex divide el flujo de entrada en partes (tokens), y luego Bison toma estas partes y las agrupa de manera lógica.
-
-Bison toma una gramática que especificamos y escribe un analizador que reconoce "oraciones" válidas en esa gramática. Usamos el término oración para una gramática del lenguaje C como las oraciones son programas C sintácticamente válidos.
-
-Los programas pueden ser sintácticamente válidos pero semánticamente inválidos, por ejemplo, un programa en C que asigna una cadena a una variable `int`. Bison solo maneja la sintaxis; la otra validación depende de nosotros.
+Bison delimita estrictamente su tarea a la validación de la sintaxis estructural [Levine, 2009, p. 110]. Las comprobaciones de semántica estática y dinámica —como la verificación de tipos, la validación de alcance de identificadores en la Tabla de Símbolos y la consistencia de operaciones sobre colecciones— no son resueltas por Bison; implementamos estas responsabilidades ad-hoc mediante algoritmos recursivos de visita sobre los nodos del AST.
 
 ## 1.4 Tipos de implementación
 
-Los sistemas de implementación de los primeros lenguajes de programación de alto nivel, construidos a finales de los años 50, fueron de los sistemas de software más complejos de esa época.
+De acuerdo con la clasificación formal de lenguajes de programación, distinguimos tres métodos fundamentales de implementación [Sebesta, 2012, pp. 25-30]:
 
-En los años 60, se realizaron esfuerzos de investigación intensivos para entender y formalizar el proceso de construcción de estas implementaciones de lenguajes de alto nivel. El mayor éxito de esos esfuerzos se dio en el área del análisis de sintaxis, principalmente porque esa parte del proceso de implementación es una aplicación de partes de la teoría de autómatas y la teoría de lenguajes formales que en ese momento ya se comprendían bien. 
+* **Compilación:** El programa fuente es traducido de forma global e integral por un compilador hacia un lenguaje destino equivalente, el cual puede consistir en lenguaje de máquina nativo del procesador, lenguaje ensamblador o código intermedio estructurado [Sebesta, 2012, p. 25]. Una vez completada la traducción y enlazadas las dependencias, ejecutamos el código destino de forma autónoma a nivel de hardware, lo que garantiza una máxima velocidad de ejecución.
+* **Interpretación Pura:** No traducimos el programa fuente a un lenguaje destino ejecutable. En su lugar, un programa denominado intérprete actúa como una máquina virtual de software que decodifica y ejecuta secuencialmente las sentencias del lenguaje fuente en tiempo real [Sebesta, 2012, p. 28]. Este método nos facilita la depuración y portabilidad a nivel de código fuente, pero presenta una degradación severa en el rendimiento temporal debido a la decodificación repetitiva de sentencias en bucles y estructuras de control.
+* **Sistemas de Implementación Híbrida:** En este modelo, traducimos el código fuente inicialmente a un lenguaje intermedio de bajo nivel y representación lineal (comúnmente denominado bytecode) [Sebesta, 2012, p. 29]. Posteriormente, dicho lenguaje intermedio es decodificado y ejecutado por un motor de interpretación o máquina virtual de tiempo de ejecución (como la JVM de Java). Este método nos evita decodificar la sintaxis de alto nivel más de una vez, logrando un compromiso entre portabilidad y velocidad.
 
-Los lenguajes de programación se pueden implementar mediante cualquiera de tres métodos generales.
-### Compilador
-Traduce programas a lenguaje de máquina, que se puede ejecutar directamente en la computadora.El lenguaje que un compilador traduce se llama lenguaje fuente.
+### 1.4.1 Enfoque de implementación de Aleph
 
-La implementación de compiladores tiene la ventaja de una ejecución de programas muy rápida, una vez que el proceso de traducción está completo.
+Con base en los fundamentos conceptuales de Sebesta (2012) y Levine (2009), clasificamos el sistema de ejecución de Aleph formalmente como un intérprete puro con front-end de análisis estático.
 
-La mayoría de las implementaciones de producción de lenguajes, como C, COBOL, C++ y Ada, se hacen mediante compiladores.
-El proceso de compilación y ejecución del programa se da en varias fases, siendo las más importantes:
+Aleph no constituye una implementación híbrida: no generamos ni emitimos un archivo o flujo lineal de código intermedio (bytecode) que deba ser decodificado por una máquina virtual basada en registros o en pila. La fase previa que construimos mediante Flex y Bison opera estrictamente como un módulo de análisis frontal (front-end léxico y sintáctico) cuya única función es transformar el texto plano en una estructura arbórea de datos en memoria dinámica: el Árbol de Sintaxis Abstracta (AST) [Levine, 2009, p. 115].
 
-1. Análisis léxico
-El analizador léxico reúne los caracteres del programa fuente en unidades léxicas.
-
-Las unidades léxicas de un programa son:
-
-Identificadores
-Palabras reservadas
-Operadores
-Símbolos de puntuación
-El analizador léxico ignora los comentarios en el programa fuente porque el compilador no los necesita.
-
-2. Análisis sintáctico
-Toma las unidades léxicas producidas por el analizador léxico y las utiliza para construir estructuras jerárquicas llamadas árboles de análisis, estos representan la estructura sintáctica del programa.En otros casos, se genera y se utiliza directamente la información que se requeriría para construir un árbol.
-
-3. Análisis semántico: comprueba que el programa tenga un significado válido. Por ejemplo, detecta errores de tipos.
-
-4. Generación de código intermedio: transforma el programa a una representación intermedia entre el lenguaje fuente y el lenguaje máquina.
-
-5. Optimización: mejora el código intermedio para obtener un programa más rápido, pequeño o eficiente.
-
-6. Generación de código: convierte el código intermedio optimizado en lenguaje máquina. La tabla de símbolos funciona como una base de datos para el proceso de compilación, sus contenidos principales son la información de tipo y atributos de cada nombre definido por el usuario en el programa. Esta información es colocada en la tabla de símbolos por los analizadores léxico y sintáctico y es utilizada por el analizador semántico y el generador de código.
-
-El compilador construye llamadas a los programas del sistema necesarios cuando el programa del usuario los requiere. Antes de que los programas en lenguaje de máquina producidos por un compilador puedan ejecutarse, los programas necesarios del sistema operativo deben ser encontrados y enlazados con el programa del usuario. La operación de enlace conecta el programa del usuario con los programas del sistema al colocar las direcciones de los puntos de entrada de los programas del sistema en las llamadas a ellos dentro del programa del usuario. El código del usuario y el del sistema juntos a veces se llaman módulo de carga o imagen ejecutable. 
-
-El proceso de reunir los programas del sistema y enlazarlos con los programas de usuario se llama enlazado y carga, o a veces solo enlazado. Esto se realiza mediante un programa del sistema llamado enlazador. Además de los programas del sistema, los programas de usuario a menudo deben enlazarse con programas de usuario previamente compilados que residen en bibliotecas. Así que el enlazador no solo enlaza un programa dado con los programas del sistema, sino que también puede enlazarlo con otros programas de usuario. 
-
-La velocidad de la conexión entre la memoria de una computadora y su procesador usualmente determina la velocidad de la computadora, porque las instrucciones a menudo pueden ejecutarse más rápido de lo que pueden trasladarse al procesador para su ejecución. Esta conexión se llama el cuello de botella de von Neumann; es el principal factor limitante en la velocidad de las computadoras con arquitectura de von Neumann. 
-
-### Interpretación Pura
-Con este enfoque, los programas son interpretados por otro programa llamado intérprete, sin ninguna traducción.
-
-El programa intérprete actúa como una simulación de software de una máquina cuyo ciclo de búsqueda-ejecución se ocupa de declaraciones de programas en lenguaje de alto nivel en lugar de instrucciones de máquina. Esta simulación de software, obviamente, proporciona una máquina virtual para el lenguaje. 
-
-La interpretación pura tiene la ventaja de permitir una fácil implementación de muchas operaciones de depuración a nivel de código fuente, porque todos los mensajes de error en tiempo de ejecución pueden referirse a unidades a nivel de fuente. Por ejemplo, si se encuentra que un índice de un arreglo está fuera de rango, el mensaje de error puede indicar fácilmente la línea de origen y el nombre del arreglo. 
-
-Por otro lado, este método tiene la seria desventaja de que la ejecución es de 10 a 100 veces más lenta que en los sistemas compilados. La fuente principal de esta lentitud es la decodificación de las declaraciones del lenguaje de alto nivel, que son mucho más complejas que las instrucciones de lenguaje de máquina (aunque puede haber menos declaraciones que instrucciones en código máquina equivalente). Además, sin importar cuántas veces se ejecute una declaración, debe decodificarse cada vez. Por lo tanto, la decodificación de declaraciones, más que la conexión entre el procesador y la memoria, es el cuello de botella de un intérprete puro.
-
-Otra desventaja de la interpretación pura es que a menudo requiere más espacio. Además del programa fuente, la tabla de símbolos debe estar presente durante la interpretación. Además, el programa fuente puede almacenarse de una forma diseñada para un acceso y modificación fáciles en lugar de una que proporcione tamaño mínimo. Aunque algunos lenguajes simples de los años 60 (APL, SNOBOL y LISP) eran puramente interpretados, para los años 80, el enfoque rara vez se usaba en lenguajes de alto nivel.
-
-### Sistemas de Implementación Híbrida
-Este método es más rápido que la interpretación pura porque las instrucciones del lenguaje fuente se decodifican solo una vez. Tales implementaciones se llaman sistemas de implementación híbridos. 
-
-En lugar de traducir el código del lenguaje intermedio a código máquina, simplemente interpreta el código intermedio.
-
-Un ejemplo es Perl, se implementa con un sistema híbrido. Los programas en Perl se compilan parcialmente para detectar errores antes de la interpretación y simplificar el intérprete. Las implementaciones iniciales de Java eran todas híbridas. Su forma intermedia, llamada bytecode, proporciona portabilidad a cualquier máquina que tenga un intérprete de bytecode y un sistema de ejecución asociado. Juntos, esto se llama la Máquina Virtual de Java. 
-
-Un sistema de implementación Just-in-Time (JIT) traduce inicialmente los programas a un lenguaje intermedio. Luego, durante la ejecución, compila los métodos del lenguaje intermedio a código máquina cuando se llaman. La versión en código máquina se guarda para llamadas posteriores.a. Java y todos los lenguajes .NET se implementan con un sistema JIT. 
-
-A veces, un implementador puede proporcionar implementaciones tanto compiladas como interpretadas para un lenguaje.  En estos casos, se usa el intérprete para desarrollar y depurar programas. Luego, después de alcanzar un estado (relativamente) libre de errores, los programas se compilan para aumentar su velocidad de ejecución.
-
-## 1.4.1 Enfoque de implementación de Aleph
-
-El lenguaje Aleph se implementa mediante un enfoque híbrido de interpretación basado en Árboles de Sintaxis Abstracta (AST):
-
-Aleph no interpreta el archivo de texto línea por línea. El código fuente es procesado estáticamente por un analizador léxico (Flex) y un analizador sintáctico (Bison). Estas herramientas validan la gramática formal del lenguaje (definida en BNF) y traducen el flujo de caracteres en una representación intermedia estructurada en memoria llamado Árbol de Sintaxis Abstracta (AST).
-
-Aleph define una computadora virtual cuya representación de datos en tiempo de ejecución: el AST (para la estructura de control de las expresiones) y la Tabla de Símbolos  que actúa como el diccionario dinámico para asociar identificadores, variables de conjuntos, tipos y ámbitos en memoria.
-
-Dado el AST sin errores sintácticos, el motor semántico de Aleph actúa como un intérprete de software que evalúa las expresiones mediante algoritmos recursivos que realizan un recorrido del árbol. Al visitar los nodos del AST, se simulan por software las operaciones matemáticas de la Teoría de Conjuntos (unión, intersección, diferencia) y la lógica de control, interactuando con la Tabla de Símbolos en tiempo de ejecución.
-
-La arquitectura de Aleph utiliza la fase de compilación frontal con la manipulación interactiva de conjuntos y autómatas en memoria que brinda flexibilidad y control dinámico.
+El AST no es un lenguaje destino autónomo, sino la representación interna en memoria de la estructura formal del programa fuente. Efectuamos la ejecución del programa a través del motor semántico del intérprete, el cual realiza recorridos recursivos en profundidad (árbol de visitas) sobre los nodos del AST [Sebesta, 2012, p. 28]. Cada nodo ejecuta directamente las operaciones lógicas, algebraicas y de control manipulando los estados de las variables en una Tabla de Símbolos activa en memoria.
 
 # 2. Análisis de requerimientos
-## 2.1. Un caso de estudio: Los Autómatas Finitos y sus algoritmos
-Un autómata finito determinista (afd) A es una 5-upla definida por los siguientes elementos: 
-  Q es un conjunto finito no vacío de estados
-  Σ es un conjunto finito no vacío de símbolos llamado alfabeto de entrada 
-  δ : QxΣ → Q es una función completamente definida llamada función de transición
-  q0 ∈ Q es el estado inicial
-  F ⊆ Q es el conjunto de estados de aceptación. 
-Entonces el autómata queda definido así: A = (Q, Σ, δ, q0, F ).
 
-Por su parte, un autómata finito no determinista (afnd) A es una 5-upla definida por los siguientes elementos: 
-  Q es un conjunto finito no vacío de estados
-  Σ es un conjunto finito no vacío de símbolos llamados alfabeto de entrada
-  δ : QxΣxQ es una relación llamada relación de transición
-  q0 ∈ Q es el estado inicial
-  F ⊆ Q es el conjunto de estados de aceptación. 
-Entonces el autómata queda definido así: A = (Q, Σ, δ, q0, F ). 
+## 2.1 Un caso de estudio: Los Autómatas Finitos y sus algoritmos
 
-Autómata finito Determinista que acepta cadenas terminadas en "01":
-A=(Q,Σ,δ,q0,F)
-Q (Estados): {q0, q1, q2}
-Σ (Alfabeto): {0, 1}
-q0 (Estado Inicial): q0
-F (Estados de Aceptación): {q2}
-δ (Transiciones representadas en tuplas origen, símbolo, destino):
+Formalmente, definimos un Autómata Finito Determinista (AFD) como una 5-upla:
 
-       Estado  |   0   |    1  |
-     →  q0     |  q1   |   q0  |
-        q1     |  q1   |   q2  |
-     *  q2     |  q1   |   q0  |
+$$A = (Q, \Sigma, \delta, q_0, F)$$
 
-q0 (Estado Inicial): q0
-F (Estados de Aceptación): {q2}
+Donde:
+* $Q$: Conjunto finito, no vacío, de estados.
+* $\Sigma$: Alfabeto finito, no vacío, de símbolos de entrada.
+* $\delta$: Función total de transición, definida como $\delta: Q \times \Sigma \to Q$.
+* $q_0$: Estado inicial, con $q_0 \in Q$.
+* $F$: Conjunto de estados de aceptación o finales, con $F \subseteq Q$.
 
-2.1.1 Aceptación de cadenas
+Por su parte, definimos un Autómata Finito No Determinista (AFND) formalmente como una 5-upla:
 
-La Función de Transición tiene como dominio pares ordenados formados por un estado y un caracter. Los afd procesan cadenas de caracteres para determinar si éstas pertenecen o no a un determinado lenguaje. Entonces es necesario generalizar la definición de Función de Transición para una cadena w de la siguiente manera: δˆ : QxΣ∗ → Q tal que: 
-  1. δˆ(q,ε) = q
-  2. δˆ(q,aw) = δ(δˆ(q,a),w).
-Una cadena w ∈ Σ∗ es aceptada por un afd ⇔ δˆ(q0,w) = p, p ∈ F. Es decir que w es aceptada por el afd si y solo si existe una sucesión de transiciones desde q0 hasta p ∈ F. El lenguaje L aceptado por un afd A es el conjunto L(A) = {w ∈ Σ∗|δˆ(q0,w) ∈ F}.
+$$A = (Q, \Sigma, \delta, q_0, F)$$
 
-Para un afnd, el lenguaje L aceptado por un afnd A es el conjunto L(A) = {w ∈ Σ∗|δ(q0,w) ∩ F ≠ ∅}. Para calcular δˆ(q,w) obtenemos primero δˆ(q,x) y luego seguimos todas las transiciones de estos estados que estén etiquetados con a, donde al menos un ri ∈ F cuando w ∈ L y ningún ri ∈ F cuando w ∉ L.
-Algoritmo de Aceptación de Cadenas:
+Donde la diferencia estructural radica en su relación de transición:
 
-     while (aux_cadena != NULL) {
+$$\delta: Q \times \Sigma \to \mathcal{P}(Q)$$
 
+En un AFND, la evaluación de un símbolo sobre un estado actual produce un subconjunto perteneciente al conjunto de partes de $Q$ (denotado $\mathcal{P}(Q)$ o $2^Q$).
+
+Ejemplo de un AFD sencillo que acepta cadenas binarias que terminan en "01":
+* $Q = \{q_0, q_1, q_2\}$
+* $\Sigma = \{'0', '1'\}$
+* $q_0 = q_0$
+* $F = \{q_2\}$
+* $\delta$:
+  * $(q_0, '0') \to q_1$, $(q_0, '1') \to q_0$
+  * $(q_1, '0') \to q_1$, $(q_1, '1') \to q_2$
+  * $(q_2, '0') \to q_1$, $(q_2, '1') \to q_0$
+
+Tabla de Transiciones:
+
+| Estado Actual | Entrada '0' | Entrada '1' |
+| :--- | :--- | :--- |
+| **$\to$ $q_0$** | $q_1$ | $q_0$ |
+| **$q_1$** | $q_1$ | $q_2$ |
+| **$* q_2$** | $q_1$ | $q_0$ |
+
+### 2.1.1 Aceptación de cadenas
+
+Para evaluar una cadena $w \\in \\Sigma^{\\ast}$ en un AFD, generalizamos formalmente la función de transición a una función de transición extendida $\\hat{\\delta}: Q \\times \\Sigma^{\\ast} \\to Q$, definida inductivamente por:
+* $\hat{\delta}(q, \varepsilon) = q$, donde $\varepsilon$ es la cadena vacía.
+* $\hat{\delta}(q, aw) = \hat{\delta}(\delta(q, a), w)$, para todo símbolo $a \in \Sigma$ y cadena $w \in \Sigma^*$.
+
+Una cadena $w$ es aceptada por un AFD si y solo si $\hat{\delta}(q_0, w) \in F$. Para un AFND, una cadena $w$ es aceptada si el conjunto de estados alcanzados contiene al menos un estado final: $\hat{\delta}(q_0, w) \cap F \neq \emptyset$.
+
+A continuación transcribimos el algoritmo de reconocimiento implementado en C:
+
+```c
+// Algoritmo de Aceptación de Cadenas:
+while (aux_cadena != NULL) {
     char c = aux_cadena->data; 
     
-    // Convertimos char a str temporal
     str temp_sym = create_nodo(c);
     int sym_idx = simbolo_a_indice(aut, temp_sym);
     free_str(temp_sym); 
@@ -191,13 +115,12 @@ Algoritmo de Aceptación de Cadenas:
     if (sym_idx == -1) {
         printf("\nSímbolo '%c' no pertenece a Sigma. Cadena rechazada.\n", c);
         free_ast(estados_actuales);
-        return 0; // Rechazo inmediato
+        return 0; 
     }
     
     Tdata proximos_estados = create_set();
     Tdata iterador = obtener_data(estados_actuales);
     
-    // 3. Evaluar transiciones
     while (iterador != NULL) {
         Tdata estado_nodo = obtener_data(iterador);
         
@@ -222,7 +145,6 @@ Algoritmo de Aceptación de Cadenas:
         iterador = obtener_next(iterador);
     }
     
-    // Actualizar estados actuales
     free_ast(estados_actuales);
     estados_actuales = proximos_estados;
     
@@ -232,20 +154,25 @@ Algoritmo de Aceptación de Cadenas:
     }
     
     aux_cadena = aux_cadena->next;
-    }
-2.1.2 Algoritmo de conversión de AFND a AFD
+}
+```
 
-Teorema: Sea A un afnd que acepta el lenguaje L ⇒ ∃ un afd B que acepta el lenguaje L.
-Construcción: Sea A = (QA,Σ,δA,q0A,FA) un afnd que acepta el conjunto L, construimos el afd B = (QB,Σ,δB,q0B,FB) siguiendo los siguientes pasos. 
-  1. El conjunto de estados de B: Los estados del af determinista B serán conjuntos pertenecientes al conjunto de partes de QA, por lo tanto QB ⊆ 2QA. cuando estudiamos los afd denotamos a los estados con un nombre (una etiqueta, por ejemplo qi), ahora los estados que van a resultar de la conversión del afnd al afd son un conjunto de estados conformados a su vez por los subconjuntos procesados.
-  2. La Función de Transición de B: Para un estado q de B (que es un subconjunto de QA, es decir, q = {p1, p2, ..., pk}) y un símbolo a de Σ, la transición δB(q, a) se calcula como la unión de todas las transiciones posibles en el AFND original. Esto es, δB(q, a) = {r1, r2, ..., rm} donde ⋃ki=1 δA(pi, a) = {r1, r2, ..., rm}. El resultado es un nuevo estado en B.
-  3. El conjunto de estados de aceptación de B: FB es el conjunto de todos los estados en QB que contienen al menos un estado de aceptación de A. Es decir, FB = {q ∈ QB | q ∩ FA ≠ ∅}.
-  4. El Estado Inicial de B: q0B = {q0A}.
+##### 2.1.2 Algoritmo de conversión de AFND a AFD (Construcción de Subconjuntos)
 
-Algoritmo de Conversion: 
+**Teorema:** Para todo lenguaje $L$ aceptado por un AFND $A=(Q_A, \Sigma, \delta_A, q_{0A}, F_A)$, existe un AFD equivalente $B=(Q_B, \Sigma, \delta_B, q_{0B}, F_B)$ tal que $L(B)=L(A)$.
 
-    int procesando = 1;
-    while (procesando) {
+La construcción algorítmica establece:
+* $Q_B \subseteq \mathcal{P}(Q_A)$: Cada estado del AFD corresponde a un subconjunto de estados del AFND.
+* $\delta_B(R,a) = \bigcup_{q \in R} \delta_A(q,a)$, para cada $R \in Q_B$ y $a \in \Sigma$.
+* $q_{0B} = \{q_{0A}\}$.
+* $F_B = \{R \in Q_B \mid R \cap F_A \neq \emptyset\}$.
+
+A continuación transcribimos la implementación en C del algoritmo:
+
+```c
+// Algoritmo de Conversion: 
+int procesando = 1;
+while (procesando) {
     procesando = 0;
     int act = -1;
     // Buscar el primer estado sin procesar
@@ -281,7 +208,7 @@ Algoritmo de Conversion:
             
             int idx_dest;
             if (idx_existente == -1) {
-                // Descubrimos un nuevo estado!
+                // Descubrimos un nuevo estado
                 estados[num_estados].conjunto_nfa = destinos;
                 if (num_estados < 26) {
                     sprintf(estados[num_estados].nombre, "%c", 'A' + num_estados);
@@ -307,187 +234,169 @@ Algoritmo de Conversion:
         
         it_sym = obtener_next(it_sym);
     }
-    }
+}
+```
 
-2.2. Conceptos sobre lenguajes de programación
+##### Modelado computacional de AF's y requerimientos de abstracción en Aleph
 
-La implementación de los lenguajes de programación, como todo desarrollo de software, comienzan por el análisis del problema que requiere una solución informática y el diseño de una respuesta adecuada.
-La definición de un lenguaje de programación se divide en tres partes fundamentales: sintaxis, semántica y pragmática.  
-  Sintaxis (Estructura): Determina cómo están constituidos los programas en dicho lenguaje. Es análoga a la gramática de un lenguaje natural; describe de qué manera se pueden combinar las partes para formar otras nuevas. Casi todos los lenguajes la definen mediante "gramáticas libres de contexto". Está íntimamente ligada a la estructura léxica, que es la ortografía de las palabras del lenguaje, conocidas formalmente como "tokens" (palabras clave, símbolos e identificadores).  
-  Semántica (Significado): Describe los efectos de la ejecución del código, es decir, el significado de las estructuras sintácticas. Es mucho más compleja y difícil de describir con precisión que la sintaxis, ya que el significado de un mecanismo suele interactuar con otros contextos del lenguaje. Aunque la mayoría de las veces se describe informalmente en manuales, existen sistemas de notación formal para definirla (semántica operacional, denotacional y axiomática).  
-  Pragmática: Se refiere a la utilidad práctica en dicho lenguaje, como el propósito para el que fue diseñado (por ejemplo, Pascal es de propósito general).
+En el diseño de Aleph, modelamos la representación de los Autómatas Finitos prescindiendo de tipos abstractos cerrados en C, utilizando las abstracciones universales del lenguaje:
+* Modelamos los conjuntos de estados $Q$, el alfabeto $\Sigma$ y los estados finales $F$ de forma directa mediante la estructura matemática `set`.
+* Modelamos computacionalmente la función o relación de transición $\delta$ mediante listas anidadas de tuplas o relaciones: `list Delta = [[q_origen, simbolo, destinos], ...]`.
+* Representamos la 5-upla completa agregando estas colecciones en una lista de orden posicional: `list Automata = [Q, Sigma, Delta, q0, F]`.
 
-2.3. Abstracciones
+**Análisis de los algoritmos en C y abstracción requerida:**
+Nuestro análisis de las implementaciones precedentes revela que, aunque utilicemos interfaces de funciones como `obtener_data`, `obtener_next`, `insert_set` y `conjuntos_iguales`, el código en C exhibe fallas de encapsulamiento debido al acoplamiento con la estructura de almacenamiento. El uso explícito de punteros directos (`aux_cadena->next`, `aux_cadena->data`) y el avance manual nodo a nodo evidencian que, como programadores, estamos forzados a operar al nivel de enlaces de memoria física.
 
-Una Abstraccion es el proceso de análisis del mundo real para interpretar los aspectos esenciales de un problema y expresarlo en términos precisos. En los lenguajes de programación, el control de la complejidad es la meta prevaleciente de la abstracción. Dado que el ser humano tiene un límite para retener detalles, se elaboran abstracciones que esconden información y se establecen interfaces estándar para poder construir sistemas a gran escala.
-Las abstracciones se agrupan en dos grandes grupos: de datos y de control, cada una con distintos niveles (básicas, estructuradas y unitarias).  
-  1. Abstracción de datos:
-       - Abstracciones Básicas: Representación interna de valores de datos comunes en una computadora. El ejemplo más común son las variables, localizaciones en la memoria de la computadora que contienen valores y que se clasifican por tipo (int, integer, float, double).
-       - Abstracciones Estructuradas: Es el método principal para la abstracción de colecciones de valores relacionados entre sí, como registros de empleados o arrays.
-       - Abstracciones Unitarias: Son los que conocemos como Tipo Abstracto de Datos (TAD), una estructura o clase que permite el encapsulamiento de datos y la restricción de información. Es importante recalcar la capacidad de reutilización de la abstracción de datos en otros programas. Las abstracciones de datos unitarios se convierten en la base del mecanismos de bibliotecas de lenguaje.
+Este análisis nos fundamenta un requerimiento arquitectónico crítico para el diseño de Aleph: nuestro lenguaje debe proveer abstracciones de control de alto nivel (como el bucle declarativo `for elemento in coleccion`) y operadores de manipulación de colecciones (como `union`, `in`, `insert`) [Louden, 2004, pp. 261-263]. Estas construcciones nos permiten aislarnos por completo del modelo de memoria y del encadenamiento de punteros subyacente, garantizando que los algoritmos matemáticos sobre autómatas se expresen en función de su lógica conjuntista y no de la gestión de memoria dinámica.
 
-  2. Abstracción de control:
-       - Abstracciones Básicas: Son aquellos enunciados o sentencias que combinan instrucciones en una sentencia abstracta más comprensible (por ejemplo, una asignación como x = x + 3).
-       - Abstracciones Estructuradas: Dividen un programa en grupos de instrucciones que están anidadas dentro de pruebas que gobiernan su ejecución (if, case, switch). Una ventaja que tienen es que se pueden anidar una dentro de otra para seleccionar una trayectoria específica. Los mecanismos de bucles o ciclos estructurados se presentan de muchas formas, incluyendo el ciclo while, for y do.
-       - Abstracciones Unitarias: Consisten en una colección de procedimientos que proporcionan servicios lógicamente relacionados con otras partes del programa y que forman una parte unitaria o independiente del mismo. Permite que la unicidad se compile por separado y sea utilizado por una interfaz permitiendo entender el programa sin conocer los detalles internos. El mecanismo útil para estructurar el control es el procedimiento también conocido como método, en todas sus variantes, lo que le permite al programador considerar una secuencia de acciones como si fuese una sola.
-2.3.1. Abstracciones de Aleph
+#### 2.2 Conceptos sobre lenguajes de programación
 
-Para que Aleph alcance su objetivo de ser un lenguaje legible y utilizable por el ser humano, requiere proporcionar abstracciones de las acciones de la computadora que sean fáciles de comprender. Un programador debe poder basarse en su comprensión para tener un discernimiento inmediato de la computación que se está describiendo. A medida que los programas en Aleph crezcan, se requerirán mecanismos de abstracción para reducir la cantidad de detalles y poder comprender el sistema como un todo.  En el diseño de Aleph se han considerado las siguientes implementaciones de los mecanismos de abstracción:
-  1. Abstracción de Datos:Aleph se apoya fuertemente en este tipo de abstracciones, ya que su dominio principal es la manipulación de elementos matemáticos.
-     -   Abstracciones Básicas: Aleph abstraerá la representación interna de valores de datos comunes en una computadora mediante el uso de variables. Estas variables actuarán como localizaciones en la memoria de la computadora (gestionadas a través de la Tabla de Símbolos en tiempo de ejecución) que contendrán valores.
-     -   Abstracciones Estructuradas: Dado que Aleph se basa en la Teoría de Conjuntos, este es su método principal para la abstracción de colecciones de valores relacionados entre sí. En lugar de lidiar con punteros de memoria, Aleph abstrae los tipos de datos permitiendo al usuario declarar estados, funciones de transición y alfabetos (que esencialmente son conjuntos) a un alto nivel. Estas abstracciones estructuradas son fundamentales para representar los elementos de la 5-upla que define a los autómatas.
-     -   Abstracciones Unitarias: Aleph implementa estructuras similares a un Tipo Abstracto de Datos (TAD) para encapsular la información referida a un autómata finito completo (sus estados, alfabeto, transiciones, etc.) y restringir el acceso a su información interna. Esto permite la reutilización de la abstracción de datos en distintos algoritmos (como la conversión de AFND a AFD o la verificación de aceptación de cadenas).
-  2. Astracción de Control:Aleph necesita construcciones lingüísticas que controlen el flujo de ejecución para poder implementar los algoritmos sobre autómatas.
-     -   Abstracciones Básicas: Se implementarán enunciados o sentencias que combinan instrucciones en una sentencia abstracta más comprensible, como por ejemplo, las asignaciones para definir transiciones o la unión de conjuntos en la construcción del algoritmo de conversión de AFND a AFD.
-     -   Abstracciones Estructuradas: Aleph divide los programas en grupos de instrucciones anidadas dentro de pruebas que gobiernan su ejecución (alternancia o selección) para decidir qué secuencias de enunciados ejecutar. Asimismo, utiliza mecanismos de bucles o ciclos estructurados (iteración) para repetir la ejecución de un cuerpo de sentencias. 
+Desde la perspectiva teórica de Louden, definimos un lenguaje de programación formalmente como un sistema notacional diseñado para describir computaciones de manera legible tanto para el ser humano como para la máquina [Louden, 2004, p. 1].
 
-# 2.4. Dominio de programación de Aleph
+Esta conceptualización nos exige un equilibrio en dos frentes complementarios:
+* **Legibilidad para el ser humano:** Nuestro lenguaje debe proveer abstracciones de alto nivel orientadas a la naturaleza lógica del problema, reduciendo la carga cognitiva impuesta por los detalles de bajo nivel del hardware (direcciones de memoria, registros y saltos de control) [Louden, 2004, p. 7]. Debe permitirnos la expresión clara, concisa y mantenible de los algoritmos.
+* **Procesabilidad por la máquina:** El sistema notacional debe poseer una sintaxis formal, inequívoca y libre de ambigüedad matemática, susceptible de ser analizada por algoritmos deterministas en tiempo y espacio finitos, permitiendo a la computadora asociar un significado semántico unívoco a cada construcción de código [Louden, 2004, p. 8].
 
-Aleph pertenece al dominio de aplicaciones científicas. Ya que su objetivo es procesar expresiones matemáticas y notaciones formales para modelar y manipular directamente la Teoría de Conjuntos y los autómatas finitos (como la conversión de AFND a AFD) mediante abstracciones de alto nivel como conjuntos, listas y mapas de transición.
+Estructuramos Aleph sobre esta definición: traducimos las operaciones conjuntistas y de teoría de lenguajes formales a una notación ejecutable y determinista para el intérprete, preservando la familiaridad de la notación matemática para nosotros como analistas.
 
-# 3. Diseño e Implementación
-## 3.1. Sentencias
-Un lenguaje, ya sea natural (como el inglés) o artificial (como Java), es un conjunto de cadenas de caracteres de algún alfabeto. Las cadenas de un lenguaje se llaman sentencias o declaraciones. Las reglas de sintaxis de un lenguaje especifican qué cadenas de caracteres del alfabeto del lenguaje pertenecen al lenguaje. 
+#### 2.3 Abstracciones
 
-En los lenguajes de programación imperativos, los cómputos se realizan principalmente evaluando expresiones y asignando los valores resultantes a variables. Sin embargo, para que un programa flexible, requiere de construcciones lingüísticas que controlen el flujo de ejecución.
-Las sentencias (enunciados o statements) se definen como las unidades sintácticas ejecutables que representan un paso individual en el proceso computacional de una máquina virtual.
+En la teoría de diseño de lenguajes de programación, consideramos una abstracción como un mecanismo conceptual que nos permite aislar las propiedades esenciales de un objeto o proceso computacional, ocultando los detalles concretos de implementación técnica y gestión de hardware [Louden, 2004, p. 11]. Logramos el control de la complejidad organizando las abstracciones en dos categorías principales, estratificadas en tres niveles progresivos:
+* **Abstracción de datos:** Nos permite estructurar y aislar la representación física de los valores computables en memoria [Louden, 2004, pp. 257-260]:
+  * **Básica:** Oculta la codificación interna de bits en la memoria de la máquina. Engloba el concepto de variable y los tipos primitivos nativos con sus operaciones escalares asociadas.
+  * **Estructurada:** Modela colecciones de valores agregados y las relaciones que existen entre ellos. Oculta la disposición física de la memoria contigua o dispersa (ej. registros, conjuntos, listas, secuencias indexadas).
+  * **Unitaria:** Encapsula la definición de un conjunto de datos junto con el repertorio completo de operaciones primitivas que los gobiernan, ocultando la estructura interna bajo una interfaz de acceso (Tipos Abstractos de Datos, módulos, clases).
+* **Abstracción de control:** Modela y organiza el flujo secuencial y alternativo de la ejecución del cómputo [Louden, 2004, pp. 11-13]:
+  * **Básica:** Sentencias elementales que encapsulan secuencias de microinstrucciones de máquina en una única orden lógica declarativa (ej. la sentencia de asignación o expresiones de cómputo).
+  * **Estructurada:** Construcciones lingüísticas que alteran el flujo del contador del programa de manera gobernada mediante condiciones lógicas (guardias), dividiendo el flujo en bloques anidados con puntos definidos de entrada y salida (bifurcaciones if-else e iteraciones while, for).
+  * **Unitaria:** Mecanismos que nos permiten tratar un bloque complejo de control de sentencias como una unidad aislada, invocable y parametrizable desde diversos puntos del sistema (procedimientos, métodos, funciones).
 
-Aquellas instrucciones que permiten seleccionar entre rutas de flujo alternativas o repetir la ejecución de un grupo de sentencias reciben el nombre de sentencias de control.
-De acuerdo con el análisis formal de los lenguajes, las estructuras de secuenciación de sentencias se clasifican en tres grandes grupos estructurados:
+##### 2.3.1 Abstracciones de Aleph
+Desde la perspectiva funcional del programador, Aleph provee los siguientes niveles de abstracción:
 
-Composición (Secuenciación Implícita): Disposición de sentencias en una serie textual donde se ejecutan de manera estrictamente ordenada (una tras otra), asumiendo que cada instrucción tiene un único punto de entrada y uno de salida.
+| Nivel | Abstracciones de datos | Abstracciones de control |
+| :--- | :--- | :--- |
+| **Básico** | `Elemento` | Asignación (`=`) |
+| **Estructurado** | `Lista` (colección ordenada) y `Conjunto` (colección no ordenada).<br><br>**Operaciones definidas:** pertenencia (`in`), unión (`union`), inserción (`insert`) y concatenación (`append`). <br><br>*(Nota: `empty` no constituye una operación, sino que actúa como un literal o constante representativa de una colección vacía).* | Selección (`if/else`), iteración (`while`), y recorrido de colecciones (`for..in` / `foreach`). |
+| **Unitario** | Aleph no proporciona actualmente mecanismos para que el programador defina nuevas abstracciones unitarias de datos. |  |
 
-Alternancia (Selección): Estructura de control que evalúa una condición lógica (guardia) para decidir cuál de dos o más secuencias de enunciados ejecutar, omitiendo el resto.
-El ejemplo es la sentencia condicional if-then-else.
 
-Iteración (Ciclos): Mecanismo que permite repetir la ejecución de un cuerpo de sentencias (bucle) de manera controlada bajo una condición lógica de parada (como la estructura while).
-La evolución histórica del diseño de lenguajes (respaldada por el Teorema de Estructura de Böhm y Jacopini) demostró que el uso indiscriminado de saltos incondicionales (goto) atenta contra la legibilidad y la confiabilidad del código.
+#### 2.4 Dominio de programación de Aleph
 
-Por ello, las sentencias modernas se diseñan bajo la premisa de la programación estructurada, garantizando que cada sentencia de control posea un único punto de acceso y un único punto de salida.
+Con base en la taxonomía de dominios de aplicación de lenguajes establecida por Sebesta [2012, pp. 6-8], localizamos a Aleph en el dominio de las Aplicaciones Científicas.
 
-# 3.1.1. Un primer diseño de sentencias de Aleph
-    list afnd2afd(list A):
-        list A = [{q0, q1}, {'0', '1'}, Delta, q0, {q1}];
-        let A = (Q, Sigma, Delta, Q0, F);
-        set Q_B = {{q0}};
-        boolean Estadefinido = false;
-        set R = {q0};
-        list DeltaB = empty;
-    
-        while (Estadefinido == false) do
-            for (a in Sigma) do
-                list DeltaAux = [R, a];
-                if (DeltaAux in Delta) do
-                    Estadefinido = true;
-                else
-                    set destinos = empty;
-                    for (q in R) do
-                        destinos = destinos union DeltaA(q, a);
-                    end
-                    Q_B = Q_B union {destinos};
-                    list TransicionB = [R, a, destinos];
-                    append(DeltaB, TransicionB);
+Esta decisión se fundamenta en que el propósito específico para el cual diseñamos Aleph es proporcionar abstracciones y operaciones que permitan representar y manipular computacionalmente estructuras matemáticas discretas. El lenguaje estructura su capacidad de cómputo proporcionando operaciones algebraicas integradas sobre elementos, conjuntos y listas. La resolución de problemas que puedan modelarse mediante estas abstracciones y la aplicación de operaciones conjuntistas son características propias de los problemas matemáticos y computacionales abordados en las disciplinas científicas.
+
+Cabe destacar que, dentro de este dominio de aplicaciones científicas, hemos establecido un caso de aplicación específico para evaluar el lenguaje: el modelado y procesamiento de Autómatas Finitos Deterministas y No Deterministas. Los autómatas y lenguajes formales no constituyen abstracciones incorporadas al núcleo del lenguaje, sino que actúan como nuestro caso de estudio. Nuestro lenguaje provee las abstracciones de datos (conjuntos, listas) y las estructuras de control adecuadas (iteraciones, selecciones) para que el programador pueda expresar formalmente la manipulación de estos autómatas, demostrando así la capacidad científica del lenguaje.
+
+En conclusión, el dominio de Aleph no se define por el cálculo numérico tradicional o el procesamiento simbólico de la Inteligencia Artificial, sino que justifica su pertenencia a las Aplicaciones Científicas por su enfoque directo en la representación algorítmica de la matemática discreta y la teoría de conjuntos.
+
+### 3. Diseño e Implementación
+
+#### 3.1 Sentencias
+
+En el diseño conceptual de lenguajes imperativos, definimos una sentencia (*statement*) como la unidad sintáctica ejecutable mínima que especifica una acción o paso discreto en el proceso de cómputo de la máquina abstracta [Sebesta, 2012, p. 113]. A diferencia de las expresiones —construcciones que evaluamos formalmente para retornar un valor de cómputo—, ejecutamos las sentencias con el objetivo fundamental de generar efectos de estado en el entorno (como modificar la Tabla de Símbolos) o alterar el flujo secuencial del control.
+
+Regimos la organización del flujo de ejecución en Aleph por las tres estructuras fundamentales de la programación estructurada [Sebesta, 2012, pp. 331-335]:
+* **Composición (Secuenciación Implícita):** Secuencia lineal en la cual ejecutamos las instrucciones estrictamente una tras otra en el orden textual del código fuente, garantizando invariantes de estado secuenciales.
+* **Alternancia (Selección):** Construcción que evalúa una condición lógica o guardia booleana para seleccionar qué bloque de ejecución debe activarse y cuál omitirse (`if-else`).
+* **Iteración (Repetición):** Construcción que nos posibilita repetir un cuerpo de sentencias de manera controlada bajo la vigencia de una condición de parada (`while`, `for`), asegurando que cada bloque de control posea un punto único de acceso y de culminación.
+
+##### 3.1.1 Un primer diseño de sentencias de Aleph
+
+A continuación presentamos nuestro primer diseño algorítmico estructurado para la conversión de un AFND a AFD expresado en el lenguaje Aleph, el cual operamos exclusivamente mediante las abstracciones generales del lenguaje:
+
+```aleph
+list afnd2afd(list A):
+    list A = [{q0, q1}, {'0', '1'}, Delta, q0, {q1}];
+    let A = (Q, Sigma, Delta, Q0, F);
+    set Q_B = {{q0}};
+    boolean Estadefinido = false;
+    set R = {q0};
+    list DeltaB = empty;
+
+    while (Estadefinido == false) do
+        for (a in Sigma) do
+            list DeltaAux = [R, a];
+            if (DeltaAux in Delta) do
+                Estadefinido = true;
+            else
+                set destinos = empty;
+                for (q in R) do
+                    destinos = destinos union DeltaA(q, a);
                 end
-                R = destinos;
+                Q_B = Q_B union {destinos};
+                list TransicionB = [R, a, destinos];
+                append(DeltaB, TransicionB);
             end
+            R = destinos;
         end
-    
-        set F_B = empty;
-        for (s in Q_B) do
-            for (q in s) do
-                if (q in F_A) do
-                    insert(F_B, s);
-                end
-            end
-        end
-    
-        list B = [Q_B, Sigma, DeltaB, {q0}, F_B];
-    return B;
     end
-    
-# 3.2. Reconocimiento de patrones. Tokens y Lexemas
 
-Las descripciones formales de la sintaxis de los lenguajes de programación, por simplicidad, a menudo no incluyen descripciones de las unidades sintácticas de nivel más bajo. Estas pequeñas unidades se llaman lexemas.
+    set F_B = empty;
+    for (s in Q_B) do
+        for (q in s) do
+            if (q in F_A) do
+                insert(F_B, s);
+            end
+        end
+    end
 
-La descripción de los lexemas puede darse mediante una especificación léxica, que normalmente es independiente de la descripción sintáctica del lenguaje.
+    list B = [Q_B, Sigma, DeltaB, {q0}, F_B];
+    return B;
+end
+```
 
-Los lexemas de un lenguaje de programación incluyen sus literales numéricos, operadores y palabras especiales, entre otros. Se puede pensar en los programas como cadenas de lexemas en lugar de caracteres.
+#### 3.2 Reconocimiento de patrones. Tokens, Lexemas y Patrones
 
-Estos se dividen en grupos; por ejemplo, los nombres de variables, métodos, clases, y demás, que en un lenguaje de programación, forman un grupo llamado identificadores.
+En la fase inicial de análisis léxico, el procesamiento de las unidades mínimas del lenguaje nos exige distinguir tres conceptos teóricos complementarios [Sebesta, 2012, pp. 114-115]:
+* **Lexema:** Secuencia textual concreta de caracteres en el código fuente que coincide formalmente con el patrón asignado a una categoría léxica. Constituye la instancia física leída de la entrada (por ejemplo, `while`, `Q_B`, `==`, `17`).
+* **Token:** Símbolo o categoría sintáctica abstracta que identifica el tipo funcional al que pertenece el lexema. Es la unidad que consume el analizador sintáctico (por ejemplo, `IDENTIFICADOR`, `OPERADOR_ASIGNACION`, `PALABRA_CLAVE_WHILE`). Desde el punto de vista sintáctico, un token actúa como un símbolo terminal dentro de la gramática formal.
+* **Patrón:** Regla de especificación formal que determina el universo de cadenas de caracteres que pertenecen a un token específico [Sebesta, 2012, p. 115]. Formalizamos los patrones mediante expresiones regulares que el generador Flex compila a autómatas finitos deterministas capaces de resolver la correspondencia léxica en tiempo lineal:
 
-Cada grupo de lexemas se representa con un nombre, o token. Entonces, un token de un lenguaje es una categoría de sus lexemas.
+$$Identificador = [A-Z][a-zA-Z0-9\_]*$$
 
-Por ejemplo, un identificador es un token que puede tener lexemas, o instancias, como sum y total.
+El analizador léxico procesa el texto plano aplicando las expresiones regulares (patrones); en cuanto identifica un lexema que satisface la regla, genera y entrega el token correspondiente a la rutina de análisis sintáctico.
 
-En algunos casos, un token tiene un único lexema posible. Por ejemplo, el token para el símbolo del operador aritmético + tiene solo un lexema posible.
+##### 3.2.1 Tokens y lexemas de Aleph
 
-Ejemplo
-
-Considerando la siguiente instrucción en Java: **index = 2 * count + 17;**
-
-### Así se verá en GitHub
-
-| Lexema | Token | Descripción |
-|---|---|---|
-| `index` | `identificador` | Nombre utilizado para identificar una variable. |
-| `=` | `equal_sign` | Operador de asignación, utilizado para asignar un valor a una variable. |
-| `2` | `int_literal` | Literal entero que representa el número 2. |
-| `*` | `mult_op` | Operador de multiplicación. |
-| `count` | `identificador` | Nombre utilizado para identificar otra variable. |
-| `+` | `plus_op` | Operador de suma. |
-| `17` | `int_literal` | Literal entero que representa el número 17. |
-| `;` | `semicolon` | Símbolo que indica el final de la instrucción en Java. |
-
-Típicamente, la fase de análisis léxico (realizada por el analizador léxico o escáner) reúne secuencias de caracteres del código de entrada para formar tokens, los cuales son procesados posteriormente por la fase de análisis sintáctico (parser) para determinar la estructura sintáctica del programa.
-
-**Clasificación de los Tokens**
-
-Los tokens se clasifican habitualmente en las siguientes categorías:
-
-**Palabras reservadas** (reserved words) o palabras clave (keywords): Cadenas fijas como if y while. Se denominan reservadas porque un identificador definido por el usuario no puede utilizar la misma cadena de caracteres (por ejemplo, en C la declaración double if; es ilegal).
-
-**Identificadores** (identifiers): Nombres definidos por el programador o el sistema para variables, funciones o tipos (por ejemplo, x24, monthly_balance, putchar).
-
-**Literales o constantes**: Valores manifiestos como 42 (literal numérica) o "hello" (literal de cadena).
-
-**Símbolos especiales**: Operadores y delimitadores de puntuación como ;, <=, o +.
-
-Los patrones de los tokens suelen describirse formalmente mediante expresiones regulares utilizando las tres operaciones básicas de concatenación, repetición (*) y elección/selección (|).
-Y las utilidades como Lex y Flex que toman descripciones de tokens en formato de expresiones regulares y generan automáticamente el código en C de un analizador léxico basado en autómatas finitos.
-
-# 3.2.1. Tokens y lexemas de Aleph
 | Lexema / Patrón | Token (Categoría) | Descripción |
-| `set` | Tipo de dato / Palabra reservada | Define un conjunto de elementos no duplicados. |
-| `list` | Tipo de dato / Palabra reservada | Define una lista o secuencia ordenada. |
-| `boolean` | Tipo de dato / Palabra reservada | Define el tipo de dato booleano (`true`/`false`). |
-| `while` | Palabra clave de control | Inicia un ciclo condicionado. |
-| `for` | Palabra clave de control | Inicia un ciclo iterativo. |
-| `if` | Palabra clave de control | Inicia una estructura condicional. |
-| `else` | Palabra clave de control | Alternativa en una estructura condicional. |
-| `do` | Delimitador de bloque | Indica el comienzo del cuerpo de un bloque, ciclo o condicional. |
-| `end` | Delimitador de bloque | Indica el cierre de un bloque, ciclo o función. |
-| `break` | Palabra clave de control | Interrumpe la ejecución de un ciclo. |
-| `return` | Palabra clave de retorno | Permite devolver un valor desde una función. |
-| `let` | Palabra clave de declaración | Permite asignar nombres a elementos internos (ej. renombrar en tuplas). |
-| `in` | Palabra clave de pertenencia | Operador relacional que evalúa si un elemento pertenece a una colección (o usado en for). |
-| `where` | Palabra clave de control | Condiciona la iteración dentro de un ciclo `for`. |
-| `empty` | Palabra reservada | Representa un conjunto o lista vacía. Reemplaza el uso de `?`. |
-| `union` | Operador algebraico / Unión | Combina los elementos de dos conjuntos (convierte la función en operador). |
-| `any` | Instrucción nativa | Verifica la existencia de un elemento en una estructura (operador existe). |
-| `append` | Instrucción nativa | Agrega un elemento al final de una lista. |
-| `insert` | Instrucción nativa | Inserta un elemento dentro de un conjunto o estructura. |
-| `:` | Símbolo especial / Delimitador | Indica la apertura del bloque de instrucciones de una función. |
-| `=` | Operador de asignación | Permite asignar un valor o colección a una variable. |
-| `==` | Operador relacional | Compara si dos valores o colecciones son exactamente iguales. |
-| `!=` | Operador relacional | Compara si dos valores o colecciones son distintos. |
-| `;` | Delimitador de instrucción | Indica el final de una sentencia o instrucción. |
-| `,` | Separador de elementos | Separa los elementos dentro de una lista, conjunto o los parámetros. |
-| `(` | Símbolo de apertura / Paréntesis | Delimitan expresiones, parámetros de funciones, tuplas o condiciones. |
-| `)` | Símbolo de cierre / Paréntesis | Cierran expresiones, parámetros de funciones, tuplas o condiciones. |
-| `{` | Símbolo de apertura / Llaves | Delimitan la declaración de los elementos de un conjunto (`set`). |
-| `}` | Símbolo de cierre / Llaves | Cierran la declaración de los elementos de un conjunto (`set`). |
-| `[` | Símbolo de apertura / Corchetes | Delimitan la declaración de los elementos de una lista (`list`). |
-| `]` | Símbolo de cierre / Corchetes | Cierran la declaración de los elementos de una lista (`list`). |
-| `true` / `false` | Literal booleano | Representa un valor verdadero o falso nativo del lenguaje. |
-| `'0'`, `'1'`, `'a'` | Literal de carácter | Representa un único carácter o símbolo. |
-| Identificadores (ej. `Q`, `Sigma`) | Identificador | Nombres de variables. En Aleph deben comenzar con mayúscula. |
+| ------ | ------ | ------ |
+| `set` | `KW_SET` | Tipo de dato / Palabra reservada: conjunto no duplicado. |
+| `list` | `KW_LIST` | Tipo de dato / Palabra reservada: secuencia o lista ordenada. |
+| `while` | `KW_WHILE` | Sentencia de control: inicio de iteración condicionada. |
+| `for` | `KW_FOR` | Sentencia de control: iteración sobre elementos de colección. |
+| `if` | `KW_IF` | Sentencia de control: bifurcación condicional de flujo. |
+| `else` | `KW_ELSE` | Sentencia de control: rama alternativa de selección. |
+| `do` | `DELIM_DO` | Delimitador de bloque: apertura de cuerpo de control o bucle. |
+| `end` | `DELIM_END` | Delimitador de bloque: cierre estructural de bloques o funciones. |
+| `break` | `KW_BREAK` | Sentencia de control: interrupción forzada de iteración. |
+| `return` | `KW_RETURN` | Sentencia de control: retorno explícito de valor de función. |
+| `let` | `KW_LET` | Declaración: desestructuración o nombramiento formal de componentes. |
+| `in` | `OP_IN` | Operador relacional: evaluación de pertenencia conjuntista o recorrido. |
+| `where` | `KW_WHERE` | Sentencia de control: cláusula de filtrado condicional en bucles. |
+| `empty` | `KW_EMPTY` | Literal / Constante: representa el conjunto o lista sin elementos. |
+| `union` | `OP_UNION` | Operador de colección: cálculo de la unión algebraica entre conjuntos. |
+| `any` | `KW_ANY` | Función primitiva: verificación existencial en colecciones. |
+| `append` | `KW_APPEND` | Función primitiva: inserción de elemento al final de una lista. |
+| `insert` | `KW_INSERT` | Función primitiva: incorporación de un elemento a un conjunto. |
+| `:` | `DELIM_COLON` | Símbolo especial: delimitador de apertura del bloque de función. |
+| `=` | `OP_ASSIGN` | Operador básico: asignación destructiva de valor a identificador. |
+| `==` | `OP_EQUAL` | Operador relacional: prueba de igualdad estructural estricta. |
+| `!=` | `OP_NOT_EQUAL` | Operador relacional: prueba de desigualdad estructural estricta. |
+| `;` | `DELIM_SEMICOLON` | Delimitador sintáctico: terminación explícita de sentencia. |
+| `,` | `DELIM_COMMA` | Separador sintáctico: división posicional en listas, conjuntos o parámetros. |
+| `(` | `DELIM_LPAREN` | Delimitador sintáctico: apertura de tuplas, condiciones o llamadas. |
+| `)` | `DELIM_RPAREN` | Delimitador sintáctico: cierre de tuplas, condiciones o llamadas. |
+| `{` | `DELIM_LBRACE` | Delimitador sintáctico: apertura de especificación literal de conjunto. |
+| `}` | `DELIM_RBRACE` | Delimitador sintáctico: cierre de especificación literal de conjunto. |
+| `[` | `DELIM_LBRACKET` | Delimitador sintáctico: apertura de especificación literal de lista. |
+| `]` | `DELIM_RBRACKET` | Delimitador sintáctico: cierre de especificación literal de lista. |
+| `true` / `false` | `LIT_BOOLEAN` | Literales: valores lógicos para evaluación de guardias y condiciones. |
+| `'0'`, `'1'`, `'a'` | `LIT_ELEMENT` | Literales: representación atómica de un elemento base para conformar colecciones. |
+| `[A-Z][a-zA-Z0-9_]*` | `IDENTIFIER` | Identificadores: nombres de variables definidos por el usuario iniciados en mayúscula. |
+
+### Referencias Bibliográficas
+* Levine, J. (2009). *flex & bison* (1ra ed.). O'Reilly Media.
+* Louden, K. C. (2004). *Lenguajes de Programación: Principios y Práctica* (2da ed.). Thomson.
+* Sebesta, R. W. (2012). *Concepts of Programming Languages* (10ma ed.). Addison-Wesley.

@@ -9,7 +9,7 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 [poner aquí la BNF de la asignación y borrar esto]
 
 ```c
-<asignacion> ::= INDETIFIER = <esprecion>
+<asignacion> ::= ID = <esprecion>
               | <asignacino_mult>
 ```
 
@@ -19,7 +19,7 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 ```C
 <asignacin_mult> ::= (funcion de multiples asignaciones ej. LET o "¤") IDENTIFIRE = <lts_id>
 <lts_id> ::= INDETIFIRE
-            | INDENTIFIRE "," <lts_id>
+            | ID "," <lts_id>
 ```
 
 ## 3.5.3 Asociatividad y Precendencia de operadores
@@ -69,14 +69,14 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 
 [poner aquí la BNF y EBNF del if y explque sobre la ambiguedad o no de su propuesta]
 ```c
-<sent_if> ::= "if" "(" <op_log> ")" <bloque>
-            | "if" "(" <op_log> ")" <bloque> "else" <bloque>
+<sent_if> ::= KW_IF  "(" <op_log> ")" <bloque>
+            | <sent_if> <bloque> "else" <bloque>
 ```
 ### Ciclos
 [poner aquí las BNF de las estructuras de control de ciclos que hayan definido]
 ```c
-<sent_while> ::= "while" "(" <op_log> ")" <bloque>
-<sent_for> ::= "for" "(" IDENTIFIER "in" IDENTIFIER ")" <bloque>
+<sent_while> ::= KW_WHILE"(" <op_log> ")" <bloque>
+<sent_for> ::= KW_FOR"(" ID OP_IN ID ")" <bloque>
 ```
 
 ## 3.5.5 Subrutinas

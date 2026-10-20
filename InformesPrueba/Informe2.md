@@ -1,9 +1,9 @@
 ## 3.3 Análisis Léxico
-### [PONER AQUÍ Definición de Análisis Léxico]
 
 Un analizador léxico realiza, técnicamente, un análisis sintáctico al nivel más bajo de la estructura del programa. Su función principal consiste en reconocer agrupaciones lógicas de caracteres (al identificar subcadenas) mediante la coincidencia de patrones sobre el código de entrada. Dichas agrupaciones se denominan lexemas, mientras que las categorías sintácticas o códigos internos asignados a ellas corresponden a los tokens.
 
-### [PONER AQUÍ Descripción de las tareas de un analizador léxico]
+
+### Descripción de las tareas de un analizador léxico
 
 Las tareas fundamentales de un analizador léxico (scanner) incluyen:
 
@@ -16,7 +16,7 @@ Las tareas fundamentales de un analizador léxico (scanner) incluyen:
 * Llevar el registro de la posición actual en el código fuente (número de línea y columna) para facilitar la emisión de mensajes de error precisos durante el análisis.
 
 ## 3.3.1 Primer analizador léxico de Aleph
-### [PONER AQUI scanner que imprime por pantalla los tokens]
+### Scanner que imprime por pantalla los tokens
 
 ```c
 %{
@@ -81,7 +81,7 @@ int yywrap() {
     return 1;
 }
 ```
-### [PONER AQUI scanner que usa enumerados]
+### Scanner que usa enumerados
 
 ```c
 %{
@@ -203,26 +203,30 @@ int yywrap() {
     return 1;
 }
 ```
+***Prefijos***:
+KW (Keyword): identifica palabras reservadas que tienen un significado especial en el lenguaje.
+DELIM (Delimiter): identifica signos que delimitan, separan o estructuran las construcciones sintácticas.
+OP (Operator): identifica operadores que realizan comparaciones, asignaciones u otras operaciones.
+LIT (Literal): identifica valores constantes escritos directamente en el código fuente.
 
 ## 3.4. Descripción Formal de la Sintaxis
 Los lenguajes de programación requieren una interpretación de sus sentencias sin ambigüedades, su descripción, a los fines de comunicar su funcionamiento, tanto a los usuarios de los mismos como a quienes realizan su implementación, requiere herramientas formales.
 
-[PONER AQUÍ DEFINICIÓN DE SINTAXIS DE LOS LP]
+# SINTAXIS DE LOS LP
 
 La sintaxis de un lenguaje de programación establece el conjunto de reglas formales que determinan cómo deben combinarse los símbolos del alfabeto del lenguaje (tokens) para construir sentencias, expresiones y estructuras válidas. Se enfoca estrictamente en la forma y organización jerárquica del código, siendo independiente del significado computacional o los efectos de ejecución (semántica).
 
-[PONER AQUÍ TEORÍA: LAS GLC Y LA DESCRIPCIÓN DE SINTAXIS]
+## LAS GLC Y LA DESCRIPCIÓN DE SINTAXIS
 
 Para modelar matemáticamente y especificar la sintaxis de la mayoría de los lenguajes de programación se utilizan las Gramáticas Libres de Contexto (GLC), introducidas por Noam Chomsky. Una GLC consta de cuatro elementos: un conjunto finito de símbolos terminales (los tokens indivisibles), un conjunto de símbolos no terminales (variables sintácticas que representan estructuras agrupadas, como una "sentencia"), un símbolo inicial desde el cual se deriva todo programa válido, y un conjunto de reglas de producción. Estas reglas indican cómo un no terminal puede reescribirse como una secuencia de terminales y no terminales. Esta capacidad recursiva permite a las GLC describir con precisión el anidamiento de estructuras de control (como bucles dentro de condicionales) que caracteriza a los lenguajes imperativos estructurados.
 
-[PONER AQUÍ DEFINICIÓN DE BNF Y EBNF]
+## DEFINICIÓN DE BNF Y EBNF
 
 La Forma de Backus-Naur (BNF) es la notación metalingüística estándar empleada para escribir las reglas de producción de una GLC de manera legible y estandarizada. En BNF, los símbolos no terminales se encierran entre corchetes angulares (ej. `<bucle>`), la derivación se expresa mediante el símbolo `::=` o `->`, y las opciones alternativas se separan con una barra vertical `|`.
 
 La EBNF (Forma de Backus-Naur Extendida) optimiza esta notación incorporando metacaracteres que evitan la sobrecarga de reglas recursivas simples: utiliza corchetes `[...]` para marcar elementos opcionales, llaves `{...}` para representar la repetición de un elemento (cero o más veces), y paréntesis `(...)` para la agrupación de símbolos lógicos.
 
 ## 3.3.1. Primera descripción formal de Aleph
-[PONER AQUÍ EL PRIMERA BNF DE ALEPH (ES A NIVEL GENERAL NO MÁS DE 5/6 PRODUCCIONES QUE ABARQUEN LAS ESTRUCTURAS IMPORTANTES]
 
 A continuación, presentamos un subconjunto general en BNF que abarca las estructuras de control principales y la definición de funciones diseñadas en nuestro primer prototipo algorítmico de Aleph:
 

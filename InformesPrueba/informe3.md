@@ -69,8 +69,8 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 
 [poner aquí la BNF y EBNF del if y explque sobre la ambiguedad o no de su propuesta]
 ```c
-<sent_if> ::= "if" "(" <op_log> ")" "do" <lts_sentencias> "end"
-            | "if" "(" <op_log> ")" "do" <lts_sentencias> "else" <lts_sentencias> "end"
+<sent_if> ::= "if" "(" <op_log> ")" <bloque>
+            | "if" "(" <op_log> ")" <bloque> "else" <bloque>
 ```
 ### Ciclos
 [poner aquí las BNF de las estructuras de control de ciclos que hayan definido]

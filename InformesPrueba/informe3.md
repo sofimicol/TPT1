@@ -9,8 +9,7 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 [poner aquí la BNF de la asignación y borrar esto]
 
 ```c
-<asignacion> ::= ID = <esprecion>
-              | <asignacino_mult>
+<asignacion> ::= ID = <esprecion> | <asignacino_mult>
 ```
 
 ## 3.5.2 Asignación Múltiple

@@ -569,7 +569,8 @@ int yywrap() {
 }
 
 ```
-3.4. Descripción Formal de la Sintaxis
+### 3.4. Descripción Formal de la Sintaxis
+
 Los lenguajes de programación requieren una interpretación de sus sentencias sin ambigüedades; su descripción formal es esencial para comunicar su funcionamiento exacto tanto a los usuarios del lenguaje como a nosotros mismos como implementadores.
 
 La sintaxis de un lenguaje de programación establece el conjunto de reglas formales que determinan cómo deben combinarse los símbolos del alfabeto del lenguaje (tokens) para construir sentencias, expresiones y estructuras válidas. Se enfoca estrictamente en la forma y organización jerárquica del código, siendo independiente del significado computacional o los efectos de ejecución (semántica).
@@ -582,7 +583,7 @@ La Forma de Backus-Naur (BNF) es la notación metalingüística estándar que em
 A continuación, presentamos un subconjunto general en BNF que abarca la jerarquía de las estructuras de control fundamentales, las sentencias de asignación y las expresiones de diseño nativo en Aleph. Las reglas están expresadas utilizando los identificadores de tokens devueltos por nuestro analizador léxico:
 
 ```c
-<programa>        ::= <lista_sent>
+<Aleph>           ::= <lista_sent>
 
 <lista_sent>      ::= <sent> DELIM_SEMICOLON 
                     | <sent> DELIM_SEMICOLON <lista_sent>

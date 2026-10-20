@@ -61,12 +61,7 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 
 ### Expresiones: Operaciones Lógicas
 [Def evaluación perezosa e ingenuas]
-```c
-no hace falta (creo)
-<op_log>  ::= <expresion> KW_AND <expresion>
-            | <expresion> KW_OR <expresion>
-            | <expresion> KW_NOT <expresion>
-            
+```c        
 ```
 
 [poner aquí la BNF de Operaciones Lógicas]

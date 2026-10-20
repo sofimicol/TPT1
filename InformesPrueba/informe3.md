@@ -127,6 +127,9 @@ La elección de la producción no siempre es tan sencilla, ya sea porque se repi
 [explciar]
 
 [Enterga de código (no poner el código aquí presentarlo en el repo correspondiente): analizar sintáctico completo sin semántica]
+
+
+```c
 <Aleph>           ::= <lista_sent>
 
 <lista_sent>      ::= <sent> ';'
@@ -138,17 +141,17 @@ La elección de la producción no siempre es tan sencilla, ya sea porque se repi
                     | <sent_if> 
                     | <sent_for>
 
-<asignacion>      ::= IDENTIFIER '=' <expresion>
-                    | KW_LET IDENTIFIER '=' <expresion>
+<asignacion>      ::= ID '=' <expresion>
+                    | KW_LET ID '=' <expresion>
 
 <bloque>          ::= DELIM_DO <lista_sent> DELIM_END
 
 <sent_while>      ::= KW_WHILE '(' <condicion> ')' <bloque>
 
-<sent_for>        ::= KW_FOR '(' IDENTIFIER OP_IN IDENTIFIER ')' <bloque>
+<sent_for>        ::= KW_FOR '(' ID OP_IN ID ')' <bloque>
 
 <sent_if>         ::= KW_IF '(' <condicion> ')' <bloque>
-                    | KW_IF DELIM_LPAREN <condicion> DELIM_RPAREN <bloque> KW_ELSE <bloque>
+                    | KW_IF '(' <condicion> ')' <bloque> KW_ELSE <bloque>
 
 <condicion>       ::= <expresion> '=' '=' <expresion> 
                     | <expresion> OP_NOT_EQUAL <expresion> 
@@ -166,3 +169,4 @@ La elección de la producción no siempre es tan sencilla, ya sea porque se repi
 
 <lts_expresiones> ::= <expresion> 
                     | <expresion> ';' <lts_expresiones>
+```

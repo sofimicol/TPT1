@@ -595,6 +595,7 @@ A continuación, presentamos un subconjunto general en BNF que abarca la jerarqu
 <expresion>       ::= ID
                     | <lts_lista> 
                     | <lts_conjunto>
+                    | LIT_ELEM
                     | <expresion> "any" <expresion>
                     | <expresion> "empty" <expresion>
                     | <expresion> "union" <expresion>
@@ -611,4 +612,3 @@ A continuación, presentamos un subconjunto general en BNF que abarca la jerarqu
 <lts_expresiones> ::= <expresion> 
                     | <expresion> ';' <lts_expresiones>
 ```
-asigmult::= Lista_id '=' lista_expr

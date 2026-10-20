@@ -46,7 +46,7 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
                 | <lts_conjunto> "empty" <lts_conjunto>
                 | <lit_lista> "union" <lit_lista>
                 | <lit_lista> "append" <lit_lista>
-                | <lit_lista> "diferencia" <lit_lista>
+                | <lit_lista> "insert" <lit_lista>
 ```
 
 ### Expresiones: Operaciones Relacionales

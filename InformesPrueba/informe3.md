@@ -17,8 +17,8 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 [poner aquí la BNF de la asignación múltiple y borrar esto]
 
 ```C
-<asignacin_mult> ::= KW_LET ID = <lts_id>
-<lts_id> ::= INDETIFIRE
+<asignacin_mult>  ::= KW_LET "=" <lts_id>
+<lts_id>  ::= INDETIFIRE
             | ID "," <lts_id>
 ```
 

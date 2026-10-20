@@ -16,8 +16,8 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 [poner aquí la BNF de la asignación múltiple y borrar esto]
 
 ```C
-<asignacin_mult>  ::= KW_LET "=" <lts_id>
-<lts_id>  ::= ID | ID "," <lts_id>
+<asignacin_mult>  ::= KW_LET '=' <lts_id>
+<lts_id>  ::= ID | ID ',' <lts_id>
 ```
 
 ## 3.5.3 Asociatividad y Precendencia de operadores
@@ -74,7 +74,7 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 
 [poner aquí la BNF y EBNF del if y explque sobre la ambiguedad o no de su propuesta]
 ```c
-<sent_if>  ::= KW_IF  "(" <op_rel> ")" <bloque> KW_ELSE <bloque>
+<sent_if>  ::= KW_IF  '(' <op_rel> ')' <bloque> KW_ELSE <bloque>
 ```
 La solución que propusimos fue utilizar una sentencia ``<bloque>`` la cual contiene a los delimitadores DELIM_DO y DELIM_END solucionando la problemática de ambiguedad del if
 ```c
@@ -83,8 +83,8 @@ La solución que propusimos fue utilizar una sentencia ``<bloque>`` la cual cont
 ### Ciclos
 [poner aquí las BNF de las estructuras de control de ciclos que hayan definido]
 ```c
-<sent_while>  ::= KW_WHILE"(" <op_rel> ")" <bloque>
-<sent_for>  ::= KW_FOR"(" ID <op_rel> ID ")" <bloque>
+<sent_while>  ::= KW_WHILE '(' <op_rel> ')' <bloque>
+<sent_for>  ::= KW_FOR '(' ID <op_rel> ID ')' <bloque>
 ```
 
 ## 3.5.5 Subrutinas

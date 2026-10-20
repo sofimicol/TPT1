@@ -18,8 +18,7 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 
 ```C
 <asignacin_mult>  ::= KW_LET "=" <lts_id>
-<lts_id>  ::= INDETIFIRE
-            | ID "," <lts_id>
+<lts_id>  ::= ID | ID "," <lts_id>
 ```
 
 ## 3.5.3 Asociatividad y Precendencia de operadores

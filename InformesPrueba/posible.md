@@ -580,6 +580,7 @@ Para modelar matemáticamente y especificar la sintaxis de la mayoría de los le
 La Forma de Backus-Naur (BNF) es la notación metalingüística estándar que empleamos para escribir las reglas de producción de nuestra GLC de manera legible y estandarizada. En BNF, los símbolos no terminales los encerramos entre corchetes angulares (ej. <bloque>), la derivación la expresamos mediante el símbolo ::=, y las opciones alternativas las separamos con una barra vertical |. Cabe resaltar que en la construcción de la BNF los elementos léxicos indivisibles (terminales) se representan mediante los identificadores de tokens provenientes de nuestra especificación léxica, y no mediante los lexemas textuales entre comillas.
 
 3.4.1. Primera descripción formal de Aleph
+
 A continuación, presentamos un subconjunto general en BNF que abarca la jerarquía de las estructuras de control fundamentales, las sentencias de asignación y las expresiones de diseño nativo en Aleph. Las reglas están expresadas utilizando los identificadores de tokens devueltos por nuestro analizador léxico:
 
 ```c

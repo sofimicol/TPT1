@@ -577,7 +577,7 @@ A continuación, presentamos un subconjunto general en BNF que abarca la jerarqu
                     | <sent_for>
 
 <asignacion>      ::= ID '=' <expresion>
-                    | KW_LET ID '=' <expresion>
+                    | KW_LET ID '=' '(' <list_ID> ')'  //* hacer list_ID
 
 <bloque>          ::= DELIM_DO <lista_sent> DELIM_END
 
@@ -592,9 +592,15 @@ A continuación, presentamos un subconjunto general en BNF que abarca la jerarqu
                     | <expresion> OP_NOT_EQUAL <expresion> 
                     | <expresion> OP_IN <expresion>
 
-<expresion> ::= ID
-              | <lts_lista> 
-              | <lts_conjunto>
+<expresion>       ::= ID
+                    | <lts_lista> 
+                    | <lts_conjunto>
+                    | <expresion> "any" <expresion>
+                    | <expresion> "empty" <expresion>
+                    | <expresion> "union" <expresion>
+                    | <expresion> "append" <expresion>
+                    | <expresion> "insert" <expresion>
+
 
 <lts_lista>       ::= '[' <lts_expresiones> ']'
                     | '[' ']'
@@ -605,3 +611,4 @@ A continuación, presentamos un subconjunto general en BNF que abarca la jerarqu
 <lts_expresiones> ::= <expresion> 
                     | <expresion> ';' <lts_expresiones>
 ```
+asigmult::= Lista_id '=' lista_expr

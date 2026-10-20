@@ -53,6 +53,10 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 
 ### Expresiones: Operaciones Relacionales
 [poner aquí la BNF de Operaciones Relacionales]
+```c
+<op_rel>  ::= <expresion> KW_IN <expresion>
+            | <expresion> "==" <expresion>
+```
 
 ### Expresiones: Operaciones Lógicas
 [Def evaluación perezosa e ingenuas]

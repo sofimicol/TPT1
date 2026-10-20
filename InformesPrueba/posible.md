@@ -568,62 +568,72 @@ int yywrap() {
     return 1;
 }
 
-## 3.4. Descripción Formal de la Sintaxis
-Los lenguajes de programación requieren una interpretación de sus sentencias sin ambigüedades, su descripción, a los fines de comunicar su funcionamiento, tanto a los usuarios de los mismos como a quienes realizan su implementación, requiere herramientas formales.
+```
+3.4. Descripción Formal de la Sintaxis
+Los lenguajes de programación requieren una interpretación de sus sentencias sin ambigüedades; su descripción formal es esencial para comunicar su funcionamiento exacto tanto a los usuarios del lenguaje como a nosotros mismos como implementadores.
 
 La sintaxis de un lenguaje de programación establece el conjunto de reglas formales que determinan cómo deben combinarse los símbolos del alfabeto del lenguaje (tokens) para construir sentencias, expresiones y estructuras válidas. Se enfoca estrictamente en la forma y organización jerárquica del código, siendo independiente del significado computacional o los efectos de ejecución (semántica).
 
-Para modelar matemáticamente y especificar la sintaxis de la mayoría de los lenguajes de programación se utilizan las Gramáticas Libres de Contexto (GLC), introducidas por Noam Chomsky. Una GLC consta de cuatro elementos: un conjunto finito de símbolos terminales (los tokens indivisibles), un conjunto de símbolos no terminales (variables sintácticas que representan estructuras agrupadas, como una "sentencia"), un símbolo inicial desde el cual se deriva todo programa válido, y un conjunto de reglas de producción. Estas reglas indican cómo un no terminal puede reescribirse como una secuencia de terminales y no terminales. Esta capacidad recursiva permite a las GLC describir con precisión el anidamiento de estructuras de control (como bucles dentro de condicionales) que caracteriza a los lenguajes imperativos estructurados.
+Para modelar matemáticamente y especificar la sintaxis de la mayoría de los lenguajes de programación utilizamos las Gramáticas Libres de Contexto (GLC), introducidas por Noam Chomsky. Una GLC consta de cuatro elementos: un conjunto finito de símbolos terminales (los tokens indivisibles devueltos por el scanner), un conjunto de símbolos no terminales (variables sintácticas que representan estructuras agrupadas, como una <sentencia>), un símbolo inicial desde el cual se deriva todo programa válido, y un conjunto de reglas de producción. Estas reglas indican cómo un no terminal puede reescribirse como una secuencia de terminales y no terminales. Esta capacidad recursiva permite a las GLC describir con precisión el anidamiento de estructuras de control que caracteriza a Aleph.
 
-La Forma de Backus-Naur (BNF) es la notación metalingüística estándar empleada para escribir las reglas de producción de una GLC de manera legible y estandarizada. En BNF, los símbolos no terminales se encierran entre corchetes angulares (ej. `<bucle>`), la derivación se expresa mediante el símbolo `::=` o `->`, y las opciones alternativas se separan con una barra vertical `|`.
+La Forma de Backus-Naur (BNF) es la notación metalingüística estándar que empleamos para escribir las reglas de producción de nuestra GLC de manera legible y estandarizada. En BNF, los símbolos no terminales los encerramos entre corchetes angulares (ej. <bloque>), la derivación la expresamos mediante el símbolo ::=, y las opciones alternativas las separamos con una barra vertical |. Cabe resaltar que en la construcción de la BNF los elementos léxicos indivisibles (terminales) se representan mediante los identificadores de tokens provenientes de nuestra especificación léxica, y no mediante los lexemas textuales entre comillas.
 
-La EBNF (Forma de Backus-Naur Extendida) optimiza esta notación incorporando metacaracteres que evitan la sobrecarga de reglas recursivas simples: utiliza corchetes `[...]` para marcar elementos opcionales, llaves `{...}` para representar la repetición de un elemento (cero o más veces), y paréntesis `(...)` para la agrupación de símbolos lógicos.
-
-## 3.3.1. Primera descripción formal de Aleph
-
-A continuación, presentamos un subconjunto general en BNF que abarca las estructuras de control principales y la definición de funciones diseñadas en nuestro primer prototipo algorítmico de Aleph:
+3.4.1. Primera descripción formal de Aleph
+A continuación, presentamos un subconjunto general en BNF que abarca la jerarquía de las estructuras de control fundamentales, las sentencias de asignación y las expresiones de diseño nativo en Aleph. Las reglas están expresadas utilizando los identificadores de tokens devueltos por nuestro analizador léxico:
 
 ```c
-<programa> ::= <lts_sentencias>
+<programa>        ::= <lista_sent>
 
-<lts_sentencias> ::= <sent_simple> ";" 
-                   | <sent_simple> ";" <lts_sentencias> 
-                   | <estruc_control> 
-                   | <estruc_control> <lts_sentencias>
+<lista_sent>      ::= <sent> DELIM_SEMICOLON 
+                    | <sent> DELIM_SEMICOLON <lista_sent>
 
-<sent_simple> ::= <asignacion> 
-                | "return" <expresion> 
-                | "break"
+<sent>            ::= <asignacion> 
+                    | <expresion> 
+                    | <sent_while> 
+                    | <sent_if> 
+                    | <sent_for>
+                    | KW_RETURN <expresion>
+                    | KW_BREAK
 
-<asignacion> ::= IDENTIFIER "=" <expresion>
+<asignacion>      ::= IDENTIFIER OP_ASSIGN <expresion>
+                    | KW_LET IDENTIFIER OP_ASSIGN <expresion>
 
-<estruc_control> ::= <sent_if> 
-                   | <sent_while> 
-                   | <sent_for>
+<bloque>          ::= DELIM_DO <lista_sent> DELIM_END
 
-<sent_if> ::= "if" "(" <condicion> ")" "do" <lts_sentencias> "end"
-            | "if" "(" <condicion> ")" "do" <lts_sentencias> "else" <lts_sentencias> "end"
+<sent_while>      ::= KW_WHILE DELIM_LPAREN <condicion> DELIM_RPAREN <bloque>
 
-<sent_while> ::= "while" "(" <condicion> ")" "do" <lts_sentencias> "end"
+<sent_for>        ::= KW_FOR DELIM_LPAREN IDENTIFIER OP_IN IDENTIFIER DELIM_RPAREN <bloque>
 
-<sent_for> ::= "for" "(" IDENTIFIER "in" IDENTIFIER ")" "do" <lts_sentencias> "end"
+<sent_if>         ::= KW_IF DELIM_LPAREN <condicion> DELIM_RPAREN <bloque>
+                    | KW_IF DELIM_LPAREN <condicion> DELIM_RPAREN <bloque> KW_ELSE <bloque>
 
-<condicion> ::= <expresion> "==" <expresion> 
-              | <expresion> "!=" <expresion> 
+<condicion>       ::= <expresion> OP_EQUAL <expresion> 
+                    | <expresion> OP_NOT_EQUAL <expresion> 
+                    | <expresion> OP_IN <expresion>
 
-<expresion> ::= <expresion> "+" <expresion>
-              | <expresion> "-" <expresion>
-              | <expresion> "*" <expresion>
-              | <expresion> "/" <expresion>
-              | IDENTIFIER
-              | LIT_NUMBER
-              | <lts_lista> 
-              | <lts_conjunto>
+<expresion>       ::= <expresion> OP_PLUS <termino>
+                    | <expresion> OP_MINUS <termino>
+                    | <termino>
 
-<lts_lista> ::= "[" <lts_expresiones> "]"
+<termino>         ::= <termino> OP_MULT <factor>
+                    | <termino> OP_DIV <factor>
+                    | <factor>
 
-<lts_conjunto> ::= "{" <lts_expresiones> "}"
+<factor>          ::= IDENTIFIER
+                    | LIT_NUMBER
+                    | LIT_BOOLEAN
+                    | LIT_ELEMENT
+                    | KW_EMPTY
+                    | <lts_lista> 
+                    | <lts_conjunto>
+                    | DELIM_LPAREN <expresion> DELIM_RPAREN
+
+<lts_lista>       ::= DELIM_LBRACKET <lts_expresiones> DELIM_RBRACKET
+                    | DELIM_LBRACKET DELIM_RBRACKET
+
+<lts_conjunto>    ::= DELIM_LBRACE <lts_expresiones> DELIM_RBRACE
+                    | DELIM_LBRACE DELIM_RBRACE
 
 <lts_expresiones> ::= <expresion> 
-                    | <expresion> "," <lts_expresiones>
+                    | <expresion> DELIM_COMMA <lts_expresiones>
 ```

@@ -366,7 +366,7 @@ El analizador léxico procesa el texto plano aplicando las expresiones regulares
 
 ##### 3.2.1 Tokens y lexemas de Aleph
 
-| Lexema / Patrón | Token (Categoría) | Descripción |
+| Lexema | Token | Descripción |
 | ------ | ------ | ------ |
 | `set` | `KW_SET` | Tipo de dato / Palabra reservada: conjunto no duplicado. |
 | `list` | `KW_LIST` | Tipo de dato / Palabra reservada: secuencia o lista ordenada. |
@@ -388,10 +388,6 @@ El analizador léxico procesa el texto plano aplicando las expresiones regulares
 | `insert` | `KW_INSERT` | Función primitiva: incorporación de un elemento a un conjunto. |
 | `:` | `DELIM_COLON` | Símbolo especial: delimitador de apertura del bloque de función. |
 | `=` | `OP_ASSIGN` | Operador básico: asignación destructiva de valor a identificador. |
-| `+` | `OP_PLUS` | Operador aritmético: suma. |
-| `-` | `OP_MINUS` | Operador aritmético: resta. |
-| `*` | `OP_MULT` | Operador aritmético: multiplicación. |
-| `/` | `OP_DIV` | Operador aritmético: división. |
 | `==` | `OP_EQUAL` | Operador relacional: prueba de igualdad estructural estricta. |
 | `!=` | `OP_NOT_EQUAL` | Operador relacional: prueba de desigualdad estructural estricta. |
 | `;` | `DELIM_SEMICOLON` | Delimitador sintáctico: terminación explícita de sentencia. |
@@ -402,10 +398,8 @@ El analizador léxico procesa el texto plano aplicando las expresiones regulares
 | `}` | `DELIM_RBRACE` | Delimitador sintáctico: cierre de especificación literal de conjunto. |
 | `[` | `DELIM_LBRACKET` | Delimitador sintáctico: apertura de especificación literal de lista. |
 | `]` | `DELIM_RBRACKET` | Delimitador sintáctico: cierre de especificación literal de lista. |
-| `true` / `false` | `LIT_BOOLEAN` | Literales primitivos: constantes booleanas lógicas. |
-| `[0-9]+` | `LIT_NUMBER` | Literales numéricos: representación de valores enteros. |
 | `'0'`, `'1'`, `'a'` | `LIT_ELEMENT` | Literales: representación atómica de un elemento base para conformar colecciones. |
-| `[A-Z][a-zA-Z0-9_]*` | `IDENTIFIER` | Identificadores: nombres de variables definidos por el usuario iniciados en mayúscula. |
+| `[A-Z][a-zA-Z0-9_]*` | `ID` | Identificadores: nombres de variables definidos por el usuario iniciados en mayúscula. |
 
 ### Referencias Bibliográficas
 * Levine, J. (2009). *flex & bison* (1ra ed.). O'Reilly Media.
@@ -449,15 +443,10 @@ enum yytokentype {
     KW_ANY = 273,
     KW_APPEND = 274,
     KW_INSERT = 275,
-    LIT_BOOLEAN = 276,
     DELIM_COLON = 277,
     OP_EQUAL = 278,
     OP_NOT_EQUAL = 279,
     OP_ASSIGN = 280,
-    OP_PLUS = 281,
-    OP_MINUS = 282,
-    OP_MULT = 283,
-    OP_DIV = 284,
     DELIM_SEMICOLON = 285,
     DELIM_COMMA = 286,
     DELIM_LPAREN = 287,
@@ -467,14 +456,12 @@ enum yytokentype {
     DELIM_LBRACKET = 291,
     DELIM_RBRACKET = 292,
     LIT_ELEMENT = 293,
-    LIT_NUMBER = 294,
-    IDENTIFIER = 295
+    ID = 295
 };
 %}
 
   /* Definiciones Regulares Base */
 DIGITO      [0-9]
-NUMERO      {DIGITO}+
 LETRA_MIN   [a-z]
 LETRA_MAY   [A-Z]
 LETRA       {LETRA_MIN}|{LETRA_MAY}
@@ -510,10 +497,6 @@ COMENT_BLO  \/\*([^*]|\*+[^*/])*\*+\/
 "=="        { return OP_EQUAL; }
 "!="        { return OP_NOT_EQUAL; }
 "="         { return OP_ASSIGN; }
-"+"         { return OP_PLUS; }
-"-"         { return OP_MINUS; }
-"*"         { return OP_MULT; }
-"/"         { return OP_DIV; }
 
   /* DELIMITADORES (DELIM) */
 "do"        { return DELIM_DO; }
@@ -529,10 +512,8 @@ COMENT_BLO  \/\*([^*]|\*+[^*/])*\*+\/
 "]"         { return DELIM_RBRACKET; }
 
   /* LITERALES E IDENTIFICADORES */
-"true"|"false" { return LIT_BOOLEAN; }
-{NUMERO}       { return LIT_NUMBER; }
 \'[^\']\'      { return LIT_ELEMENT; }
-{ID}           { return IDENTIFIER; }
+{ID}           { return ID; }
 
   /* ERRORES */
 .           { printf("Error lexico: Caracter no reconocido %s\n", yytext); }
@@ -586,8 +567,8 @@ A continuación, presentamos un subconjunto general en BNF que abarca la jerarqu
 ```c
 <Aleph>           ::= <lista_sent>
 
-<lista_sent>      ::= <sent> DELIM_SEMICOLON 
-                    | <sent> DELIM_SEMICOLON <lista_sent>
+<lista_sent>      ::= <sent> ';'
+                    | <sent> ';' <lista_sent>
 
 <sent>            ::= <asignacion> 
                     | <expresion> 
@@ -595,45 +576,32 @@ A continuación, presentamos un subconjunto general en BNF que abarca la jerarqu
                     | <sent_if> 
                     | <sent_for>
 
-<asignacion>      ::= IDENTIFIER OP_ASSIGN <expresion>
-                    | KW_LET IDENTIFIER OP_ASSIGN <expresion>
+<asignacion>      ::= IDENTIFIER '=' <expresion>
+                    | KW_LET IDENTIFIER '=' <expresion>
 
 <bloque>          ::= DELIM_DO <lista_sent> DELIM_END
 
-<sent_while>      ::= KW_WHILE DELIM_LPAREN <condicion> DELIM_RPAREN <bloque>
+<sent_while>      ::= KW_WHILE '(' <condicion> ')' <bloque>
 
-<sent_for>        ::= KW_FOR DELIM_LPAREN IDENTIFIER OP_IN IDENTIFIER DELIM_RPAREN <bloque>
+<sent_for>        ::= KW_FOR '(' IDENTIFIER OP_IN IDENTIFIER ')' <bloque>
 
-<sent_if>         ::= KW_IF DELIM_LPAREN <condicion> DELIM_RPAREN <bloque>
+<sent_if>         ::= KW_IF '(' <condicion> ')' <bloque>
                     | KW_IF DELIM_LPAREN <condicion> DELIM_RPAREN <bloque> KW_ELSE <bloque>
 
-<condicion>       ::= <expresion> OP_EQUAL <expresion> 
+<condicion>       ::= <expresion> '=' '=' <expresion> 
                     | <expresion> OP_NOT_EQUAL <expresion> 
                     | <expresion> OP_IN <expresion>
 
-<expresion>       ::= <expresion> OP_PLUS <termino>
-                    | <expresion> OP_MINUS <termino>
-                    | <termino>
+<expresion> ::= ID
+              | <lts_lista> 
+              | <lts_conjunto>
 
-<termino>         ::= <termino> OP_MULT <factor>
-                    | <termino> OP_DIV <factor>
-                    | <factor>
+<lts_lista>       ::= '[' <lts_expresiones> ']'
+                    | '[' ']'
 
-<factor>          ::= IDENTIFIER
-                    | LIT_NUMBER
-                    | LIT_BOOLEAN
-                    | LIT_ELEMENT
-                    | KW_EMPTY
-                    | <lts_lista> 
-                    | <lts_conjunto>
-                    | DELIM_LPAREN <expresion> DELIM_RPAREN
-
-<lts_lista>       ::= DELIM_LBRACKET <lts_expresiones> DELIM_RBRACKET
-                    | DELIM_LBRACKET DELIM_RBRACKET
-
-<lts_conjunto>    ::= DELIM_LBRACE <lts_expresiones> DELIM_RBRACE
-                    | DELIM_LBRACE DELIM_RBRACE
+<lts_conjunto>    ::= '{' <lts_expresiones> ´}´
+                    | '{' '}'
 
 <lts_expresiones> ::= <expresion> 
-                    | <expresion> DELIM_COMMA <lts_expresiones>
+                    | <expresion> ';' <lts_expresiones>
 ```

@@ -75,7 +75,7 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 ```c
 <sent_if>  ::= KW_IF  "(" <op_log> ")" <bloque> KW_ELSE <bloque>
 ```
-La solución que propusimos fue utilizar una sentencia llamada <bloque> la cual contiene a los delimitadores DELIM_DO y DELIM_END solucionando la problemática de ambiguedad del if
+La solución que propusimos fue utilizar una sentencia "<bloque>" la cual contiene a los delimitadores DELIM_DO y DELIM_END solucionando la problemática de ambiguedad del if
 ```c
 <bloque>  ::= DELIM_DO <lista_sent> DELIM_END
 ```

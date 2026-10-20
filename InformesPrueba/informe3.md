@@ -17,7 +17,7 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 [poner aquí la BNF de la asignación múltiple y borrar esto]
 
 ```C
-<asignacin_mult> ::= (funcion de multiples asignaciones ej. LET o "¤") IDENTIFIRE = <lts_id>
+<asignacin_mult> ::= KW_LET ID = <lts_id>
 <lts_id> ::= INDETIFIRE
             | ID "," <lts_id>
 ```
@@ -42,11 +42,15 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 ### Expresiones: Operaciones con Conjuntos y Listas
 [poner aquí la BNF de Operaciones con Conjuntos y Listas]
 ```C
-<op_lts_cjt> ::= <lts_conjunto> "any" <lts_conjunto>
-                | <lts_conjunto> "empty" <lts_conjunto>
-                | <lit_lista> "union" <lit_lista>
-                | <lit_lista> "append" <lit_lista>
-                | <lit_lista> "insert" <lit_lista>
+<expreciones>  ::= ID
+                 | LIT_ELEM
+                 | <lts_lista>
+                 | <lts_conjunto>
+                 | <expresión> empty <exprecion>
+                 | <expresión> union <exprecion>
+                 | <expresión> any <exprecion>
+                 | <expresión> append <exprecion>
+                 | <expresión> insert <exprecion>
 ```
 
 ### Expresiones: Operaciones Relacionales
@@ -55,8 +59,8 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 ### Expresiones: Operaciones Lógicas
 [Def evaluación perezosa e ingenuas]
 ```c
-<op_log> ::= <expresion> "==" <expresion> 
-              | <expresion> "!=" <expresion>
+<op_log>  ::= <expresion> "==" <expresion> 
+            | <expresion> "!=" <expresion>
 ```
 
 [poner aquí la BNF de Operaciones Lógicas]
@@ -69,13 +73,17 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 
 [poner aquí la BNF y EBNF del if y explque sobre la ambiguedad o no de su propuesta]
 ```c
-<sent_if> ::= KW_IF  "(" <op_log> ")" <bloque> KW_ELSE <bloque>
+<sent_if>  ::= KW_IF  "(" <op_log> ")" <bloque> KW_ELSE <bloque>
+```
+La solución que propusimos fue utilizar una sentencia llamada <bloque> la cual contiene a los delimitadores DELIM_DO y DELIM_END solucionando la problemática de ambiguedad del if
+```c
+<bloque>  ::= DELIM_DO <lista_sent> DELIM_END
 ```
 ### Ciclos
 [poner aquí las BNF de las estructuras de control de ciclos que hayan definido]
 ```c
-<sent_while> ::= KW_WHILE"(" <op_log> ")" <bloque>
-<sent_for> ::= KW_FOR"(" ID OP_IN ID ")" <bloque>
+<sent_while>  ::= KW_WHILE"(" <op_log> ")" <bloque>
+<sent_for>  ::= KW_FOR"(" ID OP_IN ID ")" <bloque>
 ```
 
 ## 3.5.5 Subrutinas

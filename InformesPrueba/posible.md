@@ -593,8 +593,6 @@ A continuación, presentamos un subconjunto general en BNF que abarca la jerarqu
                     | <sent_while> 
                     | <sent_if> 
                     | <sent_for>
-                    | KW_RETURN <expresion>
-                    | KW_BREAK
 
 <asignacion>      ::= IDENTIFIER OP_ASSIGN <expresion>
                     | KW_LET IDENTIFIER OP_ASSIGN <expresion>

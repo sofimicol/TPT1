@@ -75,8 +75,8 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 ### Ciclos
 [poner aquí las BNF de las estructuras de control de ciclos que hayan definido]
 ```c
-<sent_while> ::= "while" "(" <op_log> ")" "do" <lts_sentencias> "end"
-<sent_for> ::= "for" "(" IDENTIFIER "in" IDENTIFIER ")" "do" <lts_sentencias> "end"
+<sent_while> ::= "while" "(" <op_log> ")" <bloque>
+<sent_for> ::= "for" "(" IDENTIFIER "in" IDENTIFIER ")" <bloque>
 ```
 
 ## 3.5.5 Subrutinas

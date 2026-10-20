@@ -61,7 +61,11 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 
 ### Expresiones: Operaciones Lógicas
 [Def evaluación perezosa e ingenuas]
-```c        
+```c
+<op_log>  ::= <op_rel>
+            | KW_NOT <op_rel>
+            | <op_rel> KW_AND <op_rel>
+            | <op_rel> KW_OR <op_rel>
 ```
 
 [poner aquí la BNF de Operaciones Lógicas]
@@ -74,7 +78,7 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 
 [poner aquí la BNF y EBNF del if y explque sobre la ambiguedad o no de su propuesta]
 ```c
-<sent_if>  ::= KW_IF  '(' <op_rel> ')' <bloque> KW_ELSE <bloque>
+<sent_if>  ::= KW_IF  '(' <op_log> ')' <bloque> KW_ELSE <bloque>
 ```
 La solución que propusimos fue utilizar una sentencia ``<bloque>`` la cual contiene a los delimitadores DELIM_DO y DELIM_END solucionando la problemática de ambiguedad del if
 ```c
@@ -83,8 +87,8 @@ La solución que propusimos fue utilizar una sentencia ``<bloque>`` la cual cont
 ### Ciclos
 [poner aquí las BNF de las estructuras de control de ciclos que hayan definido]
 ```c
-<sent_while>  ::= KW_WHILE '(' <op_rel> ')' <bloque>
-<sent_for>  ::= KW_FOR '(' ID <op_rel> ID ')' <bloque>
+<sent_while>  ::= KW_WHILE '(' <op_log> ')' <bloque>
+<sent_for>  ::= KW_FOR '(' ID <op_log> ID ')' <bloque>
 ```
 
 ## 3.5.5 Subrutinas

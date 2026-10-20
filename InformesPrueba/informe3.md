@@ -127,67 +127,42 @@ La elección de la producción no siempre es tan sencilla, ya sea porque se repi
 [explciar]
 
 [Enterga de código (no poner el código aquí presentarlo en el repo correspondiente): analizar sintáctico completo sin semántica]
+<Aleph>           ::= <lista_sent>
 
-```c
-<programa> ::= <tipo> IDENTIFIER "(" <lts_parametros> ")" ":" <lts_sentencias> "end"
+<lista_sent>      ::= <sent> ';'
+                    | <sent> ';' <lista_sent>
 
-<lts_parametros> ::= <parametro> 
-                | <parametro> "," <lts_parametros> 
-                | ε
+<sent>            ::= <asignacion> 
+                    | <expresion> 
+                    | <sent_while> 
+                    | <sent_if> 
+                    | <sent_for>
 
-<paramtro> ::= <tipo> IDENTIFIER
+<asignacion>      ::= IDENTIFIER '=' <expresion>
+                    | KW_LET IDENTIFIER '=' <expresion>
 
-<lts_sentencias> ::= <sent_simple> ";" 
-               | <sent_simple> ";" <lts_sentencias> 
-               | <estruc_control> 
-               | <estruc_control> <lts_sentencias>
+<bloque>          ::= DELIM_DO <lista_sent> DELIM_END
 
-<sent_simple> ::= <declaracion> 
-                | <asignacion> 
-                | <llamada_rutina> 
-                | "return" <expresion> 
-                | "break"
+<sent_while>      ::= KW_WHILE '(' <condicion> ')' <bloque>
 
-<declaracion> ::= <tipo> IDENTIFIER "=" <expresion> 
-                | "let" IDENTIFIER "=" <expresion>
+<sent_for>        ::= KW_FOR '(' IDENTIFIER OP_IN IDENTIFIER ')' <bloque>
 
-<asignacion> ::= IDENTIFIER "=" <expresion>
+<sent_if>         ::= KW_IF '(' <condicion> ')' <bloque>
+                    | KW_IF DELIM_LPAREN <condicion> DELIM_RPAREN <bloque> KW_ELSE <bloque>
 
-<estruc_control> ::= <sent_if> 
-                   | <sent_while> 
-                   | <sent_for>
+<condicion>       ::= <expresion> '=' '=' <expresion> 
+                    | <expresion> OP_NOT_EQUAL <expresion> 
+                    | <expresion> OP_IN <expresion>
 
-<sent_if> ::= "if" "(" <condicion> ")" "do" <lista_sent> "end"
-            | "if" "(" <condicion> ")" "do" <lista_sent> "else" <lista_sent> "end"
+<expresion> ::= ID
+              | <lts_lista> 
+              | <lts_conjunto>
 
-<sent_while> ::= "while" "(" <condicion> ")" "do" <lista_sent> "end"
+<lts_lista>       ::= '[' <lts_expresiones> ']'
+                    | '[' ']'
 
-<sent_for> ::= "for" "(" IDENTIFIER "in" IDENTIFIER ")" "do" <lista_sent> "end"
-             | "for" "(" IDENTIFIER "in" IDENTIFIER ")" "where" "(" <condicion> ")" "do" <lista_sent> "end"
-
-<condicion> ::= <expresion> "==" <expresion> 
-              | <expresion> "!=" <expresion> 
-              | "any" "(" <lts_exprsiones> ")"
-
-<expresion> ::= <termino> 
-         | <termino> "union" <termino>
-
-<termino> ::= IDENTIFIER 
-            | LIT_BOOLEAN 
-            | LIT_CHAR 
-            | "empty" 
-            | <lts_lista> 
-            | <lts_conjunto>
-
-<lts_lista> ::= "[" <lts_expresino> "]"
-
-<lts_conjunto> ::= "{" <lts_expresion> "}"
+<lts_conjunto>    ::= '{' <lts_expresiones> ´}´
+                    | '{' '}'
 
 <lts_expresiones> ::= <expresion> 
-               | <expr> "," <lts_expresion>
-
-<llamada_rutina> ::= "insert" "(" <lts_expresiones> ")" 
-                   | "append" "(" <lts_expresiones> ")"
-
-<tipo> ::= "set" | "list" | "boolean"
-```
+                    | <expresion> ';' <lts_expresiones>

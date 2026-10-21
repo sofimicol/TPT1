@@ -9,15 +9,17 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 [poner aquí la BNF de la asignación y borrar esto]
 
 ```c
-<asignacion> ::= ID = <esprecion> | <asignacino_mult>
+<asignacion> ::= ID '=' <esprecion> | <asignacino_mult>
 ```
 
 ## 3.5.2 Asignación Múltiple
 [poner aquí la BNF de la asignación múltiple y borrar esto]
 
 ```C
-<asignacin_mult>  ::= KW_LET '=' <lts_id>
+<asignacin_mult>  ::= KW_LET <lts_id> '=' <lts_expresiones>
 <lts_id>  ::= ID | ID ',' <lts_id>
+<lts_expresiones>  ::= <expresion>
+                      | <expresion> ',' <lts_espresiones>
 ```
 
 ## 3.5.3 Asociatividad y Precendencia de operadores
@@ -25,17 +27,74 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 
 [poner aquí la Def de asociatividad y precedencia de operadores, explicación de cómo se implementan estyos conceptos en las BNF]
 
-[poner aquí la BNF de expresiones aritméticas (números ver en sebesta) con precedencia y asociatividad con uso de paréntesis]
+Asociatividad y Precedencia:
 
+La precedencia de operadores responde a la pregunta semántica sobre el orden de evaluación cuando una expresión incluye dos operadores diferentes. En una gramática BNF, la precedencia se especifica forzando a que el operador con mayor prioridad se genere en un nivel más bajo (más alejado del símbolo inicial) dentro del árbol de análisis sintáctico.
+La asociatividad define qué operador se evalúa primero cuando una expresión contiene dos operadores adyacentes con el mismo nivel de precedencia. En las gramáticas, la asociatividad por la izquierda se indica mediante una regla recursiva por la izquierda (donde el lado izquierdo de la regla aparece al principio del lado derecho), mientras que la recursividad por la derecha indica asociatividad por la derecha.
+
+[poner aquí la BNF de expresiones aritméticas (números ver en sebesta) con precedencia y asociatividad con uso de paréntesis]
+```c
+<expresion>  ::= <expresion> "+" <termino> 
+               | <expresion> "-" <termino> 
+               | <termino>
+
+<termino>  ::= <termino> "*" <factor> 
+             | <termino> "/" <factor> 
+             | <factor>
+
+<factor>  ::= "(" <expresion> ")" 
+            | ID 
+            | LIT_NUM
+```
 [poner aquí la Árbol de derivación de una expresión aritmética que use varios operadores y paréntesis]
+
+Arbol de Derivacion para la expresion para `A = B + C * A`:
+
+                  <asignacion>
+                 /      |     \
+               ID      "="   <expresion>
+               |             /    |    \
+               A   <expresion>   "+"  <termino>
+                       |              /   |   \
+                   <termino>   <termino> "*" <factor>
+                       |           |            |
+                   <factor>    <factor>         ID
+                       |           |            |
+                       ID          ID           A
+                       |           |
+                       B           C
 
 [poner aquí la Def árbol de sintaxis abstracta y derivación]
 
+Derivación y Árbol de Sintaxis Abstracta (AST):
+
+Una derivación es una secuencia de aplicaciones de reglas gramaticales que comienza con un símbolo inicial especial y termina en una oración generada sin símbolos no terminales. El árbol de análisis sintáctico (Parse Tree) describe de forma natural la estructura sintáctica jerárquica de las oraciones del lenguaje. Un Árbol de Sintaxis Abstracta (AST) es una representación condensada de este árbol en donde los símbolos no terminales sintácticos innecesarios se eliminan y los operadores pasan a ser los nodos raíz de sus respectivos operandos.
+
 [Poner aquí el árbol de sintaxis abstracta del árbol de derivación antes descripto]
+
+Árbol de Sintaxis Abstracto (AST) para `A = B + C * A`:
+
+                           "="
+                          /   \
+                         A    "+"
+                             /   \
+                            B    "*"
+                                /   \
+                               C     A
 
 [poner aquí la Def operadores sobrecargados]
 
+Operadores Sobrecargados:
+
+El uso múltiple de un mismo símbolo de operador para diferentes propósitos es lo que se conoce formalmente como sobrecarga de operadores. Al estructurar la gramática de Aleph, asignamos lexemas a delimitadores sintácticos (`), ], }`), separadores sintácticos (`.`) y símbolos especiales (`:`). Por su parte, a los operadores de palabra como la unión los identificamos directamente por su token (`OP_UNION`). De esta forma evitamos la sobrecarga, logrando que el árbol de análisis sintáctico determine de forma única la operación. Esto significa que las herramientas de análisis léxico y sintáctico (`como Flex y Bison`) pueden reconocer y procesar las instrucciones directamente desde la estructura de la gramática, sin requerir reglas semánticas complejas para desambiguar el propósito de un símbolo.
+
 [Para cada operador de aleph indicar precedencia, asociatividad y si hay sobrecarga]
+
+* Relacionales (==, !=, KW_IN): Precedencia Baja, Asociatividad Ninguna, Sobrecargados (comparación de distintos tipos).
+
+* Conjuntos/Listas (union, insert, append): Precedencia Media (igual a suma), Asociatividad Izquierda, No sobrecargados.
+
+* Lógicos (KW_AND, KW_OR): Precedencia Muy Baja, Asociatividad Izquierda, No sobrecargados.
 
 ### Expresiones: Operaciones con Conjuntos y Listas
 [poner aquí la BNF de Operaciones con Conjuntos y Listas]
@@ -44,11 +103,11 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
                  | LIT_ELEM
                  | <lts_lista>
                  | <lts_conjunto>
-                 | <expresión> empty <exprecion>
-                 | <expresión> union <exprecion>
-                 | <expresión> any <exprecion>
-                 | <expresión> append <exprecion>
-                 | <expresión> insert <exprecion>
+                 | <expresión> KW_EMPTY <expresion>
+                 | <expresion> OP_UNION <expresion>
+                 | <expresión> KW_ANY <exprecion>
+                 | <expresión> KW_APPEND <exprecion>
+                 | <expresión> KW_INSERT <exprecion>
 ```
 
 ### Expresiones: Operaciones Relacionales
@@ -61,6 +120,11 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
 
 ### Expresiones: Operaciones Lógicas
 [Def evaluación perezosa e ingenuas]
+
+La evaluación en cortocircuito (perezosa) determina el resultado de una expresión sin necesidad de evaluar la totalidad de los operandos o los operadores. Por el contrario, la evaluación ingenua evalúa sistemáticamente todas las subexpresiones y operandos antes de aplicar el operador lógico final, incluso si el primer operando ya determinó de forma concluyente el valor de la expresión.
+
+[poner aquí la BNF de Operaciones Lógicas]
+
 ```c
 <op_log>  ::= <op_rel>
             | KW_NOT <op_rel>
@@ -68,24 +132,29 @@ Para transformar valores y observar relaciones entre ellos debemos contar con ex
             | <op_rel> KW_OR <op_rel>
 ```
 
-[poner aquí la BNF de Operaciones Lógicas]
-
 ## 3.5.4 Estructuras de Control
 ### El control del flujo de ejecución de instrucciones permite alterar el orden en el que cada sentencia es evaluada.
 
 ### Alternativa
 [Explique sobre la ambigüedad de la sentencia if]
 
+La ambigüedad en el diseño clásico de la sentencia `if` (dangling-else) ocurre porque una gramática genera una forma sentencial para la cual existen dos o más árboles de análisis sintáctico distintos. Esto ocurre cuando un `if` sin `else` está anidado dentro del bloque de otro `if` externo; el compilador no puede determinar de manera unívoca a cuál de los dos `if` pertenece el else subsecuente.
+
 [poner aquí la BNF y EBNF del if y explque sobre la ambiguedad o no de su propuesta]
+
 ```c
 <sent_if>  ::= KW_IF  '(' <op_log> ')' <bloque> KW_ELSE <bloque>
 ```
-La solución que propusimos fue utilizar una sentencia ``<bloque>`` la cual contiene a los delimitadores DELIM_DO y DELIM_END solucionando la problemática de ambiguedad del if
+
+El uso estricto del no terminal `<bloque>` definido con los marcadores explícitos DELIM_DO y DELIM_END soluciona formalmente la ambigüedad. Al exigir un final de bloque explícito, el árbol de análisis sintáctico se cierra forzosamente, por lo que un else posterior solo puede enlazarse a la estructura if que actualmente permanezca abierta.
+
 ```c
 <bloque>  ::= DELIM_DO <lista_sent> DELIM_END
 ```
+
 ### Ciclos
 [poner aquí las BNF de las estructuras de control de ciclos que hayan definido]
+
 ```c
 <sent_while>  ::= KW_WHILE '(' <op_log> ')' <bloque>
 <sent_for>  ::= KW_FOR '(' ID <op_log> ID ')' <bloque>

@@ -20,8 +20,7 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 
 <lts_id>           ::= ID | ID ',' <lts_id>
 
-<lts_expresiones>  ::= <expresion>
-                     | <expresion> ',' <lts_espresiones>
+<lts_expresiones>  ::= <expresion> | <expresion> ',' <lts_espresiones>
 ```
 
 ## 3.5.3 Asociatividad y Precendencia de operadores

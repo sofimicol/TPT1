@@ -16,10 +16,12 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 [poner aquí la BNF de la asignación múltiple y borrar esto]
 
 ```C
-<asignacin_mult>  ::= KW_LET <lts_id> '=' <lts_expresiones>
-<lts_id>  ::= ID | ID ',' <lts_id>
+<asignacin_mult>   ::= KW_LET <lts_id> '=' <lts_expresiones>
+
+<lts_id>           ::= ID | ID ',' <lts_id>
+
 <lts_expresiones>  ::= <expresion>
-                      | <expresion> ',' <lts_espresiones>
+                     | <expresion> ',' <lts_espresiones>
 ```
 
 ## 3.5.3 Asociatividad y Precendencia de operadores
@@ -38,13 +40,13 @@ La asociatividad define qué operador se evalúa primero cuando una expresión c
                | <expresion> "-" <termino> 
                | <termino>
 
-<termino>  ::= <termino> "*" <factor> 
-             | <termino> "/" <factor> 
-             | <factor>
+<termino>    ::= <termino> "*" <factor> 
+               | <termino> "/" <factor> 
+               | <factor>
 
-<factor>  ::= "(" <expresion> ")" 
-            | ID 
-            | LIT_NUM
+<factor>     ::= "(" <expresion> ")" 
+               | ID 
+               | LIT_NUM
 ```
 [poner aquí la Árbol de derivación de una expresión aritmética que use varios operadores y paréntesis]
 
@@ -157,7 +159,7 @@ El uso estricto del no terminal `<bloque>` definido con los marcadores explícit
 
 ```c
 <sent_while>  ::= KW_WHILE '(' <op_log> ')' <bloque>
-<sent_for>  ::= KW_FOR '(' ID <op_log> ID ')' <bloque>
+<sent_for>    ::= KW_FOR '(' ID <op_log> ID ')' <bloque>
 ```
 
 ## 3.5.5 Subrutinas

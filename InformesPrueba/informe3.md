@@ -104,9 +104,10 @@ El uso múltiple de un mismo símbolo de operador para diferentes propósitos es
                  | LIT_ELEM
                  | <lts_lista>
                  | <lts_conjunto>
-                 | <expresión> KW_EMPTY <expresion>
                  | <expresion> OP_UNION <expresion>
-                 | <expresión> KW_ANY <exprecion>
+                 | <expresión> OP_INTERSECTION<exprecion>
+                 | <expresión> OP_CONTAIN <exprecion>
+                 | <expresion> OP_DIFFERENCE <expresion>
                  | <expresión> KW_APPEND <exprecion>
                  | <expresión> KW_INSERT <exprecion>
 ```
@@ -115,6 +116,8 @@ El uso múltiple de un mismo símbolo de operador para diferentes propósitos es
 [poner aquí la BNF de Operaciones Relacionales]
 ```c
 <op_rel>  ::= <expresion> KW_IN <expresion>
+            | <expresión> KW_EMPTY
+            | <expresión> KW_ANY <exprecion>
             | <expresion> "==" <expresion>
             | <expresion> "!=" <expresion>
 ```

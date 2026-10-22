@@ -105,8 +105,8 @@ El uso múltiple de un mismo símbolo de operador para diferentes propósitos es
                  | <lts_lista>
                  | <lts_conjunto>
                  | <expresion> OP_UNION <expresion>
-                 | <expresión> OP_INTERSECTION<exprecion>
-                 | <expresión> OP_CONTAIN <exprecion>
+                 | <expresión> OP_INTERSECTION <exprecion>
+                 | <expresión> OP_RELATION <exprecion>
                  | <expresion> OP_DIFFERENCE <expresion>
                  | <expresión> KW_APPEND <exprecion>
                  | <expresión> KW_INSERT <exprecion>
@@ -116,7 +116,9 @@ El uso múltiple de un mismo símbolo de operador para diferentes propósitos es
 [poner aquí la BNF de Operaciones Relacionales]
 ```c
 <op_rel>  ::= <expresion> KW_IN <expresion>
-            | <expresión> KW_EMPTY
+            | <expresion> OP_EQUAL <expresion>
+            | <expresion> OP_NOT_EQUAL <expresion> 
+            | KW_EMPTY <espresion>
             | <expresión> KW_ANY <exprecion>
             | <expresion> "==" <expresion>
             | <expresion> "!=" <expresion>
@@ -130,10 +132,11 @@ La evaluación en cortocircuito (perezosa) determina el resultado de una expresi
 [poner aquí la BNF de Operaciones Lógicas]
 
 ```c
-<op_log>  ::= <op_rel>
-            | KW_NOT <op_rel>
-            | <op_rel> KW_AND <op_rel>
-            | <op_rel> KW_OR <op_rel>
+
+<op_log>  ::= <OP_rel>
+            | KW_NOT <op_log>
+            | <op_log> KW_AND <op_rel>
+            | <op_log> KW_OR <OP_rel>
 ```
 
 ## 3.5.4 Estructuras de Control
@@ -310,3 +313,46 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
 - Aceptar (Accept) / Error: Se acepta si se reduce la regla inicial (`programa`) al llegar al fin de archivo (`$`). Si no hay transición válida, se invoca a `yyerror()`.
 
 ### Primer Analizador Sintáctico de Aleph
+
+| Lexema | Token | Descripción |
+| ------ | ------ | ------ |
+| `set` | `KW_SET` | Tipo de dato / Palabra reservada: conjunto no duplicado. |
+| `list` | `KW_LIST` | Tipo de dato / Palabra reservada: secuencia o lista ordenada. |
+| `while` | `KW_WHILE` | Sentencia de control: inicio de iteración condicionada. |
+| `for` | `KW_FOR` | Sentencia de control: iteración sobre elementos de colección. |
+| `if` | `KW_IF` | Sentencia de control: bifurcación condicional de flujo. |
+| `else` | `KW_ELSE` | Sentencia de control: rama alternativa de selección. |
+| `do` | `DELIM_DO` | Delimitador de bloque: apertura de cuerpo de control o bucle. |
+| `end` | `DELIM_END` | Delimitador de bloque: cierre estructural de bloques o funciones. |
+| `break` | `KW_BREAK` | Sentencia de control: interrupción forzada de iteración. |
+| `return` | `KW_RETURN` | Sentencia de control: retorno explícito de valor de función. |
+| `let` | `KW_LET` | Declaración: desestructuración o nombramiento formal de componentes. |
+| `in` | `OP_IN` | Operador relacional: evaluación de pertenencia conjuntista o recorrido. |
+| `where` | `KW_WHERE` | Sentencia de control: cláusula de filtrado condicional en bucles. |
+| `empty` | `KW_EMPTY` | Literal / Constante: representa el conjunto o lista sin elementos. |
+| `union` | `OP_UNION` | Operador de colección: cálculo de la unión algebraica entre conjuntos. |
+| `intersenction`| `ÒP_INTERSECTION`| Operador de colección: calcula los algebraica de los conjuntos. |
+|`contain`|`OP_CONTAIN`| Operador de|
+|`relation`|`OP_RELATION`|Operador de |
+|`difference`|`OP_DOFFERENCE`| Operador de|
+| `any` | `KW_ANY` | Función primitiva: verificación existencial en colecciones. |
+| `append` | `KW_APPEND` | Función primitiva: inserción de elemento al final de una lista. |
+| `insert` | `KW_INSERT` | Función primitiva: incorporación de un elemento a un conjunto. |
+| `:` | `DELIM_COLON` | Símbolo especial: delimitador de apertura del bloque de función. |
+| `=` | `OP_ASSIGN` | Operador básico: asignación destructiva de valor a identificador. |
+| `==` | `OP_EQUAL` | Operador relacional: prueba de igualdad estructural estricta. |
+| `!=` | `OP_NOT_EQUAL` | Operador relacional: prueba de desigualdad estructural estricta. |
+| `;` | `DELIM_SEMICOLON` | Delimitador sintáctico: terminación explícita de sentencia. |
+| `,` | `DELIM_COMMA` | Separador sintáctico: división posicional en listas, conjuntos o parámetros. |
+| `(` | `DELIM_LPAREN` | Delimitador sintáctico: apertura de tuplas, condiciones o llamadas. |
+| `)` | `DELIM_RPAREN` | Delimitador sintáctico: cierre de tuplas, condiciones o llamadas. |
+| `{` | `DELIM_LBRACE` | Delimitador sintáctico: apertura de especificación literal de conjunto. |
+| `}` | `DELIM_RBRACE` | Delimitador sintáctico: cierre de especificación literal de conjunto. |
+| `[` | `DELIM_LBRACKET` | Delimitador sintáctico: apertura de especificación literal de lista. |
+| `]` | `DELIM_RBRACKET` | Delimitador sintáctico: cierre de especificación literal de lista. |
+| `'0'`, `'1'`, `'a'` | `LIT_ELEMENT` | Literales: representación atómica de un elemento base para conformar colecciones. |
+| `[A-Z][a-zA-Z0-9_]*` | `ID` | Identificadores: nombres de variables definidos por el usuario iniciados en mayúscula. |
+
+```c
+
+```

@@ -165,7 +165,7 @@ El uso estricto del no terminal `<bloque>` definido con los marcadores explícit
 ```c
 <sent_while>  ::= KW_WHILE '(' <op_log> ')' <bloque>
 
-<sent_for>    ::= KW_FOR '(' ID <op_log> ID ')' <bloque>
+<sent_for>    ::= KW_FOR '(' <op_log> ')' <bloque>
 ```
 
 ## 3.5.5 Subrutinas

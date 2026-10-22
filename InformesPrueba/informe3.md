@@ -105,7 +105,7 @@ El uso múltiple de un mismo símbolo de operador para diferentes propósitos es
                  | <lts_lista>
                  | <lts_conjunto>
                  | <expresion> OP_UNION <expresion>
-                 | <expresión> OP_INTERSECTION <exprecion>
+                 | <expresión> OP_INTERSECTION <expresion>
                  | <expresión> OP_RELATION <exprecion>
                  | <expresion> OP_DIFFERENCE <expresion>
                  | <expresión> KW_APPEND <exprecion>
@@ -164,6 +164,7 @@ El uso estricto del no terminal `<bloque>` definido con los marcadores explícit
 
 ```c
 <sent_while>  ::= KW_WHILE '(' <op_log> ')' <bloque>
+
 <sent_for>    ::= KW_FOR '(' ID <op_log> ID ')' <bloque>
 ```
 

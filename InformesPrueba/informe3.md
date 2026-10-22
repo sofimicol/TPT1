@@ -296,6 +296,16 @@ Dada la configuración se define formalmente el proceso del analizador LR basado
 Una tabla de análisis LR consta de dos partes, llamadas ACTION y GOTO. La parte ACTION tiene símbolos de estado como etiquetas de gilas y los símbolos terminales de la gramática como etiquetas de columnas. Dado el estado actual del analizador y el siguiente símbolo de entrada, la tabla especifica qué debe hacer el analizador.   
 ### Funcionamiento del analizador generado por Bison
 El analizador generado por Bison es un parser ascendente (bottom-up) determinista de la familia LALR(1) (Look-Ahead Left-to-Right with 1 token lookahead). Su tarea principal es reconstruir la inversa de una derivación por la extrema derecha a partir del flujo lineal de tokens que le provee el analizador léxico Flex.
+
+Internamente Bison mediante la función yyparse() dirige la ejecución.  Cada vez que la lógica del autómata necesita un nuevo token, invoca a yylex(), para escanear el código fuente en Aleph y le retorna el valor entero del token junto con sus atributos semánticos en yyval.
+
+El parser LALR(1) utiliza un Autómata con Pila donde cada entrada alterna un símbolo gramatical y un símbolo de estado numérico34: $$(S_0, \, X_1 S_1 \, X_2 S_2 \, \dots \, X_m S_m, \quad a_i a_{i+1} \dots \$)$$. 
+
+En cada paso, el parser consulta las tablas generadas durante la compilación de aleph.y mediante: 
+- Acción Shift (Desplazamiento): Si la secuencia de tokens aún no completa el lado derecho (RHS) de una regla, el token $a_i$ se desplaza a la pila junto con un nuevo estado $S_n$, y se solicita el siguiente token a Flex.
+- Acción Reduce (Reducción):Ocurre cuando en la cima de la pila se ha completado el lado derecho de una regla de producción. Bison retira de la pila los símbolos del manejador junto con sus estados, apila el símbolo no terminal del lado izquierdo (LHS) y consulta la tabla GOTO para determinar el nuevo estado de la cima. Se ejecutan las acciones en C asociadas a la regla.
+- Aceptar (Accept) / Error: Se acepta si se reduce la regla inicial (`programa`) al llegar al fin de archivo (`$`). Si no hay transición válida, se invoca a `yyerror()`.
+
 ### Primer Analizador Sintáctico de Aleph
 [explciar]
 

@@ -196,8 +196,7 @@ La elección de la producción no siempre es tan sencilla, ya sea porque se repi
 Un analizador sintáctico ascendente (bottom-up parser) construye un árbol de análisis sintáctico comenzando en las hojas y avanzando hacia la raíz. Este orden de análisis corresponde al inverso de una derivación por la extrema derecha. Es decir, las formas sentenciales de la derivación se producen en orden desde la última hasta la primera.
 En términos de la derivación, un analizador ascendente se puede describir de la siguiente manera: Dada una forma sentencial derecha, el analizador debe determinar qué subcadena es el lado derecho (RHS) de la regla de la gramática que debe reducirse a su lado izquierdo (LHS) para producir la forma sentencial anterior en la derivación por la derecha. Por ejemplo, el primer paso para un analizador ascendente es determinar qué subcadena de la oración inicial dada es el RHS que debe reducirse a su LHS correspondiente para obtener la penúltima forma sentencial de la derivación. 
 Elegir el RHS correcto a reducir no es sencillo, pues una forma sentencial derecha dada puede incluir más de un RHS de la gramática del lenguaje que se está analizando. El RHS correcto se denomina manejador (handle).
-1. Definición de manejador (handle)
-Definición: 
+1. Definición de manejador (handle):
 γ
 γ es el manejador (handle) de la forma sentencial derecha 
 β
@@ -239,8 +238,7 @@ rmαw.
 
 Esta definición, por sí sola, no siempre facilita la identificación del manejador de una forma sentencial derecha. Para comprender mejor este concepto, se definen las frases que están relacionadas con los manejadores.
 
-2. Definición de frase simple
-Definición: 
+2. Definición de frase simple: 
 γ
 γ es una frase simple de la forma sentencial derecha 
 β
@@ -288,15 +286,21 @@ Aquí,
 +
   indica uno o más pasos.
 ### Funcionamiento de los analizadores LR
-[explciar]
-
+Los analizadores sintácticos LR constituyen el algoritmo ascendente (bottom-up) mas difundido y utilizado en la implementación de procesadores de lenguajes deprogramación. Dadas sus características fundamentales: 
+- L (Left-to-right) que indica que el flujo de tokens de entrada se explora y analiza de izquierda a derecha. 
+- R (Rightmost derivarion): Especifica que la secuencia de análisis construye la inversa de una derivación por extrema derecha.
+Todo analizador LR es un reconocedor basado en un Autómata de Pila determinista (PDA). En esta arquitectura, la pila almacena una secuencia alternada de símbolos gramaticales (X) y símbolos de estado numéricos (S): **$$S_0 \, X_1 \, S_1 \, X_2 \, S_2 \dots X_m \, S_m \quad \text{(tope)}$$**
+Donde S0 representa el estado inicial del analizador y el estado Sm sera la información relevante acumulada del análisis sintáctico procesado hasta el momento.
+Una configuración completa del analizador LR se representa como el par ordenado compuesto por la pila y la cadena restante: **$$(S_0 \, X_1 \, S_1 \, X_2 \, S_2 \dots X_m \, S_m, \quad a_i \, a_{i+1} \dots a_n \$)$$**, donde $ se coloca allí durante la inicialización del analizador para la terminación normal del proceso.
+Dada la configuración se define formalmente el proceso del analizador LR basado en la tabla de análisis:
+Una tabla de análisis LR consta de dos partes, llamadas ACTION y GOTO. La parte ACTION tiene símbolos de estado como etiquetas de gilas y los símbolos terminales de la gramática como etiquetas de columnas. Dado el estado actual del analizador y el siguiente símbolo de entrada, la tabla especifica qué debe hacer el analizador.   
 ### Funcionamiento del analizador generado por Bison
 [explciar]
 
 ### Primer Analizador Sintáctico de Aleph
 [explciar]
 
-[Enterga de código (no poner el código aquí presentarlo en el repo correspondiente): analizar sintáctico completo sin semántica]
+
 
 
 ```c

@@ -193,12 +193,30 @@ La elección de la producción no siempre es tan sencilla, ya sea porque se repi
 [Ejemplo de módulos descendentes recursivos de las expresiones de Aleph]
 
 ## 3.6.3 Analizadores Bottom-Up
-[explciar]
+Un analizador sintáctico ascendente (bottom-up parser) construye un árbol de análisis sintáctico comenzando en las hojas y avanzando hacia la raíz. Este orden de análisis corresponde al inverso de una derivación por la extrema derecha. Es decir, las formas sentenciales de la derivación se producen en orden desde la última hasta la primera.
+En términos de la derivación, un analizador ascendente se puede describir de la siguiente manera: Dada una forma sentencial derecha, el analizador debe determinar qué subcadena es el lado derecho (RHS) de la regla de la gramática que debe reducirse a su lado izquierdo (LHS) para producir la forma sentencial anterior en la derivación por la derecha. Por ejemplo, el primer paso para un analizador ascendente es determinar qué subcadena de la oración inicial dada es el RHS que debe reducirse a su LHS correspondiente para obtener la penúltima forma sentencial de la derivación. 
+Elegir el RHS correcto a reducir no es sencillo, pues una forma sentencial derecha dada puede incluir más de un RHS de la gramática del lenguaje que se está analizando. El RHS correcto se denomina manejador (handle).
+El manejador de una forma sentencial derecha es único. La tarea de un analizador ascendente es encontrar el manejador de cualquier forma sentencial derecha dada que pueda ser generada por su gramática asociada.
 
-[Def Frase, Frase Simple, Manejador]
+A continuación, se ofrecen las definiciones de varias subcadenas de formas sentenciales que están relacionadas con los manejadores para brindar intuición sobre ellos.
 
-[Ventajas]
+**Definición:** \(\gamma\) es una frase de la forma sentencial derecha \(\beta\) si y solo si:
 
+\[
+S \Rightarrow^{*} \beta
+= \alpha_1 A \alpha_2
+\Rightarrow^{+} \alpha_1 \gamma \alpha_2
+\]
+
+En esta definición, \(\Rightarrow^{+}\) significa uno o más pasos de derivación.
+
+**Definición:** \(\gamma\) es una frase simple de la forma sentencial derecha \(\beta\) si y solo si:
+
+\[
+S \Rightarrow^{*} \beta
+= \alpha_1 A \alpha_2
+\Rightarrow \alpha_1 \gamma \alpha_2
+\]
 ### Funcionamiento de los analizadores LR
 [explciar]
 

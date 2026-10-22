@@ -196,84 +196,97 @@ La elección de la producción no siempre es tan sencilla, ya sea porque se repi
 Un analizador sintáctico ascendente (bottom-up parser) construye un árbol de análisis sintáctico comenzando en las hojas y avanzando hacia la raíz. Este orden de análisis corresponde al inverso de una derivación por la extrema derecha. Es decir, las formas sentenciales de la derivación se producen en orden desde la última hasta la primera.
 En términos de la derivación, un analizador ascendente se puede describir de la siguiente manera: Dada una forma sentencial derecha, el analizador debe determinar qué subcadena es el lado derecho (RHS) de la regla de la gramática que debe reducirse a su lado izquierdo (LHS) para producir la forma sentencial anterior en la derivación por la derecha. Por ejemplo, el primer paso para un analizador ascendente es determinar qué subcadena de la oración inicial dada es el RHS que debe reducirse a su LHS correspondiente para obtener la penúltima forma sentencial de la derivación. 
 Elegir el RHS correcto a reducir no es sencillo, pues una forma sentencial derecha dada puede incluir más de un RHS de la gramática del lenguaje que se está analizando. El RHS correcto se denomina manejador (handle).
-El manejador de una forma sentencial derecha es único. La tarea de un analizador ascendente es encontrar el manejador de cualquier forma sentencial derecha dada que pueda ser generada por su gramática asociada.
+1. Definición de manejador (handle)
+Definición: 
+γ
+γ es el manejador (handle) de la forma sentencial derecha 
+β
+β si y solo si:
 
-Definición: 
-𝛾
- es el manejador (handle) de la forma sentencial derecha 
-𝛽
-=
-𝛼
-𝛾
-𝑤
- si y solo si 
-𝑆
-⇒
-𝑟
-𝑚
-∗
-𝛼
-𝐴
-𝑤
-⇒
-𝑟
-𝑚
-𝛼
-𝛾
-𝑤
-.
-Esta definicion roporciona poca ayuda para encontrar el manejador de una forma sentencial derecha dada. Las subcadenas de formas sentenciales que están relacionadas con los manejadores para brindar intuición sobre ellos son:
-Definición: 
-𝛾
- es una frase de la forma sentencial derecha 
-𝛽
- si y solo si 
-𝑆
+S
 ⇒
 ∗
-𝛽
-=
-𝛼
-1
-𝐴
-𝛼
-2
+r
+m
+A
+w
+⇒
+d
+e
+r
+r
+m
+α
+w
+S⇒ 
+∗
+ rmAw⇒ 
+der
+​
+ rmαw
+La idea es identificar la producción que se utiliza en el último paso de una derivación por la derecha. Más precisamente, si la producción es 
+A
+→
+α
+A→α, entonces 
+α
+α es el manejador de la forma sentencial derecha 
+r
+m
+α
+w
+rmαw.
+
+Esta definición, por sí sola, no siempre facilita la identificación del manejador de una forma sentencial derecha. Para comprender mejor este concepto, se definen las frases que están relacionadas con los manejadores.
+
+2. Definición de frase simple
+Definición: 
+γ
+γ es una frase simple de la forma sentencial derecha 
+β
+β si y solo si:
+
+S
+⇒
+∗
+α
+A
+w
+⇒
+d
+e
+r
+α
+γ
+w
+S⇒ 
+∗
+ αAw⇒ 
+der
+​
+ αγw
+donde 
+A
+→
+γ
+A→γ es la producción aplicada en el último paso de la derivación por la derecha.
+
+Aquí, 
+⇒
+∗
+⇒ 
+∗
+  significa uno o más pasos de derivación según la convención de tu material; estrictamente, en la notación habitual, 
+⇒
+∗
+⇒ 
+∗
+  permite cero o más pasos, mientras que 
 ⇒
 +
-𝛼
-1
-𝛾
-𝛼
-2
-.
-
-En esta definición, 
-⇒
+⇒ 
 +
- significa uno o más pasos de derivación.
-
-Definición: 
-𝛾
- es una frase simple de la forma sentencial derecha 
-𝛽
- si y solo si 
-𝑆
-⇒
-∗
-𝛽
-=
-𝛼
-1
-𝐴
-𝛼
-2
-⇒
-𝛼
-1
-𝛾
-𝛼
-2
-.
+  indica uno o más pasos.
 ### Funcionamiento de los analizadores LR
 [explciar]
 

@@ -198,16 +198,36 @@ En términos de la derivación, un analizador ascendente se puede describir de l
 Elegir el RHS correcto a reducir no es sencillo, pues una forma sentencial derecha dada puede incluir más de un RHS de la gramática del lenguaje que se está analizando. El RHS correcto se denomina manejador (handle).
 El manejador de una forma sentencial derecha es único. La tarea de un analizador ascendente es encontrar el manejador de cualquier forma sentencial derecha dada que pueda ser generada por su gramática asociada.
 
-A continuación, se ofrecen las definiciones de varias subcadenas de formas sentenciales que están relacionadas con los manejadores para brindar intuición sobre ellos.
-
-A continuación, se ofrecen las definiciones de varias subcadenas de formas sentenciales que están relacionadas con los manejadores para brindar intuición sobre ellos.
-
+Definición: 
+𝛾
+ es el manejador (handle) de la forma sentencial derecha 
+𝛽
+=
+𝛼
+𝛾
+𝑤
+ si y solo si 
+𝑆
+⇒
+𝑟
+𝑚
+∗
+𝛼
+𝐴
+𝑤
+⇒
+𝑟
+𝑚
+𝛼
+𝛾
+𝑤
+.
+Esta definicion roporciona poca ayuda para encontrar el manejador de una forma sentencial derecha dada. Las subcadenas de formas sentenciales que están relacionadas con los manejadores para brindar intuición sobre ellos son:
 Definición: 
 𝛾
  es una frase de la forma sentencial derecha 
 𝛽
- si y solo si:
-
+ si y solo si 
 𝑆
 ⇒
 ∗
@@ -225,6 +245,7 @@ Definición:
 𝛾
 𝛼
 2
+.
 
 En esta definición, 
 ⇒
@@ -235,8 +256,7 @@ Definición:
 𝛾
  es una frase simple de la forma sentencial derecha 
 𝛽
- si y solo si:
-
+ si y solo si 
 𝑆
 ⇒
 ∗
@@ -253,6 +273,7 @@ Definición:
 𝛾
 𝛼
 2
+.
 ### Funcionamiento de los analizadores LR
 [explciar]
 

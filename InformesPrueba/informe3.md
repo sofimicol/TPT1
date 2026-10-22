@@ -295,8 +295,7 @@ Una configuración completa del analizador LR se representa como el par ordenado
 Dada la configuración se define formalmente el proceso del analizador LR basado en la tabla de análisis:
 Una tabla de análisis LR consta de dos partes, llamadas ACTION y GOTO. La parte ACTION tiene símbolos de estado como etiquetas de gilas y los símbolos terminales de la gramática como etiquetas de columnas. Dado el estado actual del analizador y el siguiente símbolo de entrada, la tabla especifica qué debe hacer el analizador.   
 ### Funcionamiento del analizador generado por Bison
-[explciar]
-
+El analizador generado por Bison es un parser ascendente (bottom-up) determinista de la familia LALR(1) (Look-Ahead Left-to-Right with 1 token lookahead). Su tarea principal es reconstruir la inversa de una derivación por la extrema derecha a partir del flujo lineal de tokens que le provee el analizador léxico Flex.
 ### Primer Analizador Sintáctico de Aleph
 [explciar]
 

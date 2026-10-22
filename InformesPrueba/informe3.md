@@ -200,23 +200,59 @@ El manejador de una forma sentencial derecha es único. La tarea de un analizado
 
 A continuación, se ofrecen las definiciones de varias subcadenas de formas sentenciales que están relacionadas con los manejadores para brindar intuición sobre ellos.
 
-**Definición:** \(\gamma\) es una frase de la forma sentencial derecha \(\beta\) si y solo si:
+A continuación, se ofrecen las definiciones de varias subcadenas de formas sentenciales que están relacionadas con los manejadores para brindar intuición sobre ellos.
 
-\[
-S \Rightarrow^{*} \beta
-= \alpha_1 A \alpha_2
-\Rightarrow^{+} \alpha_1 \gamma \alpha_2
-\]
+Definición: 
+𝛾
+ es una frase de la forma sentencial derecha 
+𝛽
+ si y solo si:
 
-En esta definición, \(\Rightarrow^{+}\) significa uno o más pasos de derivación.
+𝑆
+⇒
+∗
+𝛽
+=
+𝛼
+1
+𝐴
+𝛼
+2
+⇒
++
+𝛼
+1
+𝛾
+𝛼
+2
 
-**Definición:** \(\gamma\) es una frase simple de la forma sentencial derecha \(\beta\) si y solo si:
+En esta definición, 
+⇒
++
+ significa uno o más pasos de derivación.
 
-\[
-S \Rightarrow^{*} \beta
-= \alpha_1 A \alpha_2
-\Rightarrow \alpha_1 \gamma \alpha_2
-\]
+Definición: 
+𝛾
+ es una frase simple de la forma sentencial derecha 
+𝛽
+ si y solo si:
+
+𝑆
+⇒
+∗
+𝛽
+=
+𝛼
+1
+𝐴
+𝛼
+2
+⇒
+𝛼
+1
+𝛾
+𝛼
+2
 ### Funcionamiento de los analizadores LR
 [explciar]
 

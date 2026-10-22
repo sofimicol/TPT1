@@ -357,5 +357,63 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
 | `[A-Z][a-zA-Z0-9_]*` | `ID`              | Identificadores: nombres de variables definidos por el usuario iniciados en mayúscula.   |
 
 ```c
+<Aleph>  ::= <lts_sent>
+
+<lts_sent>  ::= <sent> ';' | <sent> ';' <lts_sent>
+
+<sent>            ::= <asignacion>
+                    | <asignacion_mul>
+                    | <expresion> 
+                    | <sent_while> 
+                    | <sent_if> 
+                    | <sent_for>
+
+<asignacion> ::= ID '=' <esprecion> | <asignacino_mult>
+
+asignacin_mult>   ::= KW_LET <lts_id> '=' <lts_expresiones>
+
+<lts_id>           ::= ID | ID ',' <lts_id>
+
+<lts_expresiones>  ::= <expresion> | <expresion> ',' <lts_espresiones>
+
+<expreciones>  ::= ID
+                 | LIT_ELEM
+                 | <lts_lista>
+                 | <lts_conjunto>
+                 | <expresion> OP_UNION <expresion>
+                 | <expresión> OP_INTERSECTION <exprecion>
+                 | <expresión> OP_RELATION <exprecion>
+                 | <expresion> OP_DIFFERENCE <expresion>
+                 | <expresión> KW_APPEND <exprecion>
+                 | <expresión> KW_INSERT <exprecion>
+
+<lts_lista>       ::= '[' <lts_expresiones> ']'
+                    | '[' ']'
+
+<lts_conjunto>    ::= '{' <lts_expresiones> ´}´
+                    | '{' '}'
+
+<sent_while>  ::= KW_WHILE '(' <op_log> ')' <bloque>
+
+<sent_for>    ::= KW_FOR '(' ID <op_log> ID ')' <bloque>
+
+<sent_if>  ::= KW_IF  '(' <op_log> ')' <bloque> KW_ELSE <bloque>
+
+<op_log>  ::= <OP_rel>
+            | KW_NOT <op_log>
+            | <op_log> KW_AND <op_rel>
+            | <op_log> KW_OR <OP_rel>
+
+<op_rel>  ::= <expresion> KW_IN <expresion>
+            | <expresion> OP_EQUAL <expresion>
+            | <expresion> OP_NOT_EQUAL <expresion> 
+            | KW_EMPTY <espresion>
+            | <expresión> KW_ANY <exprecion>
+            | <expresion> "==" <expresion>
+            | <expresion> "!=" <expresion>
+
+<bloque>          ::= DELIM_DO <lista_sent> DELIM_END
+
+
 
 ```

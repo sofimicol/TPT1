@@ -367,6 +367,7 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
                        | <lts_sent> <sent> ';'
   
 <bloque>           ::= DELIM_DO <lts_sent> DELIM_END
+                     | DELIM_DO DELIM_END
 
 <sent>             ::= <asignacion>
                      | <expresion> 
@@ -382,9 +383,10 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
 
 <sent_while>        ::= KW_WHILE '(' <op_log> ')' <bloque>
 
-<sent_for>          ::= KW_FOR '(' <op_log> ')' <bloque>
+<sent_for>          ::= KW_FOR '(' ID OP_IN <expresion> ')' <bloque>
 
-<sent_if>           ::= KW_IF '(' <op_log> ')' <bloque> KW_ELSE <bloque>
+<sent_if>           ::= KW_IF '(' <op_log> ')' <bloque>
+                      | KW_IF '(' <op_log> ')' <bloque> KW_ELSE <bloque>
 
 <lts_expresiones>   ::= <expresion> 
                       | <lts_expresiones> ',' <expresion>
@@ -395,7 +397,8 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
 <lts_conjunto>      ::= '{' <lts_expresiones> '}'
                       | '{' '}'
 
-<expresion>         ::= ID
+<expresion>         ::= '(' <expresion> ')'
+                      | ID
                       | LIT_ELEM
                       | <lts_lista>
                       | <lts_conjunto>
@@ -406,11 +409,13 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
                       | <expresion> KW_INSERT <expresion>
 
 <op_log>           ::= <op_rel>
-                     | KW_NOT <op_log>
+                     | '(' <op_log> ')'
+                     | KW_NOT <op_rel>
+                     | KW_NOT '(' <op_rel> '')'
                      | <op_log> KW_AND <op_rel>
                      | <op_log> KW_OR <op_rel>
 
-<op_rel>           ::= <expresion> KW_IN <expresion>
+<op_rel>           ::= <expresion> OP_IN <expresion>
                      | <expresion> "==" <expresion>
                      | <expresion> "!=" <expresion>
                      | KW_EMPTY <expresion>

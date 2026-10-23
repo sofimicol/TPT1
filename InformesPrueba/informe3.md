@@ -369,7 +369,6 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
 <bloque>           ::= DELIM_DO <lts_sent> DELIM_END
 
 <sent>             ::= <asignacion>
-                     | <asignacion_mult>
                      | <expresion> 
                      | <sent_while> 
                      | <sent_if> 

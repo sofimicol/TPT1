@@ -150,13 +150,15 @@ La ambigüedad en el diseño clásico de la sentencia `if` (dangling-else) ocurr
 [poner aquí la BNF y EBNF del if y explque sobre la ambiguedad o no de su propuesta]
 
 ```c
-<sent_if>  ::= KW_IF  '(' <op_log> ')' <bloque> KW_ELSE <bloque>
+<sent_if>  ::= KW_IF  '(' <op_log> ')' <bloque>
+             | KW_IF  '(' <op_log> ')' <bloque> KW_ELSE <bloque>
 ```
 
 El uso estricto del no terminal `<bloque>` definido con los marcadores explícitos DELIM_DO y DELIM_END soluciona formalmente la ambigüedad. Al exigir un final de bloque explícito, el árbol de análisis sintáctico se cierra forzosamente, por lo que un else posterior solo puede enlazarse a la estructura if que actualmente permanezca abierta.
 
 ```c
 <bloque>  ::= DELIM_DO <lista_sent> DELIM_END
+            | DELIM_DO DELIM_END
 ```
 
 ### Ciclos
@@ -165,7 +167,7 @@ El uso estricto del no terminal `<bloque>` definido con los marcadores explícit
 ```c
 <sent_while>  ::= KW_WHILE '(' <op_log> ')' <bloque>
 
-<sent_for>    ::= KW_FOR '(' <op_log> ')' <bloque>
+<sent_for>    ::= KW_FOR '(' ID OP_IN ID ')' <bloque>
 ```
 
 ## 3.5.5 Subrutinas

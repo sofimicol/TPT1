@@ -397,8 +397,7 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
 <lts_conjunto>      ::= '{' <lts_expresiones> '}'
                       | '{' '}'
 
-<expresion>         ::= '(' <expresion> ')'
-                      | ID
+<expresion>         ::= ID
                       | LIT_ELEM
                       | <lts_lista>
                       | <lts_conjunto>
@@ -409,7 +408,6 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
                       | <expresion> KW_INSERT <expresion>
 
 <op_log>           ::= <op_rel>
-                     | '(' <op_log> ')'
                      | KW_NOT <op_rel>
                      | KW_NOT '(' <op_rel> '')'
                      | <op_log> KW_AND <op_rel>

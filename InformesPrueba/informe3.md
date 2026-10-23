@@ -358,61 +358,62 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
 | `[A-Z][a-zA-Z0-9_]*` | `ID`              | Identificadores: nombres de variables definidos por el usuario iniciados en mayúscula.   |
 
 ```c
-<Aleph>  ::= <lts_sent>
 
-<lts_sent>  ::= <sent> ';' | <sent> ';' <lts_sent>
+<Aleph>            ::= <lts_sent>
 
-<sent>            ::= <asignacion>
-                    | <asignacion_mul>
-                    | <expresion> 
-                    | <sent_while> 
-                    | <sent_if> 
-                    | <sent_for>
+<lts_sent>         ::= <sent> ';'
+                       | <lts_sent> <sent> ';'
+  
+<bloque>           ::= DELIM_DO <lts_sent> DELIM_END
 
-<asignacion> ::= ID '=' <esprecion> | <asignacino_mult>
+<sent>             ::= <asignacion>
+                     | <asignacion_mult>
+                     | <expresion> 
+                     | <sent_while> 
+                     | <sent_if> 
+                     | <sent_for>
 
-asignacin_mult>   ::= KW_LET <lts_id> '=' <lts_expresiones>
+<asignacion>        ::= ID '=' <expresion>
 
-<lts_id>           ::= ID | ID ',' <lts_id>
+<asignacion_mult>   ::= KW_LET <lts_id> '=' <lts_expresiones>
 
-<lts_expresiones>  ::= <expresion> | <expresion> ',' <lts_espresiones>
+<lts_id>            ::= ID 
+                      | <lts_id> ',' ID
 
-<expreciones>  ::= ID
-                 | LIT_ELEM
-                 | <lts_lista>
-                 | <lts_conjunto>
-                 | <expresion> OP_UNION <expresion>
-                 | <expresión> OP_INTERSECTION <exprecion>
-                 | <expresión> OP_RELATION <exprecion>
-                 | <expresion> OP_DIFFERENCE <expresion>
-                 | <expresión> KW_APPEND <exprecion>
-                 | <expresión> KW_INSERT <exprecion>
+<sent_while>        ::= KW_WHILE '(' <op_log> ')' <bloque>
 
-<lts_lista>       ::= '[' <lts_expresiones> ']'
-                    | '[' ']'
+<sent_for>          ::= KW_FOR '(' <op_log> ')' <bloque>
 
-<lts_conjunto>    ::= '{' <lts_expresiones> ´}´
-                    | '{' '}'
+<sent_if>           ::= KW_IF '(' <op_log> ')' <bloque> KW_ELSE <bloque>
 
-<sent_while>  ::= KW_WHILE '(' <op_log> ')' <bloque>
+<lts_expresiones>   ::= <expresion> 
+                      | <lts_expresiones> ',' <expresion>
 
-<sent_for>    ::= KW_FOR '(' <op_log> ')' <bloque>
+<lts_lista>         ::= '[' <lts_expresiones> ']'
+                      | '[' ']'
 
-<sent_if>  ::= KW_IF  '(' <op_log> ')' <bloque> KW_ELSE <bloque>
+<lts_conjunto>      ::= '{' <lts_expresiones> '}'
+                      | '{' '}'
 
-<op_log>  ::= <OP_rel>
-            | KW_NOT <op_log>
-            | <op_log> KW_AND <op_rel>
-            | <op_log> KW_OR <OP_rel>
+<expresion>         ::= ID
+                      | LIT_ELEM
+                      | <lts_lista>
+                      | <lts_conjunto>
+                      | <expresion> OP_UNION <expresion>
+                      | <expresion> OP_INTERSECTION <expresion>
+                      | <expresion> OP_DIFFERENCE <expresion>
+                      | <expresion> KW_APPEND <expresion>
+                      | <expresion> KW_INSERT <expresion>
 
-<op_rel>  ::= <expresion> KW_IN <expresion>
-            | <expresion> OP_EQUAL <expresion>
-            | <expresion> OP_NOT_EQUAL <expresion> 
-            | KW_EMPTY <espresion>
-            | <expresión> KW_ANY <exprecion>
-            | <expresion> "==" <expresion>
-            | <expresion> "!=" <expresion>
+<op_log>           ::= <op_rel>
+                     | KW_NOT <op_log>
+                     | <op_log> KW_AND <op_rel>
+                     | <op_log> KW_OR <op_rel>
 
-<bloque>          ::= DELIM_DO <lista_sent> DELIM_END
+<op_rel>           ::= <expresion> KW_IN <expresion>
+                     | <expresion> "==" <expresion>
+                     | <expresion> "!=" <expresion>
+                     | KW_EMPTY <expresion>
+                     | <expresion> KW_ANY <expresion>
 
 ```

@@ -376,8 +376,7 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
                      | <sent_for>
 
 <asignacion>        ::= ID '=' <expresion>
-
-<asignacion_mult>   ::= KW_LET <lts_id> '=' <lts_expresiones>
+                      | KW_LET <lts_id> '=' <lts_expresiones>
 
 <lts_id>            ::= ID 
                       | <lts_id> ',' ID

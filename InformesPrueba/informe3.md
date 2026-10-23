@@ -396,7 +396,7 @@ asignacin_mult>   ::= KW_LET <lts_id> '=' <lts_expresiones>
 
 <sent_while>  ::= KW_WHILE '(' <op_log> ')' <bloque>
 
-<sent_for>    ::= KW_FOR '(' ID <op_log> ID ')' <bloque>
+<sent_for>    ::= KW_FOR '(' <op_log> ')' <bloque>
 
 <sent_if>  ::= KW_IF  '(' <op_log> ')' <bloque> KW_ELSE <bloque>
 
@@ -414,7 +414,5 @@ asignacin_mult>   ::= KW_LET <lts_id> '=' <lts_expresiones>
             | <expresion> "!=" <expresion>
 
 <bloque>          ::= DELIM_DO <lista_sent> DELIM_END
-
-
 
 ```

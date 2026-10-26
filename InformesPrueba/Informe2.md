@@ -42,18 +42,20 @@ Las tareas fundamentales de un analizador léxico (scanner) incluyen:
 "append"       { printf("KW_APPEND: %s\n", yytext); }
 "insert"       { printf("KW_INSERT: %s\n", yytext); }
 
-  /* OPERADORES DE COLECCIÓN, RELACIONALES Y LÓGICOS */
-"in"           { printf("OP_IN: %s\n", yytext); }
-"union"        { printf("OP_UNION: %s\n", yytext); }
-"intersection" { printf("OP_INTERSECTION: %s\n", yytext); }
-"contain"      { printf("OP_CONTAIN: %s\n", yytext); }
-"difference"   { printf("OP_DIFFERENCE: %s\n", yytext); }
-"&&"           { printf("KW_AND: %s\n", yytext); }
-"!"            { printf("KW_NOT: %s\n", yytext); }
-"||"           { printf("KW_OR: %s\n", yytext); }
-"=="           { printf("OP_EQUAL: %s\n", yytext); }
-"!="           { printf("OP_NOT_EQUAL: %s\n", yytext); }
-"="            { printf("OP_ASSIGN: %s\n", yytext); }
+/* OPERADORES DE COLECCIÓN, RELACIONALES Y LÓGICOS */
+"in"       { printf("OP_IN: %s\n", yytext); }
+"union"    { printf("OP_UNION: %s\n", yytext); }
+"inter"    { printf("OP_INTERSECTION: %s\n", yytext); }
+"diff"     { printf("OP_DIFFERENCE: %s\n", yytext); }
+"has"      { printf("OP_HAS: %s\n", yytext); }
+
+"and"      { printf("KW_AND: %s\n", yytext); }
+"or"       { printf("KW_OR: %s\n", yytext); }
+"not"      { printf("KW_NOT: %s\n", yytext); }
+
+"=="       { printf("OP_EQUAL: %s\n", yytext); }
+"!="       { printf("OP_NOT_EQUAL: %s\n", yytext); }
+"="        { printf("OP_ASSIGN: %s\n", yytext); }
 
   /* DELIMITADORES Y SÍMBOLOS ESPECIALES */
 "do"           { printf("DELIM_DO: %s\n", yytext); }
@@ -109,8 +111,7 @@ enum yytokentype {
     OP_IN = 274,
     OP_UNION = 275,
     OP_INTERSECTION = 276,
-    OP_CONTAIN = 277,
-    OP_RELATION = 278,
+    OP_HAS = 277,
     OP_DIFFERENCE = 279,
     KW_AND = 280,
     KW_NOT = 281,
@@ -142,7 +143,6 @@ enum yytokentype {
 "for"          { return KW_FOR; }
 "if"           { return KW_IF; }
 "else"         { return KW_ELSE; }
-"break"        { return KW_BREAK; }
 "return"       { return KW_RETURN; }
 "let"          { return KW_LET; }
 "where"        { return KW_WHERE; }
@@ -150,20 +150,20 @@ enum yytokentype {
 "any"          { return KW_ANY; }
 "append"       { return KW_APPEND; }
 "insert"       { return KW_INSERT; }
+/* OPERADORES DE COLECCIÓN, RELACIONALES Y LÓGICOS */
+"in"       { return OP_IN; }
+"union"    { return OP_UNION; }
+"inter"    { return OP_INTERSECTION; }
+"diff"     { return OP_DIFFERENCE; }
+"has"      { return OP_HAS; }
 
-  /* OPERADORES DE COLECCIÓN, RELACIONALES Y LÓGICOS */
-"in"           { return OP_IN; }
-"union"        { return OP_UNION; }
-"intersection" { return OP_INTERSECTION; }
-"contain"      { return OP_CONTAIN; }
-"difference"   { return OP_DIFFERENCE; }
-"&&"           { return KW_AND; }
-"!"            { return KW_NOT; }
-"||"           { return KW_OR; }
-"=="           { return OP_EQUAL; }
-"!="           { return OP_NOT_EQUAL; }
-"="            { return OP_ASSIGN; }
+"and"      { return KW_AND; }
+"or"       { return KW_OR; }
+"not"      { return KW_NOT; }
 
+"=="       { return OP_EQUAL; }
+"!="       { return OP_NOT_EQUAL; }
+"="        { return OP_ASSIGN; }
   /* DELIMITADORES Y SÍMBOLOS ESPECIALES */
 "do"           { return DELIM_DO; }
 "end"          { return DELIM_END; }

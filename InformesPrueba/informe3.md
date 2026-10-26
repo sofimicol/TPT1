@@ -274,7 +274,7 @@ ebnf
 <lts_expresiones> ::= <expresion> { ',' <expresion> }
 ```
 
-B.Ejemplo sobre expresiones 
+B.Ejemplo de módulos descendentes recursivos de las expresiones de Aleph
 ```c
 #include <stdio.h>
 #include <stdlib.h>

@@ -16,11 +16,14 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 [poner aquí la BNF de la asignación múltiple y borrar esto]
 
 ```C
-<asignacin_mult>   ::= KW_LET <lts_id> '=' <lts_expresiones>
+<asignacion>       ::= ID '=' <expresion>
+                     | KW_LET <lts_id> '=' <lts_expresiones>
 
-<lts_id>           ::= ID | ID ',' <lts_id>
+<lts_id>           ::= ID 
+                     | <lts_id> ',' ID
 
-<lts_expresiones>  ::= <expresion> | <expresion> ',' <lts_espresiones>
+<lts_expresiones>  ::= <expresion> 
+                     | <lts_expresiones> ',' <expresion>
 ```
 
 ## 3.5.3 Asociatividad y Precendencia de operadores
@@ -100,28 +103,23 @@ El uso múltiple de un mismo símbolo de operador para diferentes propósitos es
 ### Expresiones: Operaciones con Conjuntos y Listas
 [poner aquí la BNF de Operaciones con Conjuntos y Listas]
 ```C
-<expreciones>  ::= ID
-                 | LIT_ELEM
-                 | <lts_lista>
-                 | <lts_conjunto>
-                 | <expresion> OP_UNION <expresion>
-                 | <expresión> OP_INTERSECTION <expresion>
-                 | <expresión> OP_RELATION <exprecion>
-                 | <expresion> OP_DIFFERENCE <expresion>
-                 | <expresión> KW_APPEND <exprecion>
-                 | <expresión> KW_INSERT <exprecion>
+<expresion>        ::= <expresion> OP_UNION <termino>
+                     | <expresion> OP_INTERSECTION <termino>
+                     | <expresion> OP_DIFFERENCE <termino>
+                     | <expresion> KW_APPEND <termino>
+                     | <expresion> KW_INSERT <termino>
+                     | <termino>
+
 ```
 
 ### Expresiones: Operaciones Relacionales
 [poner aquí la BNF de Operaciones Relacionales]
 ```c
-<op_rel>  ::= <expresion> KW_IN <expresion>
-            | <expresion> OP_EQUAL <expresion>
-            | <expresion> OP_NOT_EQUAL <expresion> 
-            | KW_EMPTY <espresion>
-            | <expresión> KW_ANY <exprecion>
-            | <expresion> "==" <expresion>
-            | <expresion> "!=" <expresion>
+<op_rel>           ::= <expresion> OP_IN <expresion>
+                     | <expresion> OP_EQUAL <expresion>
+                     | <expresion> OP_NOT_EQUAL <expresion>
+                     | KW_EMPTY <expresion>
+                     | <expresion> KW_ANY <expresion>
 ```
 
 ### Expresiones: Operaciones Lógicas
@@ -132,11 +130,10 @@ La evaluación en cortocircuito (perezosa) determina el resultado de una expresi
 [poner aquí la BNF de Operaciones Lógicas]
 
 ```c
-
-<op_log>  ::= <OP_rel>
-            | KW_NOT <op_log>
-            | <op_log> KW_AND <op_rel>
-            | <op_log> KW_OR <OP_rel>
+<op_log>           ::= <op_rel>
+                     | KW_NOT <op_log>
+                     | <op_log> KW_AND <op_rel>
+                     | <op_log> KW_OR <op_rel>
 ```
 
 ## 3.5.4 Estructuras de Control
@@ -165,9 +162,9 @@ El uso estricto del no terminal `<bloque>` definido con los marcadores explícit
 [poner aquí las BNF de las estructuras de control de ciclos que hayan definido]
 
 ```c
-<sent_while>  ::= KW_WHILE '(' <op_log> ')' <bloque>
+<sent_while>       ::= KW_WHILE '(' <op_log> ')' <bloque>
 
-<sent_for>    ::= KW_FOR '(' ID OP_IN ID ')' <bloque>
+<sent_for>         ::= KW_FOR '(' ID OP_IN <expresion> ')' <bloque>
 ```
 
 ## 3.5.5 Subrutinas

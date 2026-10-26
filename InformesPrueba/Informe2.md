@@ -272,7 +272,7 @@ A continuación, presentamos un subconjunto general en BNF que abarca las estruc
 <condicion>        ::= <expresion> "==" <expresion> 
                      | <expresion> "!=" <expresion> 
 
-<expresion>        ::= IDE
+<expresion>        ::= ID
                      | LIT_ELEMENT
                      | <lts_lista> 
                      | <lts_conjunto>

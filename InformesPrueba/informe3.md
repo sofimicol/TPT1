@@ -189,7 +189,46 @@ Constituye un árbol de análisis en preorden. Dado el árbol de análisis sint�
 La forma general de una forma sentencial izquierda es wAα donde: w es una cadena de símbolos terminales, A es un no terminal, y α es una cadena mixta. Como w contiene solo terminales, A es el no terminal más a la izquierda en la forma sentencial, por lo que es el que debe expandirse para obtener la siguiente forma sentencial en una derivación más a la izquierda. El analizador deberá determinar desde la gramática, la producción correcta que contienen a A en su lado izquierdo y que será utilizada para determinar la siguiente forma sentencial, este será el problema de decisión de los analizadores top-down.
 
 ### Gramáticas LL
-[explicar]
+Las gramáticas LL constituyen un marco teórico fundamental para el diseño e implementación de analizadores sintácticos deterministas de tipo descendente (Top-Down). La denominación LL responde a: primera L (Left-to-right) indica que la cadena de tokens del flujo de entrada se lee y explora secuencialmente de izquierda a derecha y la segunda L (Leftmost derivation) especifica que el analizador construye una derivación por la extrema izquierda (leftmost derivation), expandiendo siempre la variable sintáctica no terminal situada más a la izquierda en cada aso de análisis.
+Cuando el algoritmo toma decisiones de análisis examinando un único token de anticipación (lookahead), la gramática se clasifica formalmente como LL.
+En cada paso del análisis descendente, la forma sentencial izquierda es wAα, con w una cadena compuesta únicamente por símbolos terminales ya procesados, A es la variable sintáctica (no terminal) más a la izquierda y α es una cadena mixta. El problema de decisión del analizador LL es seleccionar la producción correcta comparando el siguiente token de entrada con los símbolos terminales que pueden ser generados al inicio de cada lado derecho (RHS) de las producciones de A.
+
+Para garantizar que el analizador determine unívocamente cuál producción aplicar al expandir una variable A que posee múltiples alternativas, los primeros símbolos terminales que pueden derivarse de cada RHS no pueden derivar en A.
+Se define FIRST (αi) como el conjunto de terminales que pueden aparecer al inicio de una cadena derivada a partir de αi.
+En una gramática LL(1), para cada alternativa de una producción 
+A
+→
+α
+1
+∣
+α
+2
+∣
+⋯
+∣
+α
+n
+, los conjuntos FIRST de las alternativas deben ser disjuntos entre sí:
+
+FIRST
+(
+α
+i
+)
+∩
+FIRST
+(
+α
+j
+)
+=
+∅
+para todo 
+i
+≠
+j
+
+Esto significa que dos alternativas no deben comenzar con el mismo símbolo terminal, para que el analizador sintáctico pueda elegir una alternativa mirando únicamente el siguiente símbolo de entrada.
 
 ### Analizadores Descendentes Recursivos
 Los analizadores descendientes recursivos constan de un conjunto de subprogrmas, mayormente recursivos. Cada uno de los subprogramas se asocia a una variable sintáctica de la Gramática Libre de Contexto. Por ejemplo, dada una gramática que posee las expresiones aritméticas, que en general tiene tres variables sintácticas: <expresión> <termino> <factor>, habrá un módulo asociado a cada de ellas. El código del subprograma, asociada a cada una de las variables, describe el RHS de la producción a la que esta asociado ese subprograma. 

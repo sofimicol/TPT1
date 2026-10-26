@@ -340,7 +340,6 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
 | `union`              | `OP_UNION`        | `OP_UNION`        | Operador de colección: cálculo de la unión algebraica entre conjuntos.                   |
 | `intersection`       | `OP_INTERSECTION` | `OP_INTERSECTION` | Operador de colección: cálculo de la intersección entre conjuntos.                       |
 | `contain`            | `OP_CONTAIN`      | `OP_CONTAIN`      | Operador de colección: verificación de pertenencia de un elemento en un conjunto o lista.|
-| `relation`           | `OP_RELATION`     | `OP_RELATION`     | Operador relacional: define o evalúa una relación entre expresiones.                     |
 | `difference`         | `OP_DIFFERENCE`   | `OP_DIFFERENCE`   | Operador de colección: cálculo de la diferencia algebraica entre conjuntos.              |
 | `any`                | `KW_ANY`          | `KW_ANY`          | Función primitiva: verificación existencial en colecciones.                              |
 | `append`             | `KW_APPEND`       | `KW_APPEND`       | Función primitiva: inserción de elemento al final de una lista.                          |

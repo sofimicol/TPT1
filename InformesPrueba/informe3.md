@@ -255,14 +255,6 @@ Agregando  la estratificación por niveles de precedencia ($\langle \text{expres
 A. Reescritura Gramatical Formal en EBNF
 ```c
 
-Se conservan los nombres de tokens de delimitación y las operaciones que sí existen en Aleph.
-
-A. Reescritura Gramatical Formal en EBNF
-Reemplaza tu apartado A por este bloque:
-
-
-text
-
 <expresion> ::= <termino> {
                    ( OP_UNION
                    | OP_INTERSECTION
@@ -299,10 +291,6 @@ B.Ejemplo de módulos descendentes recursivos de las expresiones de Aleph
 #include <stdio.h>
 #include <stdlib.h>
 
-/*
- * Codigos de tokens utilizados por el scanner original de Aleph.
- * Deben coincidir con los valores devueltos por yylex().
- */
 enum yytokentype {
     KW_EMPTY          = 270,
     KW_APPEND         = 272,

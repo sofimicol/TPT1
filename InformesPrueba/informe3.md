@@ -317,6 +317,11 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
 
 ### Primer Analizador Sintáctico de Aleph
 
+[explciar]
+
+[Enterga de código (no poner el código aquí presentarlo en el repo correspondiente): analizar sintáctico completo sin semántica]
+
+
 ### Tokens y Lexemas tabla actualizada
 
 | Lexema               | Token             | Token Act         | Descripción                                                                              |

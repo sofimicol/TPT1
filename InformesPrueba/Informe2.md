@@ -212,7 +212,7 @@ LIT (Literal): identifica valores constantes escritos directamente en el código
 ## 3.4. Descripción Formal de la Sintaxis
 Los lenguajes de programación requieren una interpretación de sus sentencias sin ambigüedades, su descripción, a los fines de comunicar su funcionamiento, tanto a los usuarios de los mismos como a quienes realizan su implementación, requiere herramientas formales.
 
-# SINTAXIS DE LOS LP
+## SINTAXIS DE LOS LP
 
 La sintaxis de un lenguaje de programación establece el conjunto de reglas formales que determinan cómo deben combinarse los símbolos del alfabeto del lenguaje (tokens) para construir sentencias, expresiones y estructuras válidas. Se enfoca estrictamente en la forma y organización jerárquica del código, siendo independiente del significado computacional o los efectos de ejecución (semántica).
 
@@ -231,45 +231,53 @@ La EBNF (Forma de Backus-Naur Extendida) optimiza esta notación incorporando me
 A continuación, presentamos un subconjunto general en BNF que abarca las estructuras de control principales y la definición de funciones diseñadas en nuestro primer prototipo algorítmico de Aleph:
 
 ```c
-<programa> ::= <lts_sentencias>
+<Aleph>            ::= <lts_sent>
 
-<lts_sentencias> ::= <sent_simple> ";" 
-                   | <sent_simple> ";" <lts_sentencias> 
-                   | <estruc_control> 
-                   | <estruc_control> <lts_sentencias>
+<lts_sent>         ::= <sent> ';'
+                     | <lts_sent> <sent> ';'
+  
+<bloque>           ::= DELIM_DO <lts_sent> DELIM_END
+                     | DELIM_DO DELIM_END
 
-<sent_simple> ::= <asignacion> 
-                | "return" <expresion> 
-                | "break"
+<sent>             ::= <asignacion>
+                     | <expresion> 
+                     | <sent_while> 
+                     | <sent_if> 
+                     | <sent_for>
+                     | KW_RETURN <expresion>
+                     | KW_BREAK
 
-<asignacion> ::= IDENTIFIER "=" <expresion>
+<asignacion>       ::= ID '=' <expresion>
+                     | KW_LET <lts_id> '=' <lts_expresiones>
 
-<estruc_control> ::= <sent_if> 
-                   | <sent_while> 
-                   | <sent_for>
+<lts_id>           ::= ID 
+                     | <lts_id> ',' ID
 
-<sent_if> ::= "if" "(" <condicion> ")" "do" <lts_sentencias> "end"
-            | "if" "(" <condicion> ")" "do" <lts_sentencias> "else" <lts_sentencias> "end"
+<sent_if>          ::= KW_IF '(' <op_log> ')' <bloque>
+                     | KW_IF '(' <op_log> ')' <bloque> KW_ELSE <bloque>
 
-<sent_while> ::= "while" "(" <condicion> ")" "do" <lts_sentencias> "end"
+<sent_while>       ::= KW_WHILE '(' <op_log> ')' <bloque>
 
-<sent_for> ::= "for" "(" IDENTIFIER "in" IDENTIFIER ")" "do" <lts_sentencias> "end"
+<sent_for>         ::= KW_FOR '(' ID OP_IN <expresion> ')' <bloque>
 
-<condicion> ::= <expresion> "==" <expresion> 
-              | <expresion> "!=" <expresion> 
+<condicion>        ::= <expresion> "==" <expresion> 
+                     | <expresion> "!=" <expresion> 
 
-<expresion> ::= <expresion> "+" <expresion>
-              | <expresion> "-" <expresion>
-              | <expresion> "*" <expresion>
-              | <expresion> "/" <expresion>
-              | IDENTIFIER
-              | LIT_NUMBER
-              | <lts_lista> 
-              | <lts_conjunto>
+<expresion>        ::= IDENTIFIER
+                     | LIT_ELEMENT
+                     | <lts_lista> 
+                     | <lts_conjunto>
+                     | <expresion> OP_UNION <termino>
+                     | <expresion> OP_INTERSECTION <termino>
+                     | <expresion> OP_DIFFERENCE <termino>
+                     | <expresion> KW_APPEND <termino>
+                     | <expresion> KW_INSERT <termino>
 
-<lts_lista> ::= "[" <lts_expresiones> "]"
+<lts_lista>        ::= '[' <lts_expresiones> ']'
+                     | '[' ']'
 
-<lts_conjunto> ::= "{" <lts_expresiones> "}"
+<lts_conjunto>     ::= '{' <lts_expresiones> '}'
+                     | '{' '}'
 
 <lts_expresiones> ::= <expresion> 
                     | <expresion> "," <lts_expresiones>

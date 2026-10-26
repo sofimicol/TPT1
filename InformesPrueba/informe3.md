@@ -254,140 +254,166 @@ Agregando  la estratificación por niveles de precedencia ($\langle \text{expres
 
 A. Reescritura Gramatical Formal en EBNF
 ```c
-ebnf
-<expresion> ::= <termino> { (OP_UNION | KW_APPEND | KW_INSERT) <termino> }
 
-<termino> ::= <factor> { ('+' | '-') <factor> }
+Se conservan los nombres de tokens de delimitación y las operaciones que sí existen en Aleph.
 
-<factor> ::= IDENTIFIER
-           | LIT_CHAR
-           | LIT_BOOLEAN
+A. Reescritura Gramatical Formal en EBNF
+Reemplaza tu apartado A por este bloque:
+
+
+text
+
+<expresion> ::= <termino> {
+                   ( OP_UNION
+                   | OP_INTERSECTION
+                   | OP_DIFFERENCE
+                   | KW_APPEND
+                   | KW_INSERT
+                   ) <termino>
+                 }
+
+<termino> ::= <factor>
+
+<factor> ::= ID
+           | LIT_ELEMENT
            | KW_EMPTY
-           | '(' <expresion> ')'
+           | DELIM_LPAREN <expresion> DELIM_RPAREN
            | <lista>
            | <conjunto>
 
-<lista> ::= '[' [ <lts_expresiones> ] ']'
+<lista> ::= DELIM_LBRACKET
+            [ <lts_expresiones> ]
+            DELIM_RBRACKET
 
-<conjunto> ::= '{' [ <lts_expresiones> ] '}'
+<conjunto> ::= DELIM_LBRACE
+               [ <lts_expresiones> ]
+               DELIM_RBRACE
 
-<lts_expresiones> ::= <expresion> { ',' <expresion> }
+<lts_expresiones> ::= <expresion>
+                      { DELIM_COMMA <expresion> }
 ```
 
 B.Ejemplo de módulos descendentes recursivos de las expresiones de Aleph
 ```c
+
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Códigos enteros de los tokens provistos por el analizador léxico (Flex) */
+/*
+ * Codigos de tokens utilizados por el scanner original de Aleph.
+ * Deben coincidir con los valores devueltos por yylex().
+ */
 enum yytokentype {
-    KW_SET = 258,
-    KW_LIST = 259,
-    KW_BOOLEAN = 260,
-    KW_EMPTY = 272,
-    OP_UNION = 273,
-    KW_APPEND = 275,
-    KW_INSERT = 276,
-    LIT_BOOLEAN = 277,
-    DELIM_COMMA = 283,
-    DELIM_LPAREN = 284,
-    DELIM_RPAREN = 285,
-    DELIM_LBRACE = 286,
-    DELIM_RBRACE = 287,
-    DELIM_LBRACKET = 288,
-    DELIM_RBRACKET = 289,
-    LIT_CHAR = 290,
-    IDENTIFIER = 291
+    KW_EMPTY          = 270,
+    KW_APPEND         = 272,
+    KW_INSERT         = 273,
+
+    OP_UNION          = 275,
+    OP_INTERSECTION   = 276,
+    OP_DIFFERENCE     = 279,
+
+    DELIM_COMMA       = 288,
+    DELIM_LPAREN      = 289,
+    DELIM_RPAREN      = 290,
+    DELIM_LBRACE      = 291,
+    DELIM_RBRACE      = 292,
+    DELIM_LBRACKET    = 293,
+    DELIM_RBRACKET    = 294,
+
+    LIT_ELEMENT       = 295,
+    ID                = 296
 };
 
-/* Variables globales de comunicación con el scanner */
-extern int nextToken;
-extern char yytext[];
+/* Interfaz con el analizador lexico generado por Flex. */
 extern int yylex(void);
+extern char *yytext;
+extern FILE *yyin;
 
-/* Declaraciones adelantadas de los subprogramas sintácticos */
+/* Token de anticipacion. */
+int nextToken;
+
+/* Prototipos de los modulos sintacticos. */
 void expresion(void);
 void termino(void);
 void factor(void);
 void lista(void);
 void conjunto(void);
 void lts_expresiones(void);
+
+void match(int expectedToken);
 void error_sintactico(const char *mensaje);
 
-/* Función auxiliar match: verifica el token actual y solicita el siguiente */
-void match(int expectedToken) {
+
+/*
+ * Verifica que el token actual sea el esperado.
+ * Si coincide, solicita el siguiente token al scanner.
+ */
+void match(int expectedToken)
+{
     if (nextToken == expectedToken) {
         nextToken = yylex();
     } else {
         error_sintactico(
-            "Token inesperado no coincide con la regla gramatical"
+            "El token no coincide con la regla gramatical"
         );
     }
 }
 
+
 /*
  * <expresion> ::= <termino>
- *                 { (OP_UNION | KW_APPEND | KW_INSERT) <termino> }
- *
- * El bucle while implementa la repetición de EBNF.
+ *                 { (OP_UNION
+ *                   | OP_INTERSECTION
+ *                   | OP_DIFFERENCE
+ *                   | KW_APPEND
+ *                   | KW_INSERT)
+ *                   <termino> }
  */
-void expresion(void) {
-    printf("Entrando a <expresion>\n");
-
+void expresion(void)
+{
     termino();
 
     while (nextToken == OP_UNION ||
+           nextToken == OP_INTERSECTION ||
+           nextToken == OP_DIFFERENCE ||
            nextToken == KW_APPEND ||
            nextToken == KW_INSERT) {
 
-        int op = nextToken;
-        match(op);
+        int operador = nextToken;
+
+        match(operador);
         termino();
     }
-
-    printf("Saliendo de <expresion>\n");
 }
 
+
 /*
- * <termino> ::= <factor> { ('+' | '-') <factor> }
+ * <termino> ::= <factor>
  */
-void termino(void) {
-    printf("Entrando a <termino>\n");
-
+void termino(void)
+{
     factor();
-
-    while (nextToken == '+' || nextToken == '-') {
-        int op = nextToken;
-        match(op);
-        factor();
-    }
-
-    printf("Saliendo de <termino>\n");
 }
 
+
 /*
- * <factor> ::= IDENTIFIER
- *            | LIT_CHAR
- *            | LIT_BOOLEAN
+ * <factor> ::= ID
+ *            | LIT_ELEMENT
  *            | KW_EMPTY
- *            | '(' <expresion> ')'
+ *            | DELIM_LPAREN <expresion> DELIM_RPAREN
  *            | <lista>
  *            | <conjunto>
  */
-void factor(void) {
-    printf("Entrando a <factor>\n");
-
+void factor(void)
+{
     switch (nextToken) {
-        case IDENTIFIER:
-            match(IDENTIFIER);
+
+        case ID:
+            match(ID);
             break;
 
-        case LIT_CHAR:
-            match(LIT_CHAR);
-            break;
-
-        case LIT_BOOLEAN:
-            match(LIT_BOOLEAN);
+        case LIT_ELEMENT:
+            match(LIT_ELEMENT);
             break;
 
         case KW_EMPTY:
@@ -410,19 +436,19 @@ void factor(void) {
 
         default:
             error_sintactico(
-                "Lexema no válido al inicio de <factor>"
+                "Token inesperado al comenzar un factor"
             );
     }
-
-    printf("Saliendo de <factor>\n");
 }
 
-/*
- * <lista> ::= '[' [ <lts_expresiones> ] ']'
- */
-void lista(void) {
-    printf("Entrando a <lista>\n");
 
+/*
+ * <lista> ::= DELIM_LBRACKET
+ *             [ <lts_expresiones> ]
+ *             DELIM_RBRACKET
+ */
+void lista(void)
+{
     match(DELIM_LBRACKET);
 
     if (nextToken != DELIM_RBRACKET) {
@@ -430,16 +456,16 @@ void lista(void) {
     }
 
     match(DELIM_RBRACKET);
-
-    printf("Saliendo de <lista>\n");
 }
 
-/*
- * <conjunto> ::= '{' [ <lts_expresiones> ] '}'
- */
-void conjunto(void) {
-    printf("Entrando a <conjunto>\n");
 
+/*
+ * <conjunto> ::= DELIM_LBRACE
+ *                [ <lts_expresiones> ]
+ *                DELIM_RBRACE
+ */
+void conjunto(void)
+{
     match(DELIM_LBRACE);
 
     if (nextToken != DELIM_RBRACE) {
@@ -447,15 +473,15 @@ void conjunto(void) {
     }
 
     match(DELIM_RBRACE);
-
-    printf("Saliendo de <conjunto>\n");
 }
+
 
 /*
  * <lts_expresiones> ::= <expresion>
- *                       { ',' <expresion> }
+ *                       { DELIM_COMMA <expresion> }
  */
-void lts_expresiones(void) {
+void lts_expresiones(void)
+{
     expresion();
 
     while (nextToken == DELIM_COMMA) {
@@ -464,18 +490,60 @@ void lts_expresiones(void) {
     }
 }
 
-/* Manejo de errores sintácticos */
-void error_sintactico(const char *mensaje) {
-    fprintf(
-        stderr,
-        "Error sintáctico cerca de '%s': %s (código token: %d)\n",
-        yytext,
-        mensaje,
-        nextToken
-    );
 
-    exit(1);
+/* Emite un mensaje y finaliza ante un error sintactico. */
+void error_sintactico(const char *mensaje)
+{
+    fprintf(stderr,
+            "Error sintactico cerca de '%s': %s "
+            "(token: %d)\n",
+            yytext != NULL ? yytext : "",
+            mensaje,
+            nextToken);
+
+    exit(EXIT_FAILURE);
 }
+
+
+/*
+ * Punto de entrada del parser.
+ * Analiza una expresion completa hasta llegar al fin
+ * de la entrada.
+ */
+int main(int argc, char **argv)
+{
+    if (argc > 1) {
+        yyin = fopen(argv[1], "r");
+
+        if (yyin == NULL) {
+            perror("No se pudo abrir el archivo");
+            return EXIT_FAILURE;
+        }
+    }
+
+    nextToken = yylex();
+
+    if (nextToken == 0) {
+        printf("Entrada vacia.\n");
+    } else {
+        expresion();
+
+        if (nextToken != 0) {
+            error_sintactico(
+                "Hay tokens adicionales despues de la expresion"
+            );
+        }
+
+        printf("Analisis sintactico correcto.\n");
+    }
+
+    if (argc > 1) {
+        fclose(yyin);
+    }
+
+    return EXIT_SUCCESS;
+}
+
 ```
 
 ## 3.6.3 Analizadores Bottom-Up

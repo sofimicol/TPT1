@@ -175,25 +175,32 @@ Las subrutinas permiten la modularización de un programa, de manera que no deba
 ## 3.5.6 Gramática completa de Aleph
 [poner aquí la BNF completa]
 
-## 3.6 Análisis Sintáctico pagina 178 sebesta capitilo 4
+## 3.6 Análisis Sintáctico
+
 El análisis sintáctico (syntax analysis o parsing) de un lenguaje de programación se define como en proceso encargado de analizar la sintaxis para un programa dado con entrada sintácticamente correcta, construyendo un árbol de análisis sintáctico (parse trees) que se construye con información necesaria obtenida durante el análisis. Estos árboles y sus derivaciones incluyen toda la información sintáctica que necesita un procesador de lenguaje.
 
 ## 3.6.1 Metas del Análisis Sintáctico
+
 El analizador sintáctico posee como metas:
+
 1. Revisar y verificar el programa de entrada (código de un determinado Lenguaje de Programación) sea correcto, en caso de encontrar un error, el analizador debe producir un mensaje de diagnóstico, recuperarse de este y continuar el análisis del programa de entrada. Esto se realiza para encontrar la mayor cantidad de errores posibles en un único análisis del programa de entrada.
+   
 2. Producir un árbol de análisis sintáctico completo para una entrada sintácticamente correcta. Este árbol (o su rastreo) se utilizará como base para la traducción.
 
 ## 3.6.2 Analizadores Top-Down
 
 Constituye un árbol de análisis en preorden. Dado el árbol de análisis sintáctico, el recorrido preorden construyendo desde la raíz, luego su rama izquierda que corresponde con una derivación por izquierda y por último su rama derecha. Consiste en visitar cada nodo antes de seguir sus ramas. En términos de la derivación, se puede como: dado una forma sentencial que es parte de una derivación más a la izquierda, la tarea del analizador es encontrar la siguiente forma sentencial en esa derivación más a la izquierda. 
+
 La forma general de una forma sentencial izquierda es wAα donde: w es una cadena de símbolos terminales, A es un no terminal, y α es una cadena mixta. Como w contiene solo terminales, A es el no terminal más a la izquierda en la forma sentencial, por lo que es el que debe expandirse para obtener la siguiente forma sentencial en una derivación más a la izquierda. El analizador deberá determinar desde la gramática, la producción correcta que contienen a A en su lado izquierdo y que será utilizada para determinar la siguiente forma sentencial, este será el problema de decisión de los analizadores top-down.
 
 ### Gramáticas LL
+
 Las gramáticas LL constituyen un marco teórico fundamental para el diseño e implementación de analizadores sintácticos deterministas de tipo descendente (Top-Down). La denominación LL responde a: primera L (Left-to-right) indica que la cadena de tokens del flujo de entrada se lee y explora secuencialmente de izquierda a derecha y la segunda L (Leftmost derivation) especifica que el analizador construye una derivación por la extrema izquierda (leftmost derivation), expandiendo siempre la variable sintáctica no terminal situada más a la izquierda en cada aso de análisis.
-Cuando el algoritmo toma decisiones de análisis examinando un único token de anticipación (lookahead), la gramática se clasifica formalmente como LL.
-En cada paso del análisis descendente, la forma sentencial izquierda es wAα, con w una cadena compuesta únicamente por símbolos terminales ya procesados, A es la variable sintáctica (no terminal) más a la izquierda y α es una cadena mixta. El problema de decisión del analizador LL es seleccionar la producción correcta comparando el siguiente token de entrada con los símbolos terminales que pueden ser generados al inicio de cada lado derecho (RHS) de las producciones de A.
+
+Cuando el algoritmo toma decisiones de análisis examinando un único token de anticipación (lookahead), la gramática se clasifica formalmente como LL. En cada paso del análisis descendente, la forma sentencial izquierda es wAα, con w una cadena compuesta únicamente por símbolos terminales ya procesados, A es la variable sintáctica (no terminal) más a la izquierda y α es una cadena mixta. El problema de decisión del analizador LL es seleccionar la producción correcta comparando el siguiente token de entrada con los símbolos terminales que pueden ser generados al inicio de cada lado derecho (RHS) de las producciones de A.
 
 Para garantizar que el analizador determine unívocamente cuál producción aplicar al expandir una variable A que posee múltiples alternativas, los primeros símbolos terminales que pueden derivarse de cada RHS no pueden derivar en A.
+
 Se define FIRST (αi) como el conjunto de terminales que pueden aparecer al inicio de una cadena derivada a partir de αi.
 En una gramática LL(1), para cada alternativa de una producción 
 A
@@ -231,7 +238,9 @@ j
 Esto significa que dos alternativas no deben comenzar con el mismo símbolo terminal, para que el analizador sintáctico pueda elegir una alternativa mirando únicamente el siguiente símbolo de entrada.
 
 ### Analizadores Descendentes Recursivos
+
 Los analizadores descendientes recursivos constan de un conjunto de subprogrmas, mayormente recursivos. Cada uno de los subprogramas se asocia a una variable sintáctica de la Gramática Libre de Contexto. Por ejemplo, dada una gramática que posee las expresiones aritméticas, que en general tiene tres variables sintácticas: <expresión> <termino> <factor>, habrá un módulo asociado a cada de ellas. El código del subprograma, asociada a cada una de las variables, describe el RHS de la producción a la que esta asociado ese subprograma. 
+
 Los analizadores descendentes más comunes eligen el RHS correcto para el no terminal más a la izquierda en la forma sentencial actual comparando el siguiente token de entrada con los primeros símbolos que pueden generarse por los RHS de esas reglas. El RHS que tenga ese token al inicio de la cadena que genera es el correcto. Así que, en la forma sentencial wAα, el analizador usaría cualquier token que sería el primero generado por A para determinar qué regla de A se debe usar para obtener la siguiente forma sentencial.
 La elección de la producción no siempre es tan sencilla, ya sea porque se repiten los terminales al inicio de los RHS o los extremos izquierdos tienen una variable sintáctica, por esto, se debe aplicar la Prueba de pares disjuntos sobre la BNF para detectar el problema antes de implementar el analizador y verificar que siempre sea posible elegir la producción correcta. 
 
@@ -239,8 +248,10 @@ La elección de la producción no siempre es tan sencilla, ya sea porque se repi
 
 ## 3.6.3 Analizadores Bottom-Up
 Un analizador sintáctico ascendente (bottom-up parser) construye un árbol de análisis sintáctico comenzando en las hojas y avanzando hacia la raíz. Este orden de análisis corresponde al inverso de una derivación por la extrema derecha. Es decir, las formas sentenciales de la derivación se producen en orden desde la última hasta la primera.
+
 En términos de la derivación, un analizador ascendente se puede describir de la siguiente manera: Dada una forma sentencial derecha, el analizador debe determinar qué subcadena es el lado derecho (RHS) de la regla de la gramática que debe reducirse a su lado izquierdo (LHS) para producir la forma sentencial anterior en la derivación por la derecha. Por ejemplo, el primer paso para un analizador ascendente es determinar qué subcadena de la oración inicial dada es el RHS que debe reducirse a su LHS correspondiente para obtener la penúltima forma sentencial de la derivación. 
 Elegir el RHS correcto a reducir no es sencillo, pues una forma sentencial derecha dada puede incluir más de un RHS de la gramática del lenguaje que se está analizando. El RHS correcto se denomina manejador (handle).
+
 1. Definición de manejador (handle):
 γ
 γ es el manejador (handle) de la forma sentencial derecha 
@@ -331,15 +342,21 @@ Aquí,
 +
   indica uno o más pasos.
 ### Funcionamiento de los analizadores LR
+
 Los analizadores sintácticos LR constituyen el algoritmo ascendente (bottom-up) mas difundido y utilizado en la implementación de procesadores de lenguajes deprogramación. Dadas sus características fundamentales: 
 - L (Left-to-right) que indica que el flujo de tokens de entrada se explora y analiza de izquierda a derecha. 
 - R (Rightmost derivarion): Especifica que la secuencia de análisis construye la inversa de una derivación por extrema derecha.
+  
 Todo analizador LR es un reconocedor basado en un Autómata de Pila determinista (PDA). En esta arquitectura, la pila almacena una secuencia alternada de símbolos gramaticales (X) y símbolos de estado numéricos (S): **$$S_0 \, X_1 \, S_1 \, X_2 \, S_2 \dots X_m \, S_m \quad \text{(tope)}$$**
 Donde S0 representa el estado inicial del analizador y el estado Sm sera la información relevante acumulada del análisis sintáctico procesado hasta el momento.
+
 Una configuración completa del analizador LR se representa como el par ordenado compuesto por la pila y la cadena restante: **$$(S_0 \, X_1 \, S_1 \, X_2 \, S_2 \dots X_m \, S_m, \quad a_i \, a_{i+1} \dots a_n \$)$$**, donde $ se coloca allí durante la inicialización del analizador para la terminación normal del proceso.
+
 Dada la configuración se define formalmente el proceso del analizador LR basado en la tabla de análisis:
 Una tabla de análisis LR consta de dos partes, llamadas ACTION y GOTO. La parte ACTION tiene símbolos de estado como etiquetas de gilas y los símbolos terminales de la gramática como etiquetas de columnas. Dado el estado actual del analizador y el siguiente símbolo de entrada, la tabla especifica qué debe hacer el analizador.   
+
 ### Funcionamiento del analizador generado por Bison
+
 El analizador generado por Bison es un parser ascendente (bottom-up) determinista de la familia LALR(1) (Look-Ahead Left-to-Right with 1 token lookahead). Su tarea principal es reconstruir la inversa de una derivación por la extrema derecha a partir del flujo lineal de tokens que le provee el analizador léxico Flex.
 
 Internamente Bison mediante la función yyparse() dirige la ejecución.  Cada vez que la lógica del autómata necesita un nuevo token, invoca a yylex(), para escanear el código fuente en Aleph y le retorna el valor entero del token junto con sus atributos semánticos en yyval.

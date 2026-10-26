@@ -23,62 +23,64 @@ Las tareas fundamentales de un analizador léxico (scanner) incluyen:
 #include <stdio.h>
 %}
 
+%option noyywrap
+
 %%
-  /* PALABRAS RESERVADAS */
-"set"       { printf("KW_SET: %s\n", yytext); }
-"list"      { printf("KW_LIST: %s\n", yytext); }
-"boolean"   { printf("KW_BOOLEAN: %s\n", yytext); }
-"while"     { printf("KW_WHILE: %s\n", yytext); }
-"for"       { printf("KW_FOR: %s\n", yytext); }
-"if"        { printf("KW_IF: %s\n", yytext); }
-"else"      { printf("KW_ELSE: %s\n", yytext); }
-"break"     { printf("KW_BREAK: %s\n", yytext); }
-"return"    { printf("KW_RETURN: %s\n", yytext); }
-"let"       { printf("KW_LET: %s\n", yytext); }
-"where"     { printf("KW_WHERE: %s\n", yytext); }
-"empty"     { printf("KW_EMPTY: %s\n", yytext); }
-"any"       { printf("KW_ANY: %s\n", yytext); }
-"append"    { printf("KW_APPEND: %s\n", yytext); }
-"insert"    { printf("KW_INSERT: %s\n", yytext); }
+  /* PALABRAS RESERVADAS Y FUNCIONES PRIMITIVAS */
+"set"          { printf("KW_SET: %s\n", yytext); }
+"list"         { printf("KW_LIST: %s\n", yytext); }
+"while"        { printf("KW_WHILE: %s\n", yytext); }
+"for"          { printf("KW_FOR: %s\n", yytext); }
+"if"           { printf("KW_IF: %s\n", yytext); }
+"else"         { printf("KW_ELSE: %s\n", yytext); }
+"break"        { printf("KW_BREAK: %s\n", yytext); }
+"return"       { printf("KW_RETURN: %s\n", yytext); }
+"let"          { printf("KW_LET: %s\n", yytext); }
+"where"        { printf("KW_WHERE: %s\n", yytext); }
+"empty"        { printf("KW_EMPTY: %s\n", yytext); }
+"any"          { printf("KW_ANY: %s\n", yytext); }
+"append"       { printf("KW_APPEND: %s\n", yytext); }
+"insert"       { printf("KW_INSERT: %s\n", yytext); }
 
-  /* OPERADORES */
-"in"        { printf("OP_IN: %s\n", yytext); }
-"union"     { printf("OP_UNION: %s\n", yytext); }
-"=="        { printf("OP_EQUAL: %s\n", yytext); }
-"!="        { printf("OP_NOT_EQUAL: %s\n", yytext); }
-"="         { printf("OP_ASSIGN: %s\n", yytext); }
+  /* OPERADORES DE COLECCIÓN, RELACIONALES Y LÓGICOS */
+"in"           { printf("OP_IN: %s\n", yytext); }
+"union"        { printf("OP_UNION: %s\n", yytext); }
+"intersection" { printf("OP_INTERSECTION: %s\n", yytext); }
+"contain"      { printf("OP_CONTAIN: %s\n", yytext); }
+"difference"   { printf("OP_DIFFERENCE: %s\n", yytext); }
+"&&"           { printf("KW_AND: %s\n", yytext); }
+"!"            { printf("KW_NOT: %s\n", yytext); }
+"||"           { printf("KW_OR: %s\n", yytext); }
+"=="           { printf("OP_EQUAL: %s\n", yytext); }
+"!="           { printf("OP_NOT_EQUAL: %s\n", yytext); }
+"="            { printf("OP_ASSIGN: %s\n", yytext); }
 
-  /* DELIMITADORES */
-"do"        { printf("DELIM_DO: %s\n", yytext); }
-"end"       { printf("DELIM_END: %s\n", yytext); }
-":"         { printf("DELIM_COLON: %s\n", yytext); }
-";"         { printf("DELIM_SEMICOLON: %s\n", yytext); }
-","         { printf("DELIM_COMMA: %s\n", yytext); }
-"("         { printf("DELIM_LPAREN: %s\n", yytext); }
-")"         { printf("DELIM_RPAREN: %s\n", yytext); }
-"{"         { printf("DELIM_LBRACE: %s\n", yytext); }
-"}"         { printf("DELIM_RBRACE: %s\n", yytext); }
-"["         { printf("DELIM_LBRACKET: %s\n", yytext); }
-"]"         { printf("DELIM_RBRACKET: %s\n", yytext); }
+  /* DELIMITADORES Y SÍMBOLOS ESPECIALES */
+"do"           { printf("DELIM_DO: %s\n", yytext); }
+"end"          { printf("DELIM_END: %s\n", yytext); }
+":"            { printf("DELIM_COLON: %s\n", yytext); }
+";"            { printf("DELIM_SEMICOLON: %s\n", yytext); }
+","            { printf("DELIM_COMMA: %s\n", yytext); }
+"("            { printf("DELIM_LPAREN: %s\n", yytext); }
+")"            { printf("DELIM_RPAREN: %s\n", yytext); }
+"{"            { printf("DELIM_LBRACE: %s\n", yytext); }
+"}"            { printf("DELIM_RBRACE: %s\n", yytext); }
+"["            { printf("DELIM_LBRACKET: %s\n", yytext); }
+"]"            { printf("DELIM_RBRACKET: %s\n", yytext); }
 
   /* LITERALES E IDENTIFICADORES */
-"true"|"false" { printf("LIT_BOOLEAN: %s\n", yytext); }
-\'[^\']\'      { printf("LIT_CHAR: %s\n", yytext); }
-[A-Z][a-zA-Z0-9_]* { printf("IDENTIFIER: %s\n", yytext); }
+\'[^\']\'      { printf("LIT_ELEMENT: %s\n", yytext); }
+[A-Z][a-zA-Z0-9_]* { printf("ID: %s\n", yytext); }
 
   /* ESPACIOS Y ERRORES */
-[ \t\n\r]+  { /* ignorar espacios en blanco */ }
-.           { printf("Error lexico: Caracter no reconocido %s\n", yytext); }
+[ \t\n\r]+     { /* ignorar espacios en blanco */ }
+.              { printf("Error lexico: Caracter no reconocido %s\n", yytext); }
 %%
 
 int main(int argc, char **argv) {
-    printf("Iniciando escaner de Aleph. Escriba codigo y presione Ctrl+Z para salir.\n");
+    printf("Iniciando escaner de Aleph. Escriba codigo y presione Ctrl+Z (Windows) o Ctrl+D (Linux) para salir.\n");
     yylex();
     return 0;
-}
-
-int yywrap() {
-    return 1;
 }
 ```
 ### Scanner que usa enumerados
@@ -90,87 +92,98 @@ int yywrap() {
 enum yytokentype {
     KW_SET = 258,
     KW_LIST = 259,
-    KW_BOOLEAN = 260,
-    KW_WHILE = 261,
-    KW_FOR = 262,
-    KW_IF = 263,
-    KW_ELSE = 264,
-    DELIM_DO = 265,
-    DELIM_END = 266,
-    KW_BREAK = 267,
-    KW_RETURN = 268,
-    KW_LET = 269,
-    OP_IN = 270,
-    KW_WHERE = 271,
-    KW_EMPTY = 272,
-    OP_UNION = 273,
-    KW_ANY = 274,
-    KW_APPEND = 275,
-    KW_INSERT = 276,
-    LIT_BOOLEAN = 277,
-    DELIM_COLON = 278,
-    OP_EQUAL = 279,
-    OP_NOT_EQUAL = 280,
-    OP_ASSIGN = 281,
-    DELIM_SEMICOLON = 282,
-    DELIM_COMMA = 283,
-    DELIM_LPAREN = 284,
-    DELIM_RPAREN = 285,
-    DELIM_LBRACE = 286,
-    DELIM_RBRACE = 287,
-    DELIM_LBRACKET = 288,
-    DELIM_RBRACKET = 289,
-    LIT_CHAR = 290,
-    IDENTIFIER = 291
+    KW_WHILE = 260,
+    KW_FOR = 261,
+    KW_IF = 262,
+    KW_ELSE = 263,
+    DELIM_DO = 264,
+    DELIM_END = 265,
+    KW_BREAK = 266,
+    KW_RETURN = 267,
+    KW_LET = 268,
+    KW_WHERE = 269,
+    KW_EMPTY = 270,
+    KW_ANY = 271,
+    KW_APPEND = 272,
+    KW_INSERT = 273,
+    OP_IN = 274,
+    OP_UNION = 275,
+    OP_INTERSECTION = 276,
+    OP_CONTAIN = 277,
+    OP_RELATION = 278,
+    OP_DIFFERENCE = 279,
+    KW_AND = 280,
+    KW_NOT = 281,
+    KW_OR = 282,
+    OP_EQUAL = 283,
+    OP_NOT_EQUAL = 284,
+    OP_ASSIGN = 285,
+    DELIM_COLON = 286,
+    DELIM_SEMICOLON = 287,
+    DELIM_COMMA = 288,
+    DELIM_LPAREN = 289,
+    DELIM_RPAREN = 290,
+    DELIM_LBRACE = 291,
+    DELIM_RBRACE = 292,
+    DELIM_LBRACKET = 293,
+    DELIM_RBRACKET = 294,
+    LIT_ELEMENT = 295,
+    ID = 296
 };
 %}
 
+%option noyywrap
+
 %%
-  /* PALABRAS RESERVADAS (KW) */
-"set"       { return KW_SET; }
-"list"      { return KW_LIST; }
-"boolean"   { return KW_BOOLEAN; }
-"while"     { return KW_WHILE; }
-"for"       { return KW_FOR; }
-"if"        { return KW_IF; }
-"else"      { return KW_ELSE; }
-"break"     { return KW_BREAK; }
-"return"    { return KW_RETURN; }
-"let"       { return KW_LET; }
-"where"     { return KW_WHERE; }
-"empty"     { return KW_EMPTY; }
-"any"       { return KW_ANY; }
-"append"    { return KW_APPEND; }
-"insert"    { return KW_INSERT; }
+  /* PALABRAS RESERVADAS Y FUNCIONES PRIMITIVAS */
+"set"          { return KW_SET; }
+"list"         { return KW_LIST; }
+"while"        { return KW_WHILE; }
+"for"          { return KW_FOR; }
+"if"           { return KW_IF; }
+"else"         { return KW_ELSE; }
+"break"        { return KW_BREAK; }
+"return"       { return KW_RETURN; }
+"let"          { return KW_LET; }
+"where"        { return KW_WHERE; }
+"empty"        { return KW_EMPTY; }
+"any"          { return KW_ANY; }
+"append"       { return KW_APPEND; }
+"insert"       { return KW_INSERT; }
 
-  /* OPERADORES */
-"in"        { return OP_IN; }
-"union"     { return OP_UNION; }
-"=="        { return OP_EQUAL; }
-"!="        { return OP_NOT_EQUAL; }
-"="         { return OP_ASSIGN; }
+  /* OPERADORES DE COLECCIÓN, RELACIONALES Y LÓGICOS */
+"in"           { return OP_IN; }
+"union"        { return OP_UNION; }
+"intersection" { return OP_INTERSECTION; }
+"contain"      { return OP_CONTAIN; }
+"difference"   { return OP_DIFFERENCE; }
+"&&"           { return KW_AND; }
+"!"            { return KW_NOT; }
+"||"           { return KW_OR; }
+"=="           { return OP_EQUAL; }
+"!="           { return OP_NOT_EQUAL; }
+"="            { return OP_ASSIGN; }
 
-  /* DELIMITADORES */
-"do"        { return DELIM_DO; }
-"end"       { return DELIM_END; }
-":"         { return DELIM_COLON; }
-";"         { return DELIM_SEMICOLON; }
-","         { return DELIM_COMMA; }
-"("         { return DELIM_LPAREN; }
-")"         { return DELIM_RPAREN; }
-"{"         { return DELIM_LBRACE; }
-"}"         { return DELIM_RBRACE; }
-"["         { return DELIM_LBRACKET; }
-"]"         { return DELIM_RBRACKET; }
+  /* DELIMITADORES Y SÍMBOLOS ESPECIALES */
+"do"           { return DELIM_DO; }
+"end"          { return DELIM_END; }
+":"            { return DELIM_COLON; }
+";"            { return DELIM_SEMICOLON; }
+","            { return DELIM_COMMA; }
+"("            { return DELIM_LPAREN; }
+")"            { return DELIM_RPAREN; }
+"{"            { return DELIM_LBRACE; }
+"}"            { return DELIM_RBRACE; }
+"["            { return DELIM_LBRACKET; }
+"]"            { return DELIM_RBRACKET; }
 
   /* LITERALES E IDENTIFICADORES */
-"true"|"false"     { return LIT_BOOLEAN; }
-\'[^\']\'          { return LIT_CHAR; }
-[A-Z][a-zA-Z0-9_]* { return IDENTIFIER; }
+\'[^\']\'      { return LIT_ELEMENT; }
+[A-Z][a-zA-Z0-9_]* { return ID; }
 
   /* ESPACIOS Y ERRORES */
-[ \t\n\r]+  { /* ignorar espacios en blanco */ }
-.           { printf("Error lexico: Caracter no reconocido %s\n", yytext); }
+[ \t\n\r]+     { /* ignorar espacios en blanco */ }
+.              { printf("Error lexico: Caracter no reconocido %s\n", yytext); }
 %%
 
 int main(int argc, char **argv) {
@@ -184,7 +197,7 @@ int main(int argc, char **argv) {
         }
         yyin = archivo;
     } else {
-        printf("\nIniciando analizador lexico. Ingrese codigo y presione Ctrl+Z para finalizar.\n");
+        printf("\nIniciando analizador lexico. Ingrese codigo y presione Ctrl+Z (Windows) o Ctrl+D (Linux) para finalizar.\n");
     }
 
     printf("\n=====================================\n");
@@ -197,10 +210,6 @@ int main(int argc, char **argv) {
     
     printf("=====================================\n\n");
     return 0;
-}
-
-int yywrap() {
-    return 1;
 }
 ```
 ***Prefijos***:

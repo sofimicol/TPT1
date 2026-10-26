@@ -394,7 +394,7 @@ El analizador léxico procesa el texto plano aplicando las expresiones regulares
 | `]` | `DELIM_RBRACKET` | Delimitador sintáctico: cierre de especificación literal de lista. |
 | `true` / `false` | `LIT_BOOLEAN` | Literales: valores lógicos para evaluación de guardias y condiciones. |
 | `'0'`, `'1'`, `'a'` | `LIT_ELEMENT` | Literales: representación atómica de un elemento base para conformar colecciones. |
-| `[A-Z][a-zA-Z0-9_]*` | `IDENTIFIER` | Identificadores: nombres de variables definidos por el usuario iniciados en mayúscula. |
+| `[A-Z][a-zA-Z0-9_]*` | `ID` | Identificadores: nombres de variables definidos por el usuario iniciados en mayúscula. |
 
 ### Referencias Bibliográficas
 * Levine, J. (2009). *flex & bison* (1ra ed.). O'Reilly Media.

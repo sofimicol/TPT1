@@ -177,7 +177,7 @@ Las subrutinas permiten la modularización de un programa, de manera que no deba
 
 ## 3.6 Análisis Sintáctico
 
-El análisis sintáctico (syntax analysis o parsing) de un lenguaje de programación se define como en proceso encargado de analizar la sintaxis para un programa dado con entrada sintácticamente correcta, construyendo un árbol de análisis sintáctico (parse trees) que se construye con información necesaria obtenida durante el análisis. Estos árboles y sus derivaciones incluyen toda la información sintáctica que necesita un procesador de lenguaje.
+El análisis sintáctico (syntax analysis o parsing) de un lenguaje de programación se define como el proceso encargado de analizar la sintaxis para un programa dado, con entrada sintácticamente correcta, construyendo un árbol de análisis sintáctico (parse trees) que se construye con información necesaria obtenida durante el análisis. Estos árboles y sus derivaciones incluyen toda la información sintáctica que necesita un procesador de lenguaje.
 
 ## 3.6.1 Metas del Análisis Sintáctico
 
@@ -242,14 +242,247 @@ Esto significa que dos alternativas no deben comenzar con el mismo símbolo term
 Los analizadores descendientes recursivos constan de un conjunto de subprogrmas, mayormente recursivos. Cada uno de los subprogramas se asocia a una variable sintáctica de la Gramática Libre de Contexto. Por ejemplo, dada una gramática que posee las expresiones aritméticas, que en general tiene tres variables sintácticas: <expresión> <termino> <factor>, habrá un módulo asociado a cada de ellas. El código del subprograma, asociada a cada una de las variables, describe el RHS de la producción a la que esta asociado ese subprograma. 
 
 Los analizadores descendentes más comunes eligen el RHS correcto para el no terminal más a la izquierda en la forma sentencial actual comparando el siguiente token de entrada con los primeros símbolos que pueden generarse por los RHS de esas reglas. El RHS que tenga ese token al inicio de la cadena que genera es el correcto. Así que, en la forma sentencial wAα, el analizador usaría cualquier token que sería el primero generado por A para determinar qué regla de A se debe usar para obtener la siguiente forma sentencial.
+
 La elección de la producción no siempre es tan sencilla, ya sea porque se repiten los terminales al inicio de los RHS o los extremos izquierdos tienen una variable sintáctica, por esto, se debe aplicar la Prueba de pares disjuntos sobre la BNF para detectar el problema antes de implementar el analizador y verificar que siempre sea posible elegir la producción correcta. 
 
-[Ejemplo de módulos descendentes recursivos de las expresiones de Aleph]
+Para implementar un analizador sintáctico descendente recursivo sobre Aleph, la especificación en BNF presenta barreras insuperables que obligan a su transformación a EBNF (Forma de Backus-Naur Extendida). Nos permitirá eliminar la invocación recursiva infinita producida por la recursión directa de las estructuras compuestas o repetitivas como las listas de sentencias o expresiones algebraicas. Así también, nos permite superar la Prueba de los Pares Disjuntos, esto a través de la incorporación de los metacarteres fundamentales:
+- **Llaves** { ... }:Indican que los elementos encerrados se repiten cero o más veces.
+- * **Corchetes** [ ... ]:Indican que los elementos encerrados aparecen cero o una vez.
+- **Paréntesis** ( ... ): Permiten agrupar alternativas lógicas separadas por `|`.
+
+Agregando  la estratificación por niveles de precedencia ($\langle \text{expresion} \rangle \to \langle \text{termino} \rangle \to \langle \text{factor} \rangle$) donde la función procesa primero el componente base ($\langle \text{termino} \rangle$) e itera mientras el token leí do corresponda a un operador de igual precedencia, eliminando la recursión por la izquierda y el peligro de stack overflow18more_horiz.y ubicando en el subprograma sintáctico principal del parser (expresion()), en lugar de crear múltiples funciones sintácticas auxiliares con sufijos prima ($A'$) y producciones vacías ($\varepsilon$) que inflan el código fuente, se desplazan los componentes elementales al nivel más profundo ($\langle \text{factor} \rangle$), donde cada alternativa inicia con un token terminal único ($\mathbf{IDENTIFIER}$, $\mathbf{LIT\_CHAR}$, $\mathbf{KW\_EMPTY}$, '(', '[', '{')226..
+
+A. Reescritura Gramatical Formal en EBNF
+```c
+ebnf
+<expresion> ::= <termino> { (OP_UNION | KW_APPEND | KW_INSERT) <termino> }
+
+<termino> ::= <factor> { ('+' | '-') <factor> }
+
+<factor> ::= IDENTIFIER
+           | LIT_CHAR
+           | LIT_BOOLEAN
+           | KW_EMPTY
+           | '(' <expresion> ')'
+           | <lista>
+           | <conjunto>
+
+<lista> ::= '[' [ <lts_expresiones> ] ']'
+
+<conjunto> ::= '{' [ <lts_expresiones> ] '}'
+
+<lts_expresiones> ::= <expresion> { ',' <expresion> }
+```
+
+B.Ejemplo sobre expresiones 
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+/* Códigos enteros de los tokens provistos por el analizador léxico (Flex) */
+enum yytokentype {
+    KW_SET = 258,
+    KW_LIST = 259,
+    KW_BOOLEAN = 260,
+    KW_EMPTY = 272,
+    OP_UNION = 273,
+    KW_APPEND = 275,
+    KW_INSERT = 276,
+    LIT_BOOLEAN = 277,
+    DELIM_COMMA = 283,
+    DELIM_LPAREN = 284,
+    DELIM_RPAREN = 285,
+    DELIM_LBRACE = 286,
+    DELIM_RBRACE = 287,
+    DELIM_LBRACKET = 288,
+    DELIM_RBRACKET = 289,
+    LIT_CHAR = 290,
+    IDENTIFIER = 291
+};
+
+/* Variables globales de comunicación con el scanner */
+extern int nextToken;
+extern char yytext[];
+extern int yylex(void);
+
+/* Declaraciones adelantadas de los subprogramas sintácticos */
+void expresion(void);
+void termino(void);
+void factor(void);
+void lista(void);
+void conjunto(void);
+void lts_expresiones(void);
+void error_sintactico(const char *mensaje);
+
+/* Función auxiliar match: verifica el token actual y solicita el siguiente */
+void match(int expectedToken) {
+    if (nextToken == expectedToken) {
+        nextToken = yylex();
+    } else {
+        error_sintactico(
+            "Token inesperado no coincide con la regla gramatical"
+        );
+    }
+}
+
+/*
+ * <expresion> ::= <termino>
+ *                 { (OP_UNION | KW_APPEND | KW_INSERT) <termino> }
+ *
+ * El bucle while implementa la repetición de EBNF.
+ */
+void expresion(void) {
+    printf("Entrando a <expresion>\n");
+
+    termino();
+
+    while (nextToken == OP_UNION ||
+           nextToken == KW_APPEND ||
+           nextToken == KW_INSERT) {
+
+        int op = nextToken;
+        match(op);
+        termino();
+    }
+
+    printf("Saliendo de <expresion>\n");
+}
+
+/*
+ * <termino> ::= <factor> { ('+' | '-') <factor> }
+ */
+void termino(void) {
+    printf("Entrando a <termino>\n");
+
+    factor();
+
+    while (nextToken == '+' || nextToken == '-') {
+        int op = nextToken;
+        match(op);
+        factor();
+    }
+
+    printf("Saliendo de <termino>\n");
+}
+
+/*
+ * <factor> ::= IDENTIFIER
+ *            | LIT_CHAR
+ *            | LIT_BOOLEAN
+ *            | KW_EMPTY
+ *            | '(' <expresion> ')'
+ *            | <lista>
+ *            | <conjunto>
+ */
+void factor(void) {
+    printf("Entrando a <factor>\n");
+
+    switch (nextToken) {
+        case IDENTIFIER:
+            match(IDENTIFIER);
+            break;
+
+        case LIT_CHAR:
+            match(LIT_CHAR);
+            break;
+
+        case LIT_BOOLEAN:
+            match(LIT_BOOLEAN);
+            break;
+
+        case KW_EMPTY:
+            match(KW_EMPTY);
+            break;
+
+        case DELIM_LPAREN:
+            match(DELIM_LPAREN);
+            expresion();
+            match(DELIM_RPAREN);
+            break;
+
+        case DELIM_LBRACKET:
+            lista();
+            break;
+
+        case DELIM_LBRACE:
+            conjunto();
+            break;
+
+        default:
+            error_sintactico(
+                "Lexema no válido al inicio de <factor>"
+            );
+    }
+
+    printf("Saliendo de <factor>\n");
+}
+
+/*
+ * <lista> ::= '[' [ <lts_expresiones> ] ']'
+ */
+void lista(void) {
+    printf("Entrando a <lista>\n");
+
+    match(DELIM_LBRACKET);
+
+    if (nextToken != DELIM_RBRACKET) {
+        lts_expresiones();
+    }
+
+    match(DELIM_RBRACKET);
+
+    printf("Saliendo de <lista>\n");
+}
+
+/*
+ * <conjunto> ::= '{' [ <lts_expresiones> ] '}'
+ */
+void conjunto(void) {
+    printf("Entrando a <conjunto>\n");
+
+    match(DELIM_LBRACE);
+
+    if (nextToken != DELIM_RBRACE) {
+        lts_expresiones();
+    }
+
+    match(DELIM_RBRACE);
+
+    printf("Saliendo de <conjunto>\n");
+}
+
+/*
+ * <lts_expresiones> ::= <expresion>
+ *                       { ',' <expresion> }
+ */
+void lts_expresiones(void) {
+    expresion();
+
+    while (nextToken == DELIM_COMMA) {
+        match(DELIM_COMMA);
+        expresion();
+    }
+}
+
+/* Manejo de errores sintácticos */
+void error_sintactico(const char *mensaje) {
+    fprintf(
+        stderr,
+        "Error sintáctico cerca de '%s': %s (código token: %d)\n",
+        yytext,
+        mensaje,
+        nextToken
+    );
+
+    exit(1);
+}
+```
 
 ## 3.6.3 Analizadores Bottom-Up
 Un analizador sintáctico ascendente (bottom-up parser) construye un árbol de análisis sintáctico comenzando en las hojas y avanzando hacia la raíz. Este orden de análisis corresponde al inverso de una derivación por la extrema derecha. Es decir, las formas sentenciales de la derivación se producen en orden desde la última hasta la primera.
 
 En términos de la derivación, un analizador ascendente se puede describir de la siguiente manera: Dada una forma sentencial derecha, el analizador debe determinar qué subcadena es el lado derecho (RHS) de la regla de la gramática que debe reducirse a su lado izquierdo (LHS) para producir la forma sentencial anterior en la derivación por la derecha. Por ejemplo, el primer paso para un analizador ascendente es determinar qué subcadena de la oración inicial dada es el RHS que debe reducirse a su LHS correspondiente para obtener la penúltima forma sentencial de la derivación. 
+
 Elegir el RHS correcto a reducir no es sencillo, pues una forma sentencial derecha dada puede incluir más de un RHS de la gramática del lenguaje que se está analizando. El RHS correcto se denomina manejador (handle).
 
 1. Definición de manejador (handle):

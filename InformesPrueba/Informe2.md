@@ -109,7 +109,7 @@ enum yytokentype {
     OP_IN = 274,
     OP_UNION = 275,
     OP_INTERSECTION = 276,
-    OP_HAS = 277,
+    */ OP_HAS = 277, */
     OP_DIFFERENCE = 279,
     KW_AND = 280,
     KW_NOT = 281,

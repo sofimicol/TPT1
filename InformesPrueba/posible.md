@@ -389,9 +389,9 @@ El analizador léxico procesa el texto plano aplicando las expresiones regulares
 | `any`                | `KW_ANY`          | `KW_ANY`          | Función primitiva: verificación existencial en colecciones.                              |
 | `append`             | `KW_APPEND`       | `KW_APPEND`       | Función primitiva: inserción de elemento al final de una lista.                          |
 | `insert`             | `KW_INSERT`       | `KW_INSERT`       | Función primitiva: incorporación de un elemento a un conjunto.                           |
-| `and`                 | `KW_AND`          | `KW_AND`          | Operador lógico: conjunción (Y lógico).                                                  |
-| `not`                  | `KW_NOT`          | `!`               | Operador lógico: negación unaria.                                                        |
-| `or`               | `KW_OR`           | `KW_OR`           | Operador lógico: disyunción (O lógico).                                                  |
+| `and`                | `KW_AND`          | `KW_AND`          | Operador lógico: conjunción (Y lógico).                                                  |
+| `not`                | `KW_NOT`          | `KW_NOT`          | Operador lógico: negación unaria.                                                        |
+| `or`                 | `KW_OR`           | `KW_OR`           | Operador lógico: disyunción (O lógico).                                                  |
 | `:`                  | `DELIM_COLON`     | `':'`             | Símbolo especial: delimitador de apertura del bloque de función.                         |
 | `=`                  | `OP_ASSIGN`       | `'='`             | Operador básico: asignación destructiva de valor a identificador.                        |
 | `==`                 | `OP_EQUAL`        | `OP_EQUAL`        | Operador relacional: prueba de igualdad estructural estricta.                            |

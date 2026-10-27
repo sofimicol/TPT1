@@ -295,7 +295,7 @@ A continuación, presentamos un subconjunto general en BNF que abarca las estruc
                      | <op_log> KW_AND <op_rel>
                      | <op_log> KW_OR <op_rel>
 
-<op_rel>           ::= '!' <op_rel>
+<op_rel>           ::= 'KW_NOT' <op_rel>
                      | <expresion> OP_IN <expresion>
                      | <expresion> OP_EQUAL <expresion>
                      | <expresion> OP_NOT_EQUAL <expresion>

@@ -238,6 +238,7 @@ La EBNF (Forma de Backus-Naur Extendida) optimiza esta notación incorporando me
 A continuación, presentamos un subconjunto general en BNF que abarca las estructuras de control principales y la definición de funciones diseñadas en nuestro primer prototipo algorítmico de Aleph:
 
 ```c
+
 <Aleph>            ::= <lts_sent>
 
 <lts_sent>         ::= <sent> ';'
@@ -260,25 +261,15 @@ A continuación, presentamos un subconjunto general en BNF que abarca las estruc
 <lts_id>           ::= ID 
                      | <lts_id> ',' ID
 
-<sent_if>          ::= KW_IF '(' <op_log> ')' <bloque>
-                     | KW_IF '(' <op_log> ')' <bloque> KW_ELSE <bloque>
-
 <sent_while>       ::= KW_WHILE '(' <op_log> ')' <bloque>
 
 <sent_for>         ::= KW_FOR '(' ID OP_IN <expresion> ')' <bloque>
 
-<condicion>        ::= <expresion> "==" <expresion> 
-                     | <expresion> "!=" <expresion> 
+<sent_if>          ::= KW_IF '(' <op_log> ')' <bloque>
+                     | KW_IF '(' <op_log> ')' <bloque> KW_ELSE <bloque>
 
-<expresion>        ::= ID
-                     | LIT_ELEMENT
-                     | <lts_lista> 
-                     | <lts_conjunto>
-                     | <expresion> OP_UNION <termino>
-                     | <expresion> OP_INTERSECTION <termino>
-                     | <expresion> OP_DIFFERENCE <termino>
-                     | <expresion> KW_APPEND <termino>
-                     | <expresion> KW_INSERT <termino>
+<lts_expresiones>  ::= <expresion> 
+                     | <lts_expresiones> ',' <expresion>
 
 <lts_lista>        ::= '[' <lts_expresiones> ']'
                      | '[' ']'
@@ -286,6 +277,29 @@ A continuación, presentamos un subconjunto general en BNF que abarca las estruc
 <lts_conjunto>     ::= '{' <lts_expresiones> '}'
                      | '{' '}'
 
-<lts_expresiones> ::= <expresion> 
-                    | <expresion> "," <lts_expresiones>
+<expresion>        ::= <expresion> OP_UNION <termino>
+                     | <expresion> OP_INTERSECTION <termino>
+                     | <expresion> OP_DIFFERENCE <termino>
+                     | <expresion> KW_APPEND <termino>
+                     | <expresion> KW_INSERT <termino>
+                     | <termino>
+
+<termino>          ::= ID
+                     | LIT_ELEMENT
+                     | KW_EMPTY
+                     | <lts_lista>
+                     | <lts_conjunto>
+                     | '(' <expresion> ')'
+
+<op_log>           ::= <op_rel>
+                     | <op_log> KW_AND <op_rel>
+                     | <op_log> KW_OR <op_rel>
+
+<op_rel>           ::= '!' <op_rel>
+                     | <expresion> OP_IN <expresion>
+                     | <expresion> OP_EQUAL <expresion>
+                     | <expresion> OP_NOT_EQUAL <expresion>
+                     | KW_EMPTY <expresion>
+                     | <expresion> KW_ANY <expresion>
 ```
+

@@ -416,15 +416,89 @@ El analizador léxico procesa el texto plano aplicando las expresiones regulares
 
 Un analizador léxico realiza, técnicamente, un análisis sintáctico al nivel más bajo de la estructura del programa. Su función principal consiste en reconocer agrupaciones lógicas de caracteres (al identificar subcadenas) mediante la coincidencia de patrones sobre el código de entrada. Dichas agrupaciones se denominan lexemas, mientras que las categorías sintácticas o códigos internos asignados a ellas corresponden a los tokens.
 
-Las tareas fundamentales de nuestro analizador léxico (scanner) incluyen:
+
+### Descripción de las tareas de un analizador léxico
+
+Las tareas fundamentales de un analizador léxico (scanner) incluyen:
+
 * Identificar y agrupar los caracteres en lexemas válidos basándose en patrones regulares.
+
 * Generar y entregar secuencialmente los tokens al analizador sintáctico (parser) cada vez que este los requiere para la construcción del árbol sintáctico.
-* Filtrar y descartar elementos que carecen de significado estructural para el intérprete, tales como espacios en blanco, tabulaciones, saltos de línea y comentarios.
+
+* Filtrar y descartar elementos que carecen de significado estructural para el compilador o intérprete, tales como espacios en blanco, tabulaciones, saltos de línea y comentarios.
+
 * Llevar el registro de la posición actual en el código fuente (número de línea y columna) para facilitar la emisión de mensajes de error precisos durante el análisis.
 
-### 3.3.1 Primer analizador léxico de Aleph
+## 3.3.1 Primer analizador léxico de Aleph
+### Scanner que imprime por pantalla los tokens
 
-A continuación presentamos la especificación formal de nuestro analizador léxico mediante la herramienta Flex. Hemos estructurado el archivo utilizando definiciones regulares para facilitar la lectura de los patrones complejos (como identificadores y comentarios) y hemos asociado cada lexema válido con su token correspondiente mediante una enumeración, asegurándonos de ignorar caracteres en blanco y comentarios explicativos.
+```c
+%{
+#include <stdio.h>
+%}
+
+%option noyywrap
+
+%%
+  /* PALABRAS RESERVADAS Y FUNCIONES PRIMITIVAS */
+"set"          { printf("KW_SET: %s\n", yytext); }
+"list"         { printf("KW_LIST: %s\n", yytext); }
+"while"        { printf("KW_WHILE: %s\n", yytext); }
+"for"          { printf("KW_FOR: %s\n", yytext); }
+"if"           { printf("KW_IF: %s\n", yytext); }
+"else"         { printf("KW_ELSE: %s\n", yytext); }
+"return"       { printf("KW_RETURN: %s\n", yytext); }
+"let"          { printf("KW_LET: %s\n", yytext); }
+"where"        { printf("KW_WHERE: %s\n", yytext); }
+"empty"        { printf("KW_EMPTY: %s\n", yytext); }
+"any"          { printf("KW_ANY: %s\n", yytext); }
+"append"       { printf("KW_APPEND: %s\n", yytext); }
+"insert"       { printf("KW_INSERT: %s\n", yytext); }
+
+/* OPERADORES DE COLECCIÓN, RELACIONALES Y LÓGICOS */
+"in"       { printf("OP_IN: %s\n", yytext); }
+"union"    { printf("OP_UNION: %s\n", yytext); }
+"inter"    { printf("OP_INTERSECTION: %s\n", yytext); }
+"diff"     { printf("OP_DIFFERENCE: %s\n", yytext); }
+/*"has"      { printf("OP_HAS: %s\n", yytext); } */
+
+"and"      { printf("KW_AND: %s\n", yytext); }
+"or"       { printf("KW_OR: %s\n", yytext); }
+"not"      { printf("KW_NOT: %s\n", yytext); }
+
+"=="       { printf("OP_EQUAL: %s\n", yytext); }
+"!="       { printf("OP_NOT_EQUAL: %s\n", yytext); }
+"="        { printf("OP_ASSIGN: %s\n", yytext); }
+
+  /* DELIMITADORES Y SÍMBOLOS ESPECIALES */
+"do"           { printf("DELIM_DO: %s\n", yytext); }
+"end"          { printf("DELIM_END: %s\n", yytext); }
+":"            { printf("DELIM_COLON: %s\n", yytext); }
+";"            { printf("DELIM_SEMICOLON: %s\n", yytext); }
+","            { printf("DELIM_COMMA: %s\n", yytext); }
+"("            { printf("DELIM_LPAREN: %s\n", yytext); }
+")"            { printf("DELIM_RPAREN: %s\n", yytext); }
+"{"            { printf("DELIM_LBRACE: %s\n", yytext); }
+"}"            { printf("DELIM_RBRACE: %s\n", yytext); }
+"["            { printf("DELIM_LBRACKET: %s\n", yytext); }
+"]"            { printf("DELIM_RBRACKET: %s\n", yytext); }
+
+  /* LITERALES E IDENTIFICADORES */
+\'[^\']\'      { printf("LIT_ELEMENT: %s\n", yytext); }
+[A-Z][a-zA-Z0-9_]* { printf("ID: %s\n", yytext); }
+
+  /* ESPACIOS Y ERRORES */
+[ \t\n\r]+     { /* ignorar espacios en blanco */ }
+.              { printf("Error lexico: Caracter no reconocido %s\n", yytext); }
+%%
+
+int main(int argc, char **argv) {
+    printf("Iniciando escaner de Aleph. Escriba codigo y presione Ctrl+Z (Windows) o Ctrl+D (Linux) para salir.\n");
+    yylex();
+    return 0;
+}
+```
+### Scanner que usa enumerados
 
 ```c
 %{
@@ -439,90 +513,89 @@ enum yytokentype {
     KW_ELSE = 263,
     DELIM_DO = 264,
     DELIM_END = 265,
-    KW_BREAK = 266,
     KW_RETURN = 267,
     KW_LET = 268,
-    OP_IN = 269,
-    KW_WHERE = 270,
-    KW_EMPTY = 271,
-    OP_UNION = 272,
-    KW_ANY = 273,
-    KW_APPEND = 274,
-    KW_INSERT = 275,
-    DELIM_COLON = 277,
-    OP_EQUAL = 278,
-    OP_NOT_EQUAL = 279,
-    OP_ASSIGN = 280,
-    DELIM_SEMICOLON = 285,
-    DELIM_COMMA = 286,
-    DELIM_LPAREN = 287,
-    DELIM_RPAREN = 288,
-    DELIM_LBRACE = 289,
-    DELIM_RBRACE = 290,
-    DELIM_LBRACKET = 291,
-    DELIM_RBRACKET = 292,
-    LIT_ELEMENT = 293,
-    ID = 295
+    KW_WHERE = 269,
+    KW_EMPTY = 270,
+    KW_ANY = 271,
+    KW_APPEND = 272,
+    KW_INSERT = 273,
+    OP_IN = 274,
+    OP_UNION = 275,
+    OP_INTERSECTION = 276,
+    */ OP_HAS = 277, */
+    OP_DIFFERENCE = 279,
+    KW_AND = 280,
+    KW_NOT = 281,
+    KW_OR = 282,
+    OP_EQUAL = 283,
+    OP_NOT_EQUAL = 284,
+    OP_ASSIGN = 285,
+    DELIM_COLON = 286,
+    DELIM_SEMICOLON = 287,
+    DELIM_COMMA = 288,
+    DELIM_LPAREN = 289,
+    DELIM_RPAREN = 290,
+    DELIM_LBRACE = 291,
+    DELIM_RBRACE = 292,
+    DELIM_LBRACKET = 293,
+    DELIM_RBRACKET = 294,
+    LIT_ELEMENT = 295,
+    ID = 296
 };
 %}
 
-  /* Definiciones Regulares Base */
-DIGITO      [0-9]
-LETRA_MIN   [a-z]
-LETRA_MAY   [A-Z]
-LETRA       {LETRA_MIN}|{LETRA_MAY}
-ID          {LETRA_MAY}({LETRA}|{DIGITO}|_)*
-COMENT_LIN  \/\/[^\n]*
-COMENT_BLO  \/\*([^*]|\*+[^*/])*\*+\/
+%option noyywrap
 
 %%
-  /* COMENTARIOS Y ESPACIOS */
-{COMENT_LIN} { /* Ignorar comentario de una línea */ }
-{COMENT_BLO} { /* Ignorar comentario multilinea */ }
-[ \t\n\r]+   { /* Ignorar espacios en blanco */ }
+  /* PALABRAS RESERVADAS Y FUNCIONES PRIMITIVAS */
+"set"          { return KW_SET; }
+"list"         { return KW_LIST; }
+"while"        { return KW_WHILE; }
+"for"          { return KW_FOR; }
+"if"           { return KW_IF; }
+"else"         { return KW_ELSE; }
+"return"       { return KW_RETURN; }
+"let"          { return KW_LET; }
+"where"        { return KW_WHERE; }
+"empty"        { return KW_EMPTY; }
+"any"          { return KW_ANY; }
+"append"       { return KW_APPEND; }
+"insert"       { return KW_INSERT; }
+/* OPERADORES DE COLECCIÓN, RELACIONALES Y LÓGICOS */
+"in"       { return OP_IN; }
+"union"    { return OP_UNION; }
+"inter"    { return OP_INTERSECTION; }
+"diff"     { return OP_DIFFERENCE; }
+*/ "has"      { return OP_HAS; } */
 
-  /* PALABRAS RESERVADAS (KW) */
-"set"       { return KW_SET; }
-"list"      { return KW_LIST; }
-"while"     { return KW_WHILE; }
-"for"       { return KW_FOR; }
-"if"        { return KW_IF; }
-"else"      { return KW_ELSE; }
-"break"     { return KW_BREAK; }
-"return"    { return KW_RETURN; }
-"let"       { return KW_LET; }
-"where"     { return KW_WHERE; }
-"empty"     { return KW_EMPTY; }
-"any"       { return KW_ANY; }
-"append"    { return KW_APPEND; }
-"insert"    { return KW_INSERT; }
+"and"      { return KW_AND; }
+"or"       { return KW_OR; }
+"not"      { return KW_NOT; }
 
-  /* OPERADORES (OP) */
-"in"        { return OP_IN; }
-"union"     { return OP_UNION; }
-"=="        { return OP_EQUAL; }
-"!="        { return OP_NOT_EQUAL; }
-"="         { return OP_ASSIGN; }
-
-  /* DELIMITADORES (DELIM) */
-"do"        { return DELIM_DO; }
-"end"       { return DELIM_END; }
-":"         { return DELIM_COLON; }
-";"         { return DELIM_SEMICOLON; }
-","         { return DELIM_COMMA; }
-"("         { return DELIM_LPAREN; }
-")"         { return DELIM_RPAREN; }
-"{"         { return DELIM_LBRACE; }
-"}"         { return DELIM_RBRACE; }
-"["         { return DELIM_LBRACKET; }
-"]"         { return DELIM_RBRACKET; }
+"=="       { return OP_EQUAL; }
+"!="       { return OP_NOT_EQUAL; }
+"="        { return OP_ASSIGN; }
+  /* DELIMITADORES Y SÍMBOLOS ESPECIALES */
+"do"           { return DELIM_DO; }
+"end"          { return DELIM_END; }
+":"            { return DELIM_COLON; }
+";"            { return DELIM_SEMICOLON; }
+","            { return DELIM_COMMA; }
+"("            { return DELIM_LPAREN; }
+")"            { return DELIM_RPAREN; }
+"{"            { return DELIM_LBRACE; }
+"}"            { return DELIM_RBRACE; }
+"["            { return DELIM_LBRACKET; }
+"]"            { return DELIM_RBRACKET; }
 
   /* LITERALES E IDENTIFICADORES */
 \'[^\']\'      { return LIT_ELEMENT; }
-{ID}           { return ID; }
+[A-Z][a-zA-Z0-9_]* { return ID; }
 
-  /* ERRORES */
-.           { printf("Error lexico: Caracter no reconocido %s\n", yytext); }
+  /* ESPACIOS Y ERRORES */
+[ \t\n\r]+     { /* ignorar espacios en blanco */ }
+.              { printf("Error lexico: Caracter no reconocido %s\n", yytext); }
 %%
 
 int main(int argc, char **argv) {
@@ -536,7 +609,7 @@ int main(int argc, char **argv) {
         }
         yyin = archivo;
     } else {
-        printf("\nIniciando analizador lexico. Ingrese codigo y presione Ctrl+Z para finalizar.\n");
+        printf("\nIniciando analizador lexico. Ingrese codigo y presione Ctrl+Z (Windows) o Ctrl+D (Linux) para finalizar.\n");
     }
 
     printf("\n=====================================\n");
@@ -550,73 +623,98 @@ int main(int argc, char **argv) {
     printf("=====================================\n\n");
     return 0;
 }
-
-int yywrap() {
-    return 1;
-}
-
 ```
-### 3.4. Descripción Formal de la Sintaxis
+***Prefijos***:
+KW (Keyword): identifica palabras reservadas que tienen un significado especial en el lenguaje.
+DELIM (Delimiter): identifica signos que delimitan, separan o estructuran las construcciones sintácticas.
+OP (Operator): identifica operadores que realizan comparaciones, asignaciones u otras operaciones.
+LIT (Literal): identifica valores constantes escritos directamente en el código fuente.
 
-Los lenguajes de programación requieren una interpretación de sus sentencias sin ambigüedades; su descripción formal es esencial para comunicar su funcionamiento exacto tanto a los usuarios del lenguaje como a nosotros mismos como implementadores.
+## 3.4. Descripción Formal de la Sintaxis
+Los lenguajes de programación requieren una interpretación de sus sentencias sin ambigüedades, su descripción, a los fines de comunicar su funcionamiento, tanto a los usuarios de los mismos como a quienes realizan su implementación, requiere herramientas formales.
+
+## SINTAXIS DE LOS LP
 
 La sintaxis de un lenguaje de programación establece el conjunto de reglas formales que determinan cómo deben combinarse los símbolos del alfabeto del lenguaje (tokens) para construir sentencias, expresiones y estructuras válidas. Se enfoca estrictamente en la forma y organización jerárquica del código, siendo independiente del significado computacional o los efectos de ejecución (semántica).
 
-Para modelar matemáticamente y especificar la sintaxis de la mayoría de los lenguajes de programación utilizamos las Gramáticas Libres de Contexto (GLC), introducidas por Noam Chomsky. Una GLC consta de cuatro elementos: un conjunto finito de símbolos terminales (los tokens indivisibles devueltos por el scanner), un conjunto de símbolos no terminales (variables sintácticas que representan estructuras agrupadas, como una <sentencia>), un símbolo inicial desde el cual se deriva todo programa válido, y un conjunto de reglas de producción. Estas reglas indican cómo un no terminal puede reescribirse como una secuencia de terminales y no terminales. Esta capacidad recursiva permite a las GLC describir con precisión el anidamiento de estructuras de control que caracteriza a Aleph.
+## LAS GLC Y LA DESCRIPCIÓN DE SINTAXIS
 
-La Forma de Backus-Naur (BNF) es la notación metalingüística estándar que empleamos para escribir las reglas de producción de nuestra GLC de manera legible y estandarizada. En BNF, los símbolos no terminales los encerramos entre corchetes angulares (ej. <bloque>), la derivación la expresamos mediante el símbolo ::=, y las opciones alternativas las separamos con una barra vertical |. Cabe resaltar que en la construcción de la BNF los elementos léxicos indivisibles (terminales) se representan mediante los identificadores de tokens provenientes de nuestra especificación léxica, y no mediante los lexemas textuales entre comillas.
+Para modelar matemáticamente y especificar la sintaxis de la mayoría de los lenguajes de programación se utilizan las Gramáticas Libres de Contexto (GLC), introducidas por Noam Chomsky. Una GLC consta de cuatro elementos: un conjunto finito de símbolos terminales (los tokens indivisibles), un conjunto de símbolos no terminales (variables sintácticas que representan estructuras agrupadas, como una "sentencia"), un símbolo inicial desde el cual se deriva todo programa válido, y un conjunto de reglas de producción. Estas reglas indican cómo un no terminal puede reescribirse como una secuencia de terminales y no terminales. Esta capacidad recursiva permite a las GLC describir con precisión el anidamiento de estructuras de control (como bucles dentro de condicionales) que caracteriza a los lenguajes imperativos estructurados.
 
-3.4.1. Primera descripción formal de Aleph
+## DEFINICIÓN DE BNF Y EBNF
 
-A continuación, presentamos un subconjunto general en BNF que abarca la jerarquía de las estructuras de control fundamentales, las sentencias de asignación y las expresiones de diseño nativo en Aleph. Las reglas están expresadas utilizando los identificadores de tokens devueltos por nuestro analizador léxico:
+La Forma de Backus-Naur (BNF) es la notación metalingüística estándar empleada para escribir las reglas de producción de una GLC de manera legible y estandarizada. En BNF, los símbolos no terminales se encierran entre corchetes angulares (ej. `<bucle>`), la derivación se expresa mediante el símbolo `::=` o `->`, y las opciones alternativas se separan con una barra vertical `|`.
+
+La EBNF (Forma de Backus-Naur Extendida) optimiza esta notación incorporando metacaracteres que evitan la sobrecarga de reglas recursivas simples: utiliza corchetes `[...]` para marcar elementos opcionales, llaves `{...}` para representar la repetición de un elemento (cero o más veces), y paréntesis `(...)` para la agrupación de símbolos lógicos.
+
+## 3.3.1. Primera descripción formal de Aleph
+
+A continuación, presentamos un subconjunto general en BNF que abarca las estructuras de control principales y la definición de funciones diseñadas en nuestro primer prototipo algorítmico de Aleph:
 
 ```c
-<Aleph>           ::= <lista_sent>
 
-<lista_sent>      ::= <sent> ';'
-                    | <sent> ';' <lista_sent>
+<Aleph>            ::= <lts_sent>
 
-<sent>            ::= <asignacion> 
-                    | <expresion> 
-                    | <sent_while> 
-                    | <sent_if> 
-                    | <sent_for>
+<lts_sent>         ::= <sent> ';'
+                     | <lts_sent> <sent> ';'
+  
+<bloque>           ::= DELIM_DO <lts_sent> DELIM_END
+                     | DELIM_DO DELIM_END
 
-<asignacion>      ::= ID '=' <expresion>
-                    | KW_LET ID '=' '(' <list_ID> ')'  //* hacer list_ID
+<sent>             ::= <asignacion>
+                     | <expresion> 
+                     | <sent_while> 
+                     | <sent_if> 
+                     | <sent_for>
+                     | KW_RETURN <expresion>
+                     | KW_BREAK
 
-<bloque>          ::= DELIM_DO <lista_sent> DELIM_END
+<asignacion>       ::= ID '=' <expresion>
+                     | KW_LET <lts_id> '=' <lts_expresiones>
 
-<sent_while>      ::= KW_WHILE '(' <condicion> ')' <bloque>
+<lts_id>           ::= ID 
+                     | <lts_id> ',' ID
 
-<sent_for>        ::= KW_FOR '(' ID OP_IN ID ')' <bloque>
+<sent_while>       ::= KW_WHILE '(' <op_log> ')' <bloque>
 
-<sent_if>         ::= KW_IF '(' <condicion> ')' <bloque>
-                    | KW_IF '(' <condicion> ')' <bloque> KW_ELSE <bloque>
+<sent_for>         ::= KW_FOR '(' ID OP_IN <expresion> ')' <bloque>
 
-<condicion>       ::= <expresion> '=' '=' <expresion> 
-                    | <expresion> OP_NOT_EQUAL <expresion> 
-                    | <expresion> OP_IN <expresion>
+<sent_if>          ::= KW_IF '(' <op_log> ')' <bloque>
+                     | KW_IF '(' <op_log> ')' <bloque> KW_ELSE <bloque>
 
-<expresion>       ::= ID
-                    | <lts_lista> 
-                    | <lts_conjunto>
-                    | LIT_ELEM
-                    | <expresion> "any" <expresion>
-                    | <expresion> "empty" <expresion>
-                    | <expresion> "union" <expresion>
-                    | <expresion> "append" <expresion>
-                    | <expresion> "insert" <expresion>
+<lts_expresiones>  ::= <expresion> 
+                     | <lts_expresiones> ',' <expresion>
 
+<lts_lista>        ::= '[' <lts_expresiones> ']'
+                     | '[' ']'
 
-<lts_lista>       ::= '[' <lts_expresiones> ']'
-                    | '[' ']'
+<lts_conjunto>     ::= '{' <lts_expresiones> '}'
+                     | '{' '}'
 
-<lts_conjunto>    ::= '{' <lts_expresiones> ´}´
-                    | '{' '}'
+<expresion>        ::= <expresion> OP_UNION <termino>
+                     | <expresion> OP_INTERSECTION <termino>
+                     | <expresion> OP_DIFFERENCE <termino>
+                     | <expresion> KW_APPEND <termino>
+                     | <expresion> KW_INSERT <termino>
+                     | <termino>
 
-<lts_expresiones> ::= <expresion> 
-                    | <expresion> ';' <lts_expresiones>
+<termino>          ::= ID
+                     | LIT_ELEMENT
+                     | KW_EMPTY
+                     | <lts_lista>
+                     | <lts_conjunto>
+                     | '(' <expresion> ')'
+
+<op_log>           ::= <op_rel>
+                     | <op_log> KW_AND <op_rel>
+                     | <op_log> KW_OR <op_rel>
+
+<op_rel>           ::= 'KW_NOT' <op_rel>
+                     | <expresion> OP_IN <expresion>
+                     | <expresion> OP_EQUAL <expresion>
+                     | <expresion> OP_NOT_EQUAL <expresion>
+                     | KW_EMPTY <expresion>
+                     | <expresion> KW_ANY <expresion>
 ```
 
 ## 3.5 Descripción formal de la sintaxis Aleph

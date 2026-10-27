@@ -690,7 +690,7 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
 | `append`             | `KW_APPEND`       | `KW_APPEND`       | Función primitiva: inserción de elemento al final de una lista.                          |
 | `insert`             | `KW_INSERT`       | `KW_INSERT`       | Función primitiva: incorporación de un elemento a un conjunto.                           |
 | `&&`                 | `KW_AND`          | `KW_AND`          | Operador lógico: conjunción (Y lógico).                                                  |
-| `!`                  | `KW_NOT`          | `KW_NOT`          | Operador lógico: negación unaria.                                                        |
+| `!`                  | `KW_NOT`          | `!`               | Operador lógico: negación unaria.                                                        |
 | `\|\|`               | `KW_OR`           | `KW_OR`           | Operador lógico: disyunción (O lógico).                                                  |
 | `:`                  | `DELIM_COLON`     | `':'`             | Símbolo especial: delimitador de apertura del bloque de función.                         |
 | `=`                  | `OP_ASSIGN`       | `'='`             | Operador básico: asignación destructiva de valor a identificador.                        |
@@ -762,11 +762,11 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
                      | '(' <expresion> ')'
 
 <op_log>           ::= <op_rel>
-                     | KW_NOT <op_log>
                      | <op_log> KW_AND <op_rel>
                      | <op_log> KW_OR <op_rel>
 
-<op_rel>           ::= <expresion> OP_IN <expresion>
+<op_rel>           ::= '!' <op_rel>
+                     | <expresion> OP_IN <expresion>
                      | <expresion> OP_EQUAL <expresion>
                      | <expresion> OP_NOT_EQUAL <expresion>
                      | KW_EMPTY <expresion>

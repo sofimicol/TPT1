@@ -376,16 +376,15 @@ El analizador léxico procesa el texto plano aplicando las expresiones regulares
 | `else`               | `KW_ELSE`         | `KW_ELSE`         | Sentencia de control: rama alternativa de selección.                                     |
 | `do`                 | `DELIM_DO`        | `DELIM_DO`        | Delimitador de bloque: apertura de cuerpo de control o bucle.                            |
 | `end`                | `DELIM_END`       | `DELIM_END`       | Delimitador de bloque: cierre estructural de bloques o funciones.                        |
-| `break`              | `KW_BREAK`        | `KW_BREAK`        | Sentencia de control: interrupción forzada de iteración.                                 |
 | `return`             | `KW_RETURN`       | `KW_RETURN`       | Sentencia de control: retorno explícito de valor de función.                             |
 | `let`                | `KW_LET`          | `KW_LET`          | Declaración: desestructuración o nombramiento formal de componentes.                     |
 | `in`                 | `OP_IN`           | `OP_IN`           | Operador relacional: evaluación de pertenencia conjuntista o recorrido.                  |
 | `where`              | `KW_WHERE`        | `KW_WHERE`        | Sentencia de control: cláusula de filtrado condicional en bucles.                        |
 | `empty`              | `KW_EMPTY`        | `KW_EMPTY`        | Literal / Constante: representa el conjunto o lista sin elementos.                       |
 | `union`              | `OP_UNION`        | `OP_UNION`        | Operador de colección: cálculo de la unión algebraica entre conjuntos.                   |
-| `intersection`       | `OP_INTERSECTION` | `OP_INTERSECTION` | Operador de colección: cálculo de la intersección entre conjuntos.                       |
+| `inter`              | `OP_INTERSECTION` | `OP_INTERSECTION` | Operador de colección: cálculo de la intersección entre conjuntos.                       |
 | `contain`            | `OP_CONTAIN`      | `OP_CONTAIN`      | Operador de colección: verificación de pertenencia de un elemento en un conjunto o lista.|
-| `difference`         | `OP_DIFFERENCE`   | `OP_DIFFERENCE`   | Operador de colección: cálculo de la diferencia algebraica entre conjuntos.              |
+| `diff`               | `OP_DIFFERENCE`   | `OP_DIFFERENCE`   | Operador de colección: cálculo de la diferencia algebraica entre conjuntos.              |
 | `any`                | `KW_ANY`          | `KW_ANY`          | Función primitiva: verificación existencial en colecciones.                              |
 | `append`             | `KW_APPEND`       | `KW_APPEND`       | Función primitiva: inserción de elemento al final de una lista.                          |
 | `insert`             | `KW_INSERT`       | `KW_INSERT`       | Función primitiva: incorporación de un elemento a un conjunto.                           |

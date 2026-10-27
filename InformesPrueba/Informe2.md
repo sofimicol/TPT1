@@ -33,7 +33,6 @@ Las tareas fundamentales de un analizador léxico (scanner) incluyen:
 "for"          { printf("KW_FOR: %s\n", yytext); }
 "if"           { printf("KW_IF: %s\n", yytext); }
 "else"         { printf("KW_ELSE: %s\n", yytext); }
-"break"        { printf("KW_BREAK: %s\n", yytext); }
 "return"       { printf("KW_RETURN: %s\n", yytext); }
 "let"          { printf("KW_LET: %s\n", yytext); }
 "where"        { printf("KW_WHERE: %s\n", yytext); }
@@ -47,7 +46,7 @@ Las tareas fundamentales de un analizador léxico (scanner) incluyen:
 "union"    { printf("OP_UNION: %s\n", yytext); }
 "inter"    { printf("OP_INTERSECTION: %s\n", yytext); }
 "diff"     { printf("OP_DIFFERENCE: %s\n", yytext); }
-"has"      { printf("OP_HAS: %s\n", yytext); }
+/*"has"      { printf("OP_HAS: %s\n", yytext); } */
 
 "and"      { printf("KW_AND: %s\n", yytext); }
 "or"       { printf("KW_OR: %s\n", yytext); }
@@ -100,7 +99,6 @@ enum yytokentype {
     KW_ELSE = 263,
     DELIM_DO = 264,
     DELIM_END = 265,
-    KW_BREAK = 266,
     KW_RETURN = 267,
     KW_LET = 268,
     KW_WHERE = 269,
@@ -155,7 +153,7 @@ enum yytokentype {
 "union"    { return OP_UNION; }
 "inter"    { return OP_INTERSECTION; }
 "diff"     { return OP_DIFFERENCE; }
-"has"      { return OP_HAS; }
+*/ "has"      { return OP_HAS; } */
 
 "and"      { return KW_AND; }
 "or"       { return KW_OR; }

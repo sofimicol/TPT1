@@ -115,7 +115,8 @@ El uso múltiple de un mismo símbolo de operador para diferentes propósitos es
 ### Expresiones: Operaciones Relacionales
 [poner aquí la BNF de Operaciones Relacionales]
 ```c
-<op_rel>           ::= <expresion> OP_IN <expresion>
+<op_rel>           ::= 'KW_NOT' <op_rel>
+                     | <expresion> OP_IN <expresion>
                      | <expresion> OP_EQUAL <expresion>
                      | <expresion> OP_NOT_EQUAL <expresion>
                      | KW_EMPTY <expresion>
@@ -131,7 +132,6 @@ La evaluación en cortocircuito (perezosa) determina el resultado de una expresi
 
 ```c
 <op_log>           ::= <op_rel>
-                     | KW_NOT <op_log>
                      | <op_log> KW_AND <op_rel>
                      | <op_log> KW_OR <op_rel>
 ```
@@ -231,7 +231,7 @@ Las subrutinas permiten la modularización de un programa, de manera que no deba
                      | <op_log> KW_AND <op_rel>
                      | <op_log> KW_OR <op_rel>
 
-<op_rel>           ::= '!' <op_rel>
+<op_rel>           ::= 'KW_NOT' <op_rel>
                      | <expresion> OP_IN <expresion>
                      | <expresion> OP_EQUAL <expresion>
                      | <expresion> OP_NOT_EQUAL <expresion>

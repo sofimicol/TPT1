@@ -389,9 +389,9 @@ El analizador léxico procesa el texto plano aplicando las expresiones regulares
 | `any`                | `KW_ANY`          | `KW_ANY`          | Función primitiva: verificación existencial en colecciones.                              |
 | `append`             | `KW_APPEND`       | `KW_APPEND`       | Función primitiva: inserción de elemento al final de una lista.                          |
 | `insert`             | `KW_INSERT`       | `KW_INSERT`       | Función primitiva: incorporación de un elemento a un conjunto.                           |
-| `&&`                 | `KW_AND`          | `KW_AND`          | Operador lógico: conjunción (Y lógico).                                                  |
-| `!`                  | `KW_NOT`          | `!`               | Operador lógico: negación unaria.                                                        |
-| `\|\|`               | `KW_OR`           | `KW_OR`           | Operador lógico: disyunción (O lógico).                                                  |
+| `and`                 | `KW_AND`          | `KW_AND`          | Operador lógico: conjunción (Y lógico).                                                  |
+| `not`                  | `KW_NOT`          | `!`               | Operador lógico: negación unaria.                                                        |
+| `or`               | `KW_OR`           | `KW_OR`           | Operador lógico: disyunción (O lógico).                                                  |
 | `:`                  | `DELIM_COLON`     | `':'`             | Símbolo especial: delimitador de apertura del bloque de función.                         |
 | `=`                  | `OP_ASSIGN`       | `'='`             | Operador básico: asignación destructiva de valor a identificador.                        |
 | `==`                 | `OP_EQUAL`        | `OP_EQUAL`        | Operador relacional: prueba de igualdad estructural estricta.                            |
@@ -630,93 +630,6 @@ DELIM (Delimiter): identifica signos que delimitan, separan o estructuran las co
 OP (Operator): identifica operadores que realizan comparaciones, asignaciones u otras operaciones.
 LIT (Literal): identifica valores constantes escritos directamente en el código fuente.
 
-## 3.4. Descripción Formal de la Sintaxis
-Los lenguajes de programación requieren una interpretación de sus sentencias sin ambigüedades, su descripción, a los fines de comunicar su funcionamiento, tanto a los usuarios de los mismos como a quienes realizan su implementación, requiere herramientas formales.
-
-## SINTAXIS DE LOS LP
-
-La sintaxis de un lenguaje de programación establece el conjunto de reglas formales que determinan cómo deben combinarse los símbolos del alfabeto del lenguaje (tokens) para construir sentencias, expresiones y estructuras válidas. Se enfoca estrictamente en la forma y organización jerárquica del código, siendo independiente del significado computacional o los efectos de ejecución (semántica).
-
-## LAS GLC Y LA DESCRIPCIÓN DE SINTAXIS
-
-Para modelar matemáticamente y especificar la sintaxis de la mayoría de los lenguajes de programación se utilizan las Gramáticas Libres de Contexto (GLC), introducidas por Noam Chomsky. Una GLC consta de cuatro elementos: un conjunto finito de símbolos terminales (los tokens indivisibles), un conjunto de símbolos no terminales (variables sintácticas que representan estructuras agrupadas, como una "sentencia"), un símbolo inicial desde el cual se deriva todo programa válido, y un conjunto de reglas de producción. Estas reglas indican cómo un no terminal puede reescribirse como una secuencia de terminales y no terminales. Esta capacidad recursiva permite a las GLC describir con precisión el anidamiento de estructuras de control (como bucles dentro de condicionales) que caracteriza a los lenguajes imperativos estructurados.
-
-## DEFINICIÓN DE BNF Y EBNF
-
-La Forma de Backus-Naur (BNF) es la notación metalingüística estándar empleada para escribir las reglas de producción de una GLC de manera legible y estandarizada. En BNF, los símbolos no terminales se encierran entre corchetes angulares (ej. `<bucle>`), la derivación se expresa mediante el símbolo `::=` o `->`, y las opciones alternativas se separan con una barra vertical `|`.
-
-La EBNF (Forma de Backus-Naur Extendida) optimiza esta notación incorporando metacaracteres que evitan la sobrecarga de reglas recursivas simples: utiliza corchetes `[...]` para marcar elementos opcionales, llaves `{...}` para representar la repetición de un elemento (cero o más veces), y paréntesis `(...)` para la agrupación de símbolos lógicos.
-
-## 3.3.1. Primera descripción formal de Aleph
-
-A continuación, presentamos un subconjunto general en BNF que abarca las estructuras de control principales y la definición de funciones diseñadas en nuestro primer prototipo algorítmico de Aleph:
-
-```c
-
-<Aleph>            ::= <lts_sent>
-
-<lts_sent>         ::= <sent> ';'
-                     | <lts_sent> <sent> ';'
-  
-<bloque>           ::= DELIM_DO <lts_sent> DELIM_END
-                     | DELIM_DO DELIM_END
-
-<sent>             ::= <asignacion>
-                     | <expresion> 
-                     | <sent_while> 
-                     | <sent_if> 
-                     | <sent_for>
-                     | KW_RETURN <expresion>
-                     | KW_BREAK
-
-<asignacion>       ::= ID '=' <expresion>
-                     | KW_LET <lts_id> '=' <lts_expresiones>
-
-<lts_id>           ::= ID 
-                     | <lts_id> ',' ID
-
-<sent_while>       ::= KW_WHILE '(' <op_log> ')' <bloque>
-
-<sent_for>         ::= KW_FOR '(' ID OP_IN <expresion> ')' <bloque>
-
-<sent_if>          ::= KW_IF '(' <op_log> ')' <bloque>
-                     | KW_IF '(' <op_log> ')' <bloque> KW_ELSE <bloque>
-
-<lts_expresiones>  ::= <expresion> 
-                     | <lts_expresiones> ',' <expresion>
-
-<lts_lista>        ::= '[' <lts_expresiones> ']'
-                     | '[' ']'
-
-<lts_conjunto>     ::= '{' <lts_expresiones> '}'
-                     | '{' '}'
-
-<expresion>        ::= <expresion> OP_UNION <termino>
-                     | <expresion> OP_INTERSECTION <termino>
-                     | <expresion> OP_DIFFERENCE <termino>
-                     | <expresion> KW_APPEND <termino>
-                     | <expresion> KW_INSERT <termino>
-                     | <termino>
-
-<termino>          ::= ID
-                     | LIT_ELEMENT
-                     | KW_EMPTY
-                     | <lts_lista>
-                     | <lts_conjunto>
-                     | '(' <expresion> ')'
-
-<op_log>           ::= <op_rel>
-                     | <op_log> KW_AND <op_rel>
-                     | <op_log> KW_OR <op_rel>
-
-<op_rel>           ::= 'KW_NOT' <op_rel>
-                     | <expresion> OP_IN <expresion>
-                     | <expresion> OP_EQUAL <expresion>
-                     | <expresion> OP_NOT_EQUAL <expresion>
-                     | KW_EMPTY <expresion>
-                     | <expresion> KW_ANY <expresion>
-```
-
 ## 3.5 Descripción formal de la sintaxis Aleph
 Las instrucciones que conforman todo lenguaje se pueden agrupar en instrucciones de asignación y estructuras de control de flujo. Las instrucciones de asignación también se conocen como de transferencia de datos, pues asignan valores de una dirección a otra o de una expresión a una dirección. Las expresiones que son asignadas o evaluadas manipulan datos y retornan un valor determinado. La evaluación de expresiones puede servir entonces tanto para ser asignada a una dirección de memoria (nominada mediante un identificador) o para determinar bifurcaciones en el flujo de ejecución del programa.
 
@@ -735,11 +648,14 @@ Las asignaciones son parte fundamental de un lenguaje de programación imperativ
 [poner aquí la BNF de la asignación múltiple y borrar esto]
 
 ```C
-<asignacin_mult>   ::= KW_LET <lts_id> '=' <lts_expresiones>
+<asignacion>       ::= ID '=' <expresion>
+                     | KW_LET <lts_id> '=' <lts_expresiones>
 
-<lts_id>           ::= ID | ID ',' <lts_id>
+<lts_id>           ::= ID 
+                     | <lts_id> ',' ID
 
-<lts_expresiones>  ::= <expresion> | <expresion> ',' <lts_espresiones>
+<lts_expresiones>  ::= <expresion> 
+                     | <lts_expresiones> ',' <expresion>
 ```
 
 ## 3.5.3 Asociatividad y Precendencia de operadores
@@ -819,28 +735,24 @@ El uso múltiple de un mismo símbolo de operador para diferentes propósitos es
 ### Expresiones: Operaciones con Conjuntos y Listas
 [poner aquí la BNF de Operaciones con Conjuntos y Listas]
 ```C
-<expreciones>  ::= ID
-                 | LIT_ELEM
-                 | <lts_lista>
-                 | <lts_conjunto>
-                 | <expresion> OP_UNION <expresion>
-                 | <expresión> OP_INTERSECTION <expresion>
-                 | <expresión> OP_RELATION <exprecion>
-                 | <expresion> OP_DIFFERENCE <expresion>
-                 | <expresión> KW_APPEND <exprecion>
-                 | <expresión> KW_INSERT <exprecion>
+<expresion>        ::= <expresion> OP_UNION <termino>
+                     | <expresion> OP_INTERSECTION <termino>
+                     | <expresion> OP_DIFFERENCE <termino>
+                     | <expresion> KW_APPEND <termino>
+                     | <expresion> KW_INSERT <termino>
+                     | <termino>
+
 ```
 
 ### Expresiones: Operaciones Relacionales
 [poner aquí la BNF de Operaciones Relacionales]
 ```c
-<op_rel>  ::= <expresion> KW_IN <expresion>
-            | <expresion> OP_EQUAL <expresion>
-            | <expresion> OP_NOT_EQUAL <expresion> 
-            | KW_EMPTY <espresion>
-            | <expresión> KW_ANY <exprecion>
-            | <expresion> "==" <expresion>
-            | <expresion> "!=" <expresion>
+<op_rel>           ::= 'KW_NOT' <op_rel>
+                     | <expresion> OP_IN <expresion>
+                     | <expresion> OP_EQUAL <expresion>
+                     | <expresion> OP_NOT_EQUAL <expresion>
+                     | KW_EMPTY <expresion>
+                     | <expresion> KW_ANY <expresion>
 ```
 
 ### Expresiones: Operaciones Lógicas
@@ -851,11 +763,9 @@ La evaluación en cortocircuito (perezosa) determina el resultado de una expresi
 [poner aquí la BNF de Operaciones Lógicas]
 
 ```c
-
-<op_log>  ::= <OP_rel>
-            | KW_NOT <op_log>
-            | <op_log> KW_AND <op_rel>
-            | <op_log> KW_OR <OP_rel>
+<op_log>           ::= <op_rel>
+                     | <op_log> KW_AND <op_rel>
+                     | <op_log> KW_OR <op_rel>
 ```
 
 ## 3.5.4 Estructuras de Control
@@ -884,9 +794,9 @@ El uso estricto del no terminal `<bloque>` definido con los marcadores explícit
 [poner aquí las BNF de las estructuras de control de ciclos que hayan definido]
 
 ```c
-<sent_while>  ::= KW_WHILE '(' <op_log> ')' <bloque>
+<sent_while>       ::= KW_WHILE '(' <op_log> ')' <bloque>
 
-<sent_for>    ::= KW_FOR '(' ID OP_IN ID ')' <bloque>
+<sent_for>         ::= KW_FOR '(' ID OP_IN <expresion> ')' <bloque>
 ```
 
 ## 3.5.5 Subrutinas
@@ -895,35 +805,438 @@ Las subrutinas permiten la modularización de un programa, de manera que no deba
 [poner la BNF de la subrutina (dejar para el final)]
 
 ## 3.5.6 Gramática completa de Aleph
-[poner aquí la BNF completa]
+```c
 
-## 3.6 Análisis Sintáctico pagina 178 sebesta capitilo 4
-El análisis sintáctico (syntax analysis o parsing) de un lenguaje de programación se define como en proceso encargado de analizar la sintaxis para un programa dado con entrada sintácticamente correcta, construyendo un árbol de análisis sintáctico (parse trees) que se construye con información necesaria obtenida durante el análisis. Estos árboles y sus derivaciones incluyen toda la información sintáctica que necesita un procesador de lenguaje.
+<Aleph>            ::= <lts_sent>
+
+<lts_sent>         ::= <sent> ';'
+                     | <lts_sent> <sent> ';'
+  
+<bloque>           ::= DELIM_DO <lts_sent> DELIM_END
+                     | DELIM_DO DELIM_END
+
+<sent>             ::= <asignacion>
+                     | <expresion> 
+                     | <sent_while> 
+                     | <sent_if> 
+                     | <sent_for>
+                     | KW_RETURN <expresion>
+                     | KW_BREAK
+
+<asignacion>       ::= ID '=' <expresion>
+                     | KW_LET <lts_id> '=' <lts_expresiones>
+
+<lts_id>           ::= ID 
+                     | <lts_id> ',' ID
+
+<sent_while>       ::= KW_WHILE '(' <op_log> ')' <bloque>
+
+<sent_for>         ::= KW_FOR '(' ID OP_IN <expresion> ')' <bloque>
+
+<sent_if>          ::= KW_IF '(' <op_log> ')' <bloque>
+                     | KW_IF '(' <op_log> ')' <bloque> KW_ELSE <bloque>
+
+<lts_expresiones>  ::= <expresion> 
+                     | <lts_expresiones> ',' <expresion>
+
+<lts_lista>        ::= '[' <lts_expresiones> ']'
+                     | '[' ']'
+
+<lts_conjunto>     ::= '{' <lts_expresiones> '}'
+                     | '{' '}'
+
+<expresion>        ::= <expresion> OP_UNION <termino>
+                     | <expresion> OP_INTERSECTION <termino>
+                     | <expresion> OP_DIFFERENCE <termino>
+                     | <expresion> KW_APPEND <termino>
+                     | <expresion> KW_INSERT <termino>
+                     | <termino>
+
+<termino>          ::= ID
+                     | LIT_ELEMENT
+                     | KW_EMPTY
+                     | <lts_lista>
+                     | <lts_conjunto>
+                     | '(' <expresion> ')'
+
+<op_log>           ::= <op_rel>
+                     | <op_log> KW_AND <op_rel>
+                     | <op_log> KW_OR <op_rel>
+
+<op_rel>           ::= 'KW_NOT' <op_rel>
+                     | <expresion> OP_IN <expresion>
+                     | <expresion> OP_EQUAL <expresion>
+                     | <expresion> OP_NOT_EQUAL <expresion>
+                     | KW_EMPTY <expresion>
+                     | <expresion> KW_ANY <expresion>
+```
+
+## 3.6 Análisis Sintáctico
+
+El análisis sintáctico (syntax analysis o parsing) de un lenguaje de programación se define como el proceso encargado de analizar la sintaxis para un programa dado, con entrada sintácticamente correcta, construyendo un árbol de análisis sintáctico (parse trees) que se construye con información necesaria obtenida durante el análisis. Estos árboles y sus derivaciones incluyen toda la información sintáctica que necesita un procesador de lenguaje.
 
 ## 3.6.1 Metas del Análisis Sintáctico
+
 El analizador sintáctico posee como metas:
+
 1. Revisar y verificar el programa de entrada (código de un determinado Lenguaje de Programación) sea correcto, en caso de encontrar un error, el analizador debe producir un mensaje de diagnóstico, recuperarse de este y continuar el análisis del programa de entrada. Esto se realiza para encontrar la mayor cantidad de errores posibles en un único análisis del programa de entrada.
+   
 2. Producir un árbol de análisis sintáctico completo para una entrada sintácticamente correcta. Este árbol (o su rastreo) se utilizará como base para la traducción.
 
 ## 3.6.2 Analizadores Top-Down
 
 Constituye un árbol de análisis en preorden. Dado el árbol de análisis sintáctico, el recorrido preorden construyendo desde la raíz, luego su rama izquierda que corresponde con una derivación por izquierda y por último su rama derecha. Consiste en visitar cada nodo antes de seguir sus ramas. En términos de la derivación, se puede como: dado una forma sentencial que es parte de una derivación más a la izquierda, la tarea del analizador es encontrar la siguiente forma sentencial en esa derivación más a la izquierda. 
+
 La forma general de una forma sentencial izquierda es wAα donde: w es una cadena de símbolos terminales, A es un no terminal, y α es una cadena mixta. Como w contiene solo terminales, A es el no terminal más a la izquierda en la forma sentencial, por lo que es el que debe expandirse para obtener la siguiente forma sentencial en una derivación más a la izquierda. El analizador deberá determinar desde la gramática, la producción correcta que contienen a A en su lado izquierdo y que será utilizada para determinar la siguiente forma sentencial, este será el problema de decisión de los analizadores top-down.
 
 ### Gramáticas LL
-[explicar]
+
+Las gramáticas LL constituyen un marco teórico fundamental para el diseño e implementación de analizadores sintácticos deterministas de tipo descendente (Top-Down). La denominación LL responde a: primera L (Left-to-right) indica que la cadena de tokens del flujo de entrada se lee y explora secuencialmente de izquierda a derecha y la segunda L (Leftmost derivation) especifica que el analizador construye una derivación por la extrema izquierda (leftmost derivation), expandiendo siempre la variable sintáctica no terminal situada más a la izquierda en cada aso de análisis.
+
+Cuando el algoritmo toma decisiones de análisis examinando un único token de anticipación (lookahead), la gramática se clasifica formalmente como LL. En cada paso del análisis descendente, la forma sentencial izquierda es wAα, con w una cadena compuesta únicamente por símbolos terminales ya procesados, A es la variable sintáctica (no terminal) más a la izquierda y α es una cadena mixta. El problema de decisión del analizador LL es seleccionar la producción correcta comparando el siguiente token de entrada con los símbolos terminales que pueden ser generados al inicio de cada lado derecho (RHS) de las producciones de A.
+
+Para garantizar que el analizador determine unívocamente cuál producción aplicar al expandir una variable A que posee múltiples alternativas, los primeros símbolos terminales que pueden derivarse de cada RHS no pueden derivar en A.
+
+Se define FIRST (αi) como el conjunto de terminales que pueden aparecer al inicio de una cadena derivada a partir de αi.
+En una gramática LL(1), para cada alternativa de una producción 
+A
+→
+α
+1
+∣
+α
+2
+∣
+⋯
+∣
+α
+n
+, los conjuntos FIRST de las alternativas deben ser disjuntos entre sí:
+
+FIRST
+(
+α
+i
+)
+∩
+FIRST
+(
+α
+j
+)
+=
+∅
+para todo 
+i
+≠
+j
+
+Esto significa que dos alternativas no deben comenzar con el mismo símbolo terminal, para que el analizador sintáctico pueda elegir una alternativa mirando únicamente el siguiente símbolo de entrada.
 
 ### Analizadores Descendentes Recursivos
+
 Los analizadores descendientes recursivos constan de un conjunto de subprogrmas, mayormente recursivos. Cada uno de los subprogramas se asocia a una variable sintáctica de la Gramática Libre de Contexto. Por ejemplo, dada una gramática que posee las expresiones aritméticas, que en general tiene tres variables sintácticas: <expresión> <termino> <factor>, habrá un módulo asociado a cada de ellas. El código del subprograma, asociada a cada una de las variables, describe el RHS de la producción a la que esta asociado ese subprograma. 
+
 Los analizadores descendentes más comunes eligen el RHS correcto para el no terminal más a la izquierda en la forma sentencial actual comparando el siguiente token de entrada con los primeros símbolos que pueden generarse por los RHS de esas reglas. El RHS que tenga ese token al inicio de la cadena que genera es el correcto. Así que, en la forma sentencial wAα, el analizador usaría cualquier token que sería el primero generado por A para determinar qué regla de A se debe usar para obtener la siguiente forma sentencial.
+
 La elección de la producción no siempre es tan sencilla, ya sea porque se repiten los terminales al inicio de los RHS o los extremos izquierdos tienen una variable sintáctica, por esto, se debe aplicar la Prueba de pares disjuntos sobre la BNF para detectar el problema antes de implementar el analizador y verificar que siempre sea posible elegir la producción correcta. 
 
-[Ejemplo de módulos descendentes recursivos de las expresiones de Aleph]
+Para implementar un analizador sintáctico descendente recursivo sobre Aleph, la especificación en BNF presenta barreras insuperables que obligan a su transformación a EBNF (Forma de Backus-Naur Extendida). Nos permitirá eliminar la invocación recursiva infinita producida por la recursión directa de las estructuras compuestas o repetitivas como las listas de sentencias o expresiones algebraicas. Así también, nos permite superar la Prueba de los Pares Disjuntos, esto a través de la incorporación de los metacarteres fundamentales:
+- **Llaves** { ... }:Indican que los elementos encerrados se repiten cero o más veces.
+- * **Corchetes** [ ... ]:Indican que los elementos encerrados aparecen cero o una vez.
+- **Paréntesis** ( ... ): Permiten agrupar alternativas lógicas separadas por `|`.
+
+Agregando  la estratificación por niveles de precedencia ($\langle \text{expresion} \rangle \to \langle \text{termino} \rangle \to \langle \text{factor} \rangle$) donde la función procesa primero el componente base ($\langle \text{termino} \rangle$) e itera mientras el token leí do corresponda a un operador de igual precedencia, eliminando la recursión por la izquierda y el peligro de stack overflow18more_horiz.y ubicando en el subprograma sintáctico principal del parser (expresion()), en lugar de crear múltiples funciones sintácticas auxiliares con sufijos prima ($A'$) y producciones vacías ($\varepsilon$) que inflan el código fuente, se desplazan los componentes elementales al nivel más profundo ($\langle \text{factor} \rangle$), donde cada alternativa inicia con un token terminal único ($\mathbf{IDENTIFIER}$, $\mathbf{LIT\_CHAR}$, $\mathbf{KW\_EMPTY}$, '(', '[', '{')226..
+
+A. Reescritura Gramatical Formal en EBNF
+```c
+
+<expresion> ::= <termino> {
+                   ( OP_UNION
+                   | OP_INTERSECTION
+                   | OP_DIFFERENCE
+                   | KW_APPEND
+                   | KW_INSERT
+                   ) <termino>
+                 }
+
+<termino> ::= <factor>
+
+<factor> ::= ID
+           | LIT_ELEMENT
+           | KW_EMPTY
+           | DELIM_LPAREN <expresion> DELIM_RPAREN
+           | <lista>
+           | <conjunto>
+
+<lista> ::= DELIM_LBRACKET
+            [ <lts_expresiones> ]
+            DELIM_RBRACKET
+
+<conjunto> ::= DELIM_LBRACE
+               [ <lts_expresiones> ]
+               DELIM_RBRACE
+
+<lts_expresiones> ::= <expresion>
+                      { DELIM_COMMA <expresion> }
+```
+
+B.Ejemplo de módulos descendentes recursivos de las expresiones de Aleph
+```c
+
+#include <stdio.h>
+#include <stdlib.h>
+
+enum yytokentype {
+    KW_EMPTY          = 270,
+    KW_APPEND         = 272,
+    KW_INSERT         = 273,
+
+    OP_UNION          = 275,
+    OP_INTERSECTION   = 276,
+    OP_DIFFERENCE     = 279,
+
+    DELIM_COMMA       = 288,
+    DELIM_LPAREN      = 289,
+    DELIM_RPAREN      = 290,
+    DELIM_LBRACE      = 291,
+    DELIM_RBRACE      = 292,
+    DELIM_LBRACKET    = 293,
+    DELIM_RBRACKET    = 294,
+
+    LIT_ELEMENT       = 295,
+    ID                = 296
+};
+
+/* Interfaz con el analizador lexico generado por Flex. */
+extern int yylex(void);
+extern char *yytext;
+extern FILE *yyin;
+
+/* Token de anticipacion. */
+int nextToken;
+
+/* Prototipos de los modulos sintacticos. */
+void expresion(void);
+void termino(void);
+void factor(void);
+void lista(void);
+void conjunto(void);
+void lts_expresiones(void);
+
+void match(int expectedToken);
+void error_sintactico(const char *mensaje);
+
+
+/*
+ * Verifica que el token actual sea el esperado.
+ * Si coincide, solicita el siguiente token al scanner.
+ */
+void match(int expectedToken)
+{
+    if (nextToken == expectedToken) {
+        nextToken = yylex();
+    } else {
+        error_sintactico(
+            "El token no coincide con la regla gramatical"
+        );
+    }
+}
+
+
+/*
+ * <expresion> ::= <termino>
+ *                 { (OP_UNION
+ *                   | OP_INTERSECTION
+ *                   | OP_DIFFERENCE
+ *                   | KW_APPEND
+ *                   | KW_INSERT)
+ *                   <termino> }
+ */
+void expresion(void)
+{
+    termino();
+
+    while (nextToken == OP_UNION ||
+           nextToken == OP_INTERSECTION ||
+           nextToken == OP_DIFFERENCE ||
+           nextToken == KW_APPEND ||
+           nextToken == KW_INSERT) {
+
+        int operador = nextToken;
+
+        match(operador);
+        termino();
+    }
+}
+
+
+/*
+ * <termino> ::= <factor>
+ */
+void termino(void)
+{
+    factor();
+}
+
+
+/*
+ * <factor> ::= ID
+ *            | LIT_ELEMENT
+ *            | KW_EMPTY
+ *            | DELIM_LPAREN <expresion> DELIM_RPAREN
+ *            | <lista>
+ *            | <conjunto>
+ */
+void factor(void)
+{
+    switch (nextToken) {
+
+        case ID:
+            match(ID);
+            break;
+
+        case LIT_ELEMENT:
+            match(LIT_ELEMENT);
+            break;
+
+        case KW_EMPTY:
+            match(KW_EMPTY);
+            break;
+
+        case DELIM_LPAREN:
+            match(DELIM_LPAREN);
+            expresion();
+            match(DELIM_RPAREN);
+            break;
+
+        case DELIM_LBRACKET:
+            lista();
+            break;
+
+        case DELIM_LBRACE:
+            conjunto();
+            break;
+
+        default:
+            error_sintactico(
+                "Token inesperado al comenzar un factor"
+            );
+    }
+}
+
+
+/*
+ * <lista> ::= DELIM_LBRACKET
+ *             [ <lts_expresiones> ]
+ *             DELIM_RBRACKET
+ */
+void lista(void)
+{
+    match(DELIM_LBRACKET);
+
+    if (nextToken != DELIM_RBRACKET) {
+        lts_expresiones();
+    }
+
+    match(DELIM_RBRACKET);
+}
+
+
+/*
+ * <conjunto> ::= DELIM_LBRACE
+ *                [ <lts_expresiones> ]
+ *                DELIM_RBRACE
+ */
+void conjunto(void)
+{
+    match(DELIM_LBRACE);
+
+    if (nextToken != DELIM_RBRACE) {
+        lts_expresiones();
+    }
+
+    match(DELIM_RBRACE);
+}
+
+
+/*
+ * <lts_expresiones> ::= <expresion>
+ *                       { DELIM_COMMA <expresion> }
+ */
+void lts_expresiones(void)
+{
+    expresion();
+
+    while (nextToken == DELIM_COMMA) {
+        match(DELIM_COMMA);
+        expresion();
+    }
+}
+
+
+/* Emite un mensaje y finaliza ante un error sintactico. */
+void error_sintactico(const char *mensaje)
+{
+    fprintf(stderr,
+            "Error sintactico cerca de '%s': %s "
+            "(token: %d)\n",
+            yytext != NULL ? yytext : "",
+            mensaje,
+            nextToken);
+
+    exit(EXIT_FAILURE);
+}
+
+
+/*
+ * Punto de entrada del parser.
+ * Analiza una expresion completa hasta llegar al fin
+ * de la entrada.
+ */
+int main(int argc, char **argv)
+{
+    if (argc > 1) {
+        yyin = fopen(argv[1], "r");
+
+        if (yyin == NULL) {
+            perror("No se pudo abrir el archivo");
+            return EXIT_FAILURE;
+        }
+    }
+
+    nextToken = yylex();
+
+    if (nextToken == 0) {
+        printf("Entrada vacia.\n");
+    } else {
+        expresion();
+
+        if (nextToken != 0) {
+            error_sintactico(
+                "Hay tokens adicionales despues de la expresion"
+            );
+        }
+
+        printf("Analisis sintactico correcto.\n");
+    }
+
+    if (argc > 1) {
+        fclose(yyin);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+```
 
 ## 3.6.3 Analizadores Bottom-Up
 Un analizador sintáctico ascendente (bottom-up parser) construye un árbol de análisis sintáctico comenzando en las hojas y avanzando hacia la raíz. Este orden de análisis corresponde al inverso de una derivación por la extrema derecha. Es decir, las formas sentenciales de la derivación se producen en orden desde la última hasta la primera.
+
 En términos de la derivación, un analizador ascendente se puede describir de la siguiente manera: Dada una forma sentencial derecha, el analizador debe determinar qué subcadena es el lado derecho (RHS) de la regla de la gramática que debe reducirse a su lado izquierdo (LHS) para producir la forma sentencial anterior en la derivación por la derecha. Por ejemplo, el primer paso para un analizador ascendente es determinar qué subcadena de la oración inicial dada es el RHS que debe reducirse a su LHS correspondiente para obtener la penúltima forma sentencial de la derivación. 
+
 Elegir el RHS correcto a reducir no es sencillo, pues una forma sentencial derecha dada puede incluir más de un RHS de la gramática del lenguaje que se está analizando. El RHS correcto se denomina manejador (handle).
+
 1. Definición de manejador (handle):
 γ
 γ es el manejador (handle) de la forma sentencial derecha 
@@ -1014,15 +1327,21 @@ Aquí,
 +
   indica uno o más pasos.
 ### Funcionamiento de los analizadores LR
+
 Los analizadores sintácticos LR constituyen el algoritmo ascendente (bottom-up) mas difundido y utilizado en la implementación de procesadores de lenguajes deprogramación. Dadas sus características fundamentales: 
 - L (Left-to-right) que indica que el flujo de tokens de entrada se explora y analiza de izquierda a derecha. 
 - R (Rightmost derivarion): Especifica que la secuencia de análisis construye la inversa de una derivación por extrema derecha.
+  
 Todo analizador LR es un reconocedor basado en un Autómata de Pila determinista (PDA). En esta arquitectura, la pila almacena una secuencia alternada de símbolos gramaticales (X) y símbolos de estado numéricos (S): **$$S_0 \, X_1 \, S_1 \, X_2 \, S_2 \dots X_m \, S_m \quad \text{(tope)}$$**
 Donde S0 representa el estado inicial del analizador y el estado Sm sera la información relevante acumulada del análisis sintáctico procesado hasta el momento.
+
 Una configuración completa del analizador LR se representa como el par ordenado compuesto por la pila y la cadena restante: **$$(S_0 \, X_1 \, S_1 \, X_2 \, S_2 \dots X_m \, S_m, \quad a_i \, a_{i+1} \dots a_n \$)$$**, donde $ se coloca allí durante la inicialización del analizador para la terminación normal del proceso.
+
 Dada la configuración se define formalmente el proceso del analizador LR basado en la tabla de análisis:
 Una tabla de análisis LR consta de dos partes, llamadas ACTION y GOTO. La parte ACTION tiene símbolos de estado como etiquetas de gilas y los símbolos terminales de la gramática como etiquetas de columnas. Dado el estado actual del analizador y el siguiente símbolo de entrada, la tabla especifica qué debe hacer el analizador.   
+
 ### Funcionamiento del analizador generado por Bison
+
 El analizador generado por Bison es un parser ascendente (bottom-up) determinista de la familia LALR(1) (Look-Ahead Left-to-Right with 1 token lookahead). Su tarea principal es reconstruir la inversa de una derivación por la extrema derecha a partir del flujo lineal de tokens que le provee el analizador léxico Flex.
 
 Internamente Bison mediante la función yyparse() dirige la ejecución.  Cada vez que la lógica del autómata necesita un nuevo token, invoca a yylex(), para escanear el código fuente en Aleph y le retorna el valor entero del token junto con sus atributos semánticos en yyval.
@@ -1035,110 +1354,3 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
 - Aceptar (Accept) / Error: Se acepta si se reduce la regla inicial (`programa`) al llegar al fin de archivo (`$`). Si no hay transición válida, se invoca a `yyerror()`.
 
 ### Primer Analizador Sintáctico de Aleph
-
-### Tokens y Lexemas tabla actualizada
-
-| Lexema               | Token             | Descripción                                                                              |
-| -------------------- | ----------------- | ---------------------------------------------------------------------------------------- |
-| `set`                | `KW_SET`          | Tipo de dato / Palabra reservada: conjunto no duplicado.                                 |
-| `list`               | `KW_LIST`         | Tipo de dato / Palabra reservada: secuencia o lista ordenada.                            |
-| `while`              | `KW_WHILE`        | Sentencia de control: inicio de iteración condicionada.                                  |
-| `for`                | `KW_FOR`          | Sentencia de control: iteración sobre elementos de colección.                            |
-| `if`                 | `KW_IF`           | Sentencia de control: bifurcación condicional de flujo.                                  |
-| `else`               | `KW_ELSE`         | Sentencia de control: rama alternativa de selección.                                     |
-| `do`                 | `DELIM_DO`        | Delimitador de bloque: apertura de cuerpo de control o bucle.                            |
-| `end`                | `DELIM_END`       | Delimitador de bloque: cierre estructural de bloques o funciones.                        |
-| `break`              | `KW_BREAK`        | Sentencia de control: interrupción forzada de iteración.                                 |
-| `return`             | `KW_RETURN`       | Sentencia de control: retorno explícito de valor de función.                             |
-| `let`                | `KW_LET`          | Declaración: desestructuración o nombramiento formal de componentes.                     |
-| `in`                 | `OP_IN`           | Operador relacional: evaluación de pertenencia conjuntista o recorrido.                  |
-| `where`              | `KW_WHERE`        | Sentencia de control: cláusula de filtrado condicional en bucles.                        |
-| `empty`              | `KW_EMPTY`        | Literal / Constante: representa el conjunto o lista sin elementos.                       |
-| `union`              | `OP_UNION`        | Operador de colección: cálculo de la unión algebraica entre conjuntos.                   |
-| `intersection`       | `OP_INTERSECTION` | Operador de colección: cálculo de la intersección entre conjuntos.                       |
-| `contain`            | `OP_CONTAIN`      | Operador de colección: verificación de pertenencia de un elemento en un conjunto o lista.|
-| `relation`           | `OP_RELATION`     | Operador relacional: define o evalúa una relación entre expresiones.                     |
-| `difference`         | `OP_DIFFERENCE`   | Operador de colección: cálculo de la diferencia algebraica entre conjuntos.              |
-| `any`                | `KW_ANY`          | Función primitiva: verificación existencial en colecciones.                              |
-| `append`             | `KW_APPEND`       | Función primitiva: inserción de elemento al final de una lista.                          |
-| `insert`             | `KW_INSERT`       | Función primitiva: incorporación de un elemento a un conjunto.                           |
-| `&&`                 | `KW_AND`          | Operador lógico: conjunción (Y lógico).                                                  |
-| `!`                  | `KW_NOT`          | Operador lógico: negación unaria.                                                        |
-| `\|\|`               | `KW_OR`           | Operador lógico: disyunción (O lógico).                                                  |
-| `:`                  | `DELIM_COLON`     | Símbolo especial: delimitador de apertura del bloque de función.                         |
-| `=`                  | `OP_ASSIGN`       | Operador básico: asignación destructiva de valor a identificador.                        |
-| `==`                 | `OP_EQUAL`        | Operador relacional: prueba de igualdad estructural estricta.                            |
-| `!=`                 | `OP_NOT_EQUAL`    | Operador relacional: prueba de desigualdad estructural estricta.                         |
-| `;`                  | `DELIM_SEMICOLON` | Delimitador sintáctico: terminación explícita de sentencia.                              |
-| `,`                  | `DELIM_COMMA`     | Separador sintáctico: división posicional en listas, conjuntos o parámetros.             |
-| `(`                  | `DELIM_LPAREN`    | Delimitador sintáctico: apertura de tuplas, condiciones o llamadas.                      |
-| `)`                  | `DELIM_RPAREN`    | Delimitador sintáctico: cierre de tuplas, condiciones o llamadas.                        |
-| `{`                  | `DELIM_LBRACE`    | Delimitador sintáctico: apertura de especificación literal de conjunto.                  |
-| `}`                  | `DELIM_RBRACE`    | Delimitador sintáctico: cierre de especificación literal de conjunto.                    |
-| `[`                  | `DELIM_LBRACKET`  | Delimitador sintáctico: apertura de especificación literal de lista.                     |
-| `]`                  | `DELIM_RBRACKET`  | Delimitador sintáctico: cierre de especificación literal de lista.                       |
-| `'0'`,`'1'`,`'a'`    | `LIT_ELEMENT`     | Literales: representación atómica de un elemento base para conformar colecciones.        |
-| `[A-Z][a-zA-Z0-9_]*` | `ID`              | Identificadores: nombres de variables definidos por el usuario iniciados en mayúscula.   |
-
-```c
-
-<Aleph>            ::= <lts_sent>
-
-<lts_sent>         ::= <sent> ';'
-                       | <lts_sent> <sent> ';'
-  
-<bloque>           ::= DELIM_DO <lts_sent> DELIM_END
-                     | DELIM_DO DELIM_END
-
-<sent>             ::= <asignacion>
-                     | <expresion> 
-                     | <sent_while> 
-                     | <sent_if> 
-                     | <sent_for>
-
-<asignacion>        ::= ID '=' <expresion>
-                      | KW_LET <lts_id> '=' <lts_expresiones>
-
-<lts_id>            ::= ID 
-                      | <lts_id> ',' ID
-
-<sent_while>        ::= KW_WHILE '(' <op_log> ')' <bloque>
-
-<sent_for>          ::= KW_FOR '(' ID OP_IN <expresion> ')' <bloque>
-
-<sent_if>           ::= KW_IF '(' <op_log> ')' <bloque>
-                      | KW_IF '(' <op_log> ')' <bloque> KW_ELSE <bloque>
-
-<lts_expresiones>   ::= <expresion> 
-                      | <lts_expresiones> ',' <expresion>
-
-<lts_lista>         ::= '[' <lts_expresiones> ']'
-                      | '[' ']'
-
-<lts_conjunto>      ::= '{' <lts_expresiones> '}'
-                      | '{' '}'
-
-<expresion>         ::= ID
-                      | LIT_ELEM
-                      | <lts_lista>
-                      | <lts_conjunto>
-                      | <expresion> OP_UNION <expresion>
-                      | <expresion> OP_INTERSECTION <expresion>
-                      | <expresion> OP_DIFFERENCE <expresion>
-                      | <expresion> KW_APPEND <expresion>
-                      | <expresion> KW_INSERT <expresion>
-
-<op_log>           ::= <op_rel>
-                     | KW_NOT <op_rel>
-                     | KW_NOT '(' <op_rel> '')'
-                     | <op_log> KW_AND <op_rel>
-                     | <op_log> KW_OR <op_rel>
-
-<op_rel>           ::= <expresion> OP_IN <expresion>
-                     | <expresion> "==" <expresion>
-                     | <expresion> "!=" <expresion>
-                     | KW_EMPTY <expresion>
-                     | <expresion> KW_ANY <expresion>
-
-```
-

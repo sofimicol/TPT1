@@ -1353,3 +1353,46 @@ En cada paso, el parser consulta las tablas generadas durante la compilación de
 - Aceptar (Accept) / Error: Se acepta si se reduce la regla inicial (`programa`) al llegar al fin de archivo (`$`). Si no hay transición válida, se invoca a `yyerror()`.
 
 ### Primer Analizador Sintáctico de Aleph
+
+
+Semantica Denotacional
+###### Descripción de las estructuras de control de Aleph
+
+Para describir formalmente nuestras estructuras de control mediante la semántica denotacional, primero definimos el concepto de **estado de la máquina** ($s$). En Aleph, el estado $s$ representa el conjunto de valores actuales almacenados en nuestra memoria dinámica (la Tabla de Símbolos) en un instante dado. 
+
+Definimos dos funciones de mapeo semántico principales:
+* $M_{exp}(E, s)$: Función que evalúa una expresión $E$ en el estado $s$ y devuelve un valor (ej: un elemento, un conjunto, o un booleano `cierto`/`falso`).
+* $M_{sent}(S, s)$: Función que ejecuta una sentencia o bloque $S$ en el estado $s$ y devuelve un **nuevo estado modificado** $s'$. Si ocurre un error, devuelve un estado especial $\text{error}$.
+
+A continuación, modelamos matemáticamente el comportamiento de las estructuras de control de flujo de Aleph:
+
+**1. Estructura de Selección (if-else)**
+Nuestra estructura condicional evalúa una guardia lógica. Matemáticamente, la denotamos como una función particionada que bifurca el estado resultante dependiendo del valor de verdad devuelto por $M_{exp}$:
+
+$$M_{sent}(\text{if } (B) \text{ do } S_1 \text{ else } S_2 \text{ end}, s) \to \Delta = 
+\begin{cases} 
+M_{sent}(S_1, s) & \text{si } M_{exp}(B, s) = \text{cierto} \\ 
+M_{sent}(S_2, s) & \text{si } M_{exp}(B, s) = \text{falso} \\ 
+\text{error} & \text{en cualquier otro caso} 
+\end{cases}$$
+
+*(Nota: Para el `if` simple sin la rama `else`, si $M_{exp}(B, s) = \text{falso}$, la función simplemente devuelve el estado original $s$ sin modificaciones).*
+
+**2. Estructura de Iteración Condicionada (while)**
+Dado que el ciclo `while` repite un bloque mientras su condición sea verdadera, en la semántica denotacional lo modelamos como una **función recursiva**. El estado final se alcanza aplicando la misma función $M_{sent}$ sobre el estado modificado que devuelve la iteración anterior:
+
+$$M_{sent}(\text{while } (B) \text{ do } S \text{ end}, s) \to \Delta = 
+\begin{cases} 
+M_{sent}(\text{while } (B) \text{ do } S \text{ end}, M_{sent}(S, s)) & \text{si } M_{exp}(B, s) = \text{cierto} \\ 
+s & \text{si } M_{exp}(B, s) = \text{falso} \\ 
+\text{error} & \text{en cualquier otro caso} 
+\end{cases}$$
+
+Esta formulación garantiza matemáticamente que, si la condición se vuelve falsa, el ciclo se rompe devolviendo el último estado válido $s$.
+
+**3. Estructura de Recorrido de Colecciones (for-in)**
+Nuestra estructura iterativa `for (ID in Coleccion)` extrae secuencialmente elementos de un conjunto o lista para operarlos. Denotacionalmente, si $M_{exp}(\text{Coleccion}, s)$ es una colección con los elementos $e_1, e_2, \dots, e_n$, la función compone el estado actualizando secuencialmente el iterador `ID`:
+
+$$M_{sent}(\text{for } (id \text{ in } C) \text{ do } S \text{ end}, s) \to \Delta = M_{sent}(S_{id=e_n}, \dots M_{sent}(S_{id=e_2}, M_{sent}(S_{id=e_1}, s))\dots)$$
+
+Si la colección $C$ evaluada es vacía (`empty`), la función matemática actúa como la identidad, devolviendo el estado inicial inalterado: $M_{sent} = s$.

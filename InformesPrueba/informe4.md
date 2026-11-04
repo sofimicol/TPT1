@@ -26,11 +26,11 @@ Reglas Semánticas y Atributos:
 
 $$\begin{aligned} <expresion>_1.\text{env} &\leftarrow <expresion>_0.\text{env} \\ <termino>.\text{env} &\leftarrow <expresion>_0.\text{env} \\ <expresion>_0.\text{nodo} &\leftarrow \text{newast}(\text{OP\_UNION}, <expresion>_1.\text{nodo}, <termino>.\text{nodo}) \\ <expresion>_0.\text{tipo} &\leftarrow \begin{cases} \text{set} & \text{si } (<expresion>_1.\text{tipo} \in \{\text{set}, \text{empty}\}) \land (<termino>.\text{tipo} \in \{\text{set}, \text{empty}\}) \\  \text{error\_type} & \text{en otro caso (Error de tipos)} \end{cases} \end{aligned}$$
 
-$$
+```math
 \langle \text{expresion} \rangle_0 ::= \langle \text{expresion} \rangle_1 \ \text{OP\_UNION} \ \langle \text{termino} \rangle
-$$
+```
 
-$$
+```math
 \begin{aligned}
 \langle \text{expresion} \rangle_1.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
 \langle \text{termino} \rangle.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
@@ -41,7 +41,7 @@ $$
 \text{error\_type} & \text{en otro caso (Error de tipos)}
 \end{cases}
 \end{aligned}
-$$
+```
 
 ## 3.7.2. Semántica Dinámica
 [Poner aquí Def Semántica Dinámica]

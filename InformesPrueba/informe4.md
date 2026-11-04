@@ -19,9 +19,8 @@ Gramática de atributos para las expresiones de Aleph
 1. Operaciones Algebraicas de Conjuntos
 
 Regla Sintáctica:
-``math
 $$<expresion>_0 ::= <expresion>_1 \text{ OP\_UNION } <termino>$$
-``
+
 (Aplica idéntico para OP_INTERSECTION y OP_DIFFERENCE)
 Reglas Semánticas y Atributos:
 ``math

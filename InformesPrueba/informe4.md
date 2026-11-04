@@ -16,15 +16,13 @@ Una gramática de atributos es una extensión formal de las GLC diseñada para d
 Gramática de atributos para las expresiones de Aleph
 [Poner aquí las gramáticas de atributos de las operaciones de alpeh]
 
-Asignación de variables (`OP_ASSIGN`)
-* Regla Sintáctica: <asignacion> ::= ID '=' <expresion>Regla
-* Semántica:
+1. Operaciones Algebraicas de Conjuntos
 
-- **Regla Semántica:**
-
-  $`\langle asignacion \rangle.tipo\_esperado \leftarrow lookup(ID.name, \langle asignacion \rangle.env)`$
-
-* Predicado:
+Regla Sintáctica:
+$$<expresion>_0 ::= <expresion>_1 \text{ OP\_UNION } <termino>$$
+(Aplica idéntico para OP_INTERSECTION y OP_DIFFERENCE)
+Reglas Semánticas y Atributos:
+$$\begin{aligned} <expresion>_1.\text{env} &\leftarrow <expresion>_0.\text{env} \\ <termino>.\text{env} &\leftarrow <expresion>_0.\text{env} \\ <expresion>_0.\text{nodo} &\leftarrow \text{newast}(\text{OP\_UNION}, <expresion>_1.\text{nodo}, <termino>.\text{nodo}) \\ <expresion>_0.\text{tipo} &\leftarrow \begin{cases} \text{set} & \text{si } (<expresion>_1.\text{tipo} \in \{\text{set}, \text{empty}\}) \land (<termino>.\text{tipo} \in \{\text{set}, \text{empty}\}) \\  \text{error\_type} & \text{en otro caso (Error de tipos)} \end{cases} \end{aligned}$$
 
 ## 3.7.2. Semántica Dinámica
 [Poner aquí Def Semántica Dinámica]

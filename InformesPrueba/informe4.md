@@ -16,23 +16,157 @@ Una gramática de atributos es una extensión formal de las GLC diseñada para d
 Gramática de atributos para las expresiones de Aleph
 [Poner aquí las gramáticas de atributos de las operaciones de alpeh]
 
-1. Operaciones Algebraicas de Conjuntos
+#### A. Operaciones Algebraicas de Conjuntos
 
-Regla Sintáctica:
+  Regla Sintáctica:
 ```math
-\boldsymbol \langle \text{expresion} \rangle_0 ::= \langle \text{expresion} \rangle_1 \ \text{OP\_UNION} \ \langle \text{termino} \rangle
+\Large \langle \text{expresion} \rangle_0 ::= \langle \text{expresion} \rangle_1 \ \text{OP\_UNION} \ \langle \text{termino} \rangle
 ```
-(Aplica idéntico para OP_INTERSECTION y OP_DIFFERENCE)
+                        (Aplica idéntico para OP_INTERSECTION y OP_DIFFERENCE)
 
-Reglas Semánticas y Atributos:
+  Reglas Semánticas y Atributos:
 ```math
 \begin{aligned}
 \langle \text{expresion} \rangle_1.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
 \langle \text{termino} \rangle.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
-\langle \text{expresion} \rangle_0.\text{nodo} &\leftarrow \text{newast}(\text{OP\_UNION}, \langle \text{expresion} \rangle_1.\text{nodo}, \langle \text{termino} \rangle.\text{nodo}) \\
+\langle \text{expresion} \rangle_0.\text{nodo} &\leftarrow \text{new\_binary\_ast}(\text{OP\_UNION}, \langle \text{expresion} \rangle_1.\text{nodo}, \langle \text{termino} \rangle.\text{nodo}) \\
 \langle \text{expresion} \rangle_0.\text{tipo} &\leftarrow
 \begin{cases}
 \text{set} & \text{si } (\langle \text{expresion} \rangle_1.\text{tipo} \in \{\text{set}, \text{empty}\}) \land (\langle \text{termino} \rangle.\text{tipo} \in \{\text{set}, \text{empty}\}) \\
+\text{error\_type} & \text{en otro caso (Error de tipos)}
+\end{cases}
+\end{aligned}
+```
+
+#### B. Operaciones de Modificación de Colecciones
+
+  Regla Sintactica:
+```math
+\Large \langle \text{expresion} \rangle_0 ::= \langle \text{expresion} \rangle_1 \ \text{KW\_APPEND} \ \langle \text{termino} \rangle
+```
+
+  Reglas Semánticas y Atributos:
+```math
+\begin{aligned}
+\langle \text{expresion} \rangle_1.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
+\langle \text{termino} \rangle.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
+\langle \text{expresion} \rangle_0.\text{nodo} &\leftarrow \text{new\_binary\_ast}(\text{KW\_APPEND}, \langle \text{expresion} \rangle_1.\text{nodo}, \langle \text{termino} \rangle.\text{nodo}) \\
+\langle \text{expresion} \rangle_0.\text{tipo} &\leftarrow
+\begin{cases}
+\text{list} & \text{si } (\langle \text{expresion} \rangle_1.\text{tipo} \in \{\text{list}, \text{empty}\}) \\
+\text{error\_type} & \text{en otro caso (Error de tipos)}
+\end{cases}
+\end{aligned}
+```
+  Regla Sintactica:
+```math
+\Large \langle \text{expresion} \rangle_0 ::= \langle \text{expresion} \rangle_1 \ \text{KW\_INSERT} \ \langle \text{termino} \rangle
+```
+
+  Reglas Semánticas y Atributos:
+```math
+\begin{aligned}
+\langle \text{expresion} \rangle_1.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
+\langle \text{termino} \rangle.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
+\langle \text{expresion} \rangle_0.\text{nodo} &\leftarrow \text{new\_binary\_ast}(\text{KW\_INSERT}, \langle \text{expresion} \rangle_1.\text{nodo}, \langle \text{termino} \rangle.\text{nodo}) \\
+\langle \text{expresion} \rangle_0.\text{tipo} &\leftarrow
+\begin{cases}
+\text{set} & \text{si } (\langle \text{expresion} \rangle_1.\text{tipo} \in \{\text{set}, \text{empty}\}) \\
+\text{error\_type} & \text{en otro caso (Error de tipos)}
+\end{cases}
+\end{aligned}
+```
+#### C. Transición de Expresión a Término
+
+  Regla Sintactica:
+```math
+\Large \langle \text{expresion} \rangle_0 ::= \langle \text{termino} \rangle
+```
+
+  Reglas Semánticas y Atributos:
+```math
+\begin{aligned}
+\langle \text{termino} \rangle.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
+\langle \text{expresion} \rangle_0.\text{nodo} &\leftarrow \langle \text{termino} \rangle.\text{nodo} \\
+\langle \text{expresion} \rangle_0.\text{tipo} &\leftarrow \langle \text{termino} \rangle.\text{tipo}
+\end{aligned}
+```
+#### D. Operaciones Relacionales
+
+  Regla Sintactica:
+```math
+\Large \langle \text{op\_rel} \rangle_0 ::= \langle \text{expresion} \rangle_1 \ \text{OP\_IN} \ \langle \text{expresion} \rangle_2
+```
+                            (Aplica idéntico estructura lógica para OP_EQUAL y OP_NOT_EQUAL)
+
+  Reglas Semánticas y Atributos:
+```math
+\begin{aligned}
+\langle \text{expresion} \rangle_1.\text{env} &\leftarrow \langle \text{op\_rel} \rangle_0.\text{env} \\
+\langle \text{expresion} \rangle_2.\text{env} &\leftarrow \langle \text{op\_rel} \rangle_0.\text{env} \\
+\langle \text{op\_rel} \rangle_0.\text{nodo} &\leftarrow \text{new\_relation\_ast}(\text{OP\_IN}, \langle \text{expresion} \rangle_1.\text{nodo}, \langle \text{expresion} \rangle_2.\text{nodo}) \\
+\langle \text{op\_rel} \rangle_0.\text{tipo} &\leftarrow
+\begin{cases}
+\text{boolean} & \text{si } (\langle \text{expresion} \rangle_1.\text{tipo} == \langle \text{expresion} \rangle_2.\text{tipo}) \lor (\text{colección compatible}) \\
+\text{error\_type} & \text{en otro caso (Error de tipos)}
+\end{cases}
+\end{aligned}
+```
+
+  Regla Sintactica:
+```math
+\Large \langle \text{op\_rel} \rangle_0 ::= \text{KW\_EMPTY} \ \langle \text{expresion} \rangle
+```
+
+   Reglas Semánticas y Atributos:
+```math
+\begin{aligned}
+\langle \text{expresion} \rangle.\text{env} &\leftarrow \langle \text{op\_rel} \rangle_0.\text{env} \\
+\langle \text{op\_rel} \rangle_0.\text{nodo} &\leftarrow \text{new\_unary\_ast}(\text{KW\_EMPTY}, \langle \text{expresion} \rangle.\text{nodo}) \\
+\langle \text{op\_rel} \rangle_0.\text{tipo} &\leftarrow
+\begin{cases}
+\text{boolean} & \text{si } (\langle \text{expresion} \rangle.\text{tipo} \in \{\text{set}, \text{list}, \text{empty}\}) \\
+\text{error\_type} & \text{en otro caso}
+\end{cases}
+\end{aligned}
+```
+
+Regla Sintactica:
+```math
+\Large \langle \text{op\_rel} \rangle_0 ::= \langle \text{expresion} \rangle_1 \ \text{KW\_ANY} \ \langle \text{expresion} \rangle_2
+```
+
+   Reglas Semánticas y Atributos:
+```math
+\begin{aligned}
+\langle \text{expresion} \rangle_1.\text{env} &\leftarrow \langle \text{op\_rel} \rangle_0.\text{env} \\
+\langle \text{expresion} \rangle_2.\text{env} &\leftarrow \langle \text{op\_rel} \rangle_0.\text{env} \\
+\langle \text{op\_rel} \rangle_0.\text{nodo} &\leftarrow \text{new\_binary\_ast}(\text{KW\_ANY}, \langle \text{expresion} \rangle_1.\text{nodo}, \langle \text{expresion} \rangle_2.\text{nodo}) \\
+\langle \text{op\_rel} \rangle_0.\text{tipo} &\leftarrow
+\begin{cases}
+\text{boolean} & \text{si } (\langle \text{expresion} \rangle_2.\text{tipo} \in \{\text{set}, \text{list}, \text{empty}\}) \\
+\text{error\_type} & \text{en otro caso (Error de tipos)}
+\end{cases}
+\end{aligned}
+```
+
+#### E. Operaciones Lógicas
+
+  Regla Sintactica:
+```math
+\Large \langle \text{op\_log} \rangle_0 ::= \langle \text{op\_log} \rangle_1 \ \text{KW\_AND} \ \langle \text{op\_rel} \rangle
+```
+                               (Aplica idéntico para KW_OR)
+
+   Reglas Semánticas y Atributos:
+```math
+\begin{aligned}
+\langle \text{op\_log} \rangle_1.\text{env} &\leftarrow \langle \text{op\_log} \rangle_0.\text{env} \\
+\langle \text{op\_rel} \rangle.\text{env} &\leftarrow \langle \text{op\_log} \rangle_0.\text{env} \\
+\langle \text{op\_log} \rangle_0.\text{nodo} &\leftarrow \text{new\_binary\_ast}(\text{KW\_AND}, \langle \text{op\_log} \rangle_1.\text{nodo}, \langle \text{op\_rel} \rangle.\text{nodo}) \\
+\langle \text{op\_log} \rangle_0.\text{tipo} &\leftarrow
+\begin{cases}
+\text{boolean} & \text{si } (\langle \text{op\_log} \rangle_1.\text{tipo} == \text{boolean}) \land (\langle \text{op\_rel} \rangle.\text{tipo} == \text{boolean}) \\
 \text{error\_type} & \text{en otro caso (Error de tipos)}
 \end{cases}
 \end{aligned}

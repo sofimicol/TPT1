@@ -208,6 +208,35 @@ La semántica denotacional representa el significado formal del código asociand
 Descripción las estructuras de control de Aleph
 [Poner aquí las descripciones de las estructuras de control de Apleh con semántica denotacional]
 
+A. Evaluación de Colecciones (Conjuntos y Listas)
+  * Lectura de variable (ID): El intérprete busca el identificador en el estado actual de la memoria $\sigma$. Si existe, retorna la lista o conjunto asociado; si no, arroja       un error de ejecución.
+  * Unión de Conjuntos (OP_UNION):
+    1. Se evalúa el operando izquierdo para obtener una colección $C_1$.
+    2. Se evalúa el operando derecho para obtener una colección $C_2$.
+    3. El intérprete crea y retorna un nuevo conjunto que contiene todos los elementos presentes en $C_1$ y $C_2$, omitiendo cualquier elemento duplicado.
+  * Diferencia de Conjuntos (OP_DIFFERENCE):
+    1. Se evalúa el operando izquierdo ($C_1$) y el derecho ($C_2$).
+    2. El intérprete retorna un nuevo conjunto que contiene únicamente los elementos de $C_1$ que no están presentes en $C_2$.
+  * Modificación (KW_INSERT / KW_APPEND):
+    1. Se evalúa la colección base obteniendo $C$.
+    2. Se evalúa el término derecho obteniendo el elemento $e$.Si es KW_APPEND (listas), retorna una nueva colección con $e$ concatenado en la última posición.
+    3. Si es KW_INSERT (conjuntos), retorna la colección con $e$ incluido solo si no existía previamente.2.
+
+B. Evaluación de Expresiones Relacionales
+  * Pertenencia (OP_IN):
+    1. Se evalúa el término izquierdo obteniendo un elemento $e$.
+    2. Se evalúa la expresión derecha obteniendo la colección $C$.
+    3. El intérprete recorre $C$. Si encuentra una coincidencia exacta con $e$, la instrucción finaliza y retorna true. Si agota la colección sin coincidencias, retorna false.
+  * Comprobación de Vacío (KW_EMPTY):
+    1. Se evalúa la expresión obteniendo una colección $C$.
+    2. Si el tamaño de $C$ es igual a 0 (no contiene elementos), retorna true; de lo contrario, retorna false.3.
+
+C. Semántica de Comandos de Asignación
+  * Asignación Simple (ID = expr):
+    1. Se evalúa secuencialmente la expresión expr hasta resolverse en un valor final $v$ (una colección, elemento o booleano).
+    2. El intérprete actualiza el estado de la memoria $\sigma$, vinculando el identificador ID con el nuevo valor $v$.
+    3. Si ID ya existía en memoria, su referencia anterior se descarta y es sobrescrita. Si no existía, se reserva el espacio y se registra en el entorno actual.
+
 ## 3.8 Análisis Semántico
 ## 3.8.1 Construcción del AST y evaluación de expresiones
 [Mostrar y explicar la estructura de datos y módulos que se usan para la construcción del AST]

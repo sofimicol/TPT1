@@ -74,6 +74,25 @@ L_ELSE:
     
 L_FIN:
     // El programa continúa su estado normal
+```
+2. Semántica Operacional de la Iteración (while)
+
+La estructura repetitiva básica en Aleph se define sintácticamente como while ( <op_log> ) do <bloque> end. Su semántica operacional requiere una evaluación constante de la guardia booleana antes de cada ejecución del cuerpo, generando el siguiente rastro de estados:
+```
+L_INICIO_WHILE:
+    // Evaluación de la condición de parada
+    eval(<op_log>, T1)
+    if(!T1) goto(L_FIN_WHILE)
+    
+    // Modificación del estado a través del bloque
+    <bloque>
+    
+    // Retorno incondicional a la evaluación
+    goto(L_INICIO_WHILE)
+    
+L_FIN_WHILE:
+    // Fin de la iteración. El programa continúa.
+````
 
 ## 3.8 Análisis Semántico
 ## 3.8.1 Construcción del AST y evaluación de expresiones

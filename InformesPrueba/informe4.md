@@ -1,176 +1,35 @@
-## 3.7 Semántica: Métodos Formales
-En esta sección se especificará la semántica, el significado, de las construcciones sintácticas descriptas en la sección anterior del presente informe. Las herramientas formales para esta tarea no son tan conocidas como las herramientas formales para la sintaxis. No obstante, estas herramientas pueden ser utilizadas para complementar las definiciones de algunas construcciones que exijan una mayor precisión en su descripción semántica que aquella que puede brindarse mediante una definición coloquial de su funcionamiento.
+##### 3.7.1. Semántica Estática
 
-[poner aquí Def Semántica]
+La semántica estática abarca aquellas validaciones y reglas de significado que podemos comprobar en el programa fuente antes de su ejecución real. A diferencia del análisis sintáctico (que solo verifica que las oraciones estén bien formadas según la BNF), la semántica estática de Aleph se encarga de dar sentido a esas estructuras, comprobando, por ejemplo, que las variables utilizadas hayan sido previamente declaradas, que las operaciones algebraicas reciban operandos compatibles y que los identificadores respeten las reglas de alcance (scope).
 
-La semántica formal describe de manera rigurosa y matemática el significado de los programas y cómo se alteran los estados durante su ejecución. Mientras que la sintaxis establece las reglas estrictas de formación del código y su jerarquía, la semántica determina los cómputos precisos que se realizan al evaluar dichas secuencias sobre la máquina virtual o el entorno de ejecución.
+Dado que hemos diseñado Aleph como un intérprete puro, efectuamos gran parte de nuestro análisis estático de manera integrada durante la fase de construcción del Árbol de Sintaxis Abstracta (AST). El analizador sintáctico (Bison) guía la estructura, pero son las acciones semánticas asociadas a cada regla las que se encargan de propagar la información de tipos y construir los nodos en memoria para su posterior evaluación.
 
-## 3.7.1. Semántica Estática
-[Poner aquí Def Semántica Estática]
+###### Gramática de Atributos
 
-Gramática de Atributos
-[Poner aquí Def Gramática de Atributos]
+Para formalizar cómo fluye la información de contexto y de tipos a través de la sintaxis de Aleph, nos basamos en el concepto de Gramáticas de Atributos propuesto por Knuth (1968) [Louden, 2004, p. 101]. Una gramática de atributos es una extensión de las gramáticas libres de contexto, donde asociamos a cada símbolo de la gramática (terminal o no terminal) un conjunto de propiedades denominadas "atributos", y a cada regla de producción le asignamos funciones semánticas que especifican cómo calcular dichos atributos.
 
-Una gramática de atributos es una extensión formal de las GLC diseñada para describir la semántica estática de un lenguaje. Este modelo asocia atributos (como tipos de datos o valores) a los símbolos terminales y no terminales de la gramática. Adicionalmente, adjunta funciones semánticas a las reglas de producción para especificar cómo se sintetizan o heredan dichos atributos a lo largo del árbol sintáctico, y utiliza funciones de predicado para verificar que se cumplan las restricciones lógicas y de tipado.
+En nuestro diseño diferenciamos dos tipos de atributos:
+*   **Atributos Sintetizados:** Son aquellos cuyo valor en el nodo padre se calcula exclusivamente a partir de los valores de los atributos de sus nodos hijos. En implementaciones de análisis ascendente (bottom-up) como la generada por Bison, estos atributos son los más naturales de implementar, ya que la información fluye desde las hojas (los lexemas) hacia la raíz del árbol.
+*   **Atributos Heredados:** Son aquellos cuyo valor se calcula tomando información del nodo padre o de los nodos hermanos. Permiten que la información fluya "hacia abajo" o "lateralmente" en el árbol de derivación.
 
-Gramática de atributos para las expresiones de Aleph
-[Poner aquí las gramáticas de atributos de las operaciones de alpeh]
+En la arquitectura de nuestro intérprete Aleph, hemos optado por utilizar fundamentalmente **atributos sintetizados**. Cada vez que Flex reconoce un literal o un identificador, emite un token y sintetiza su valor (por ejemplo, el carácter en sí, o el nombre de la variable) hacia Bison mediante la variable `yylval`. Luego, a medida que Bison reduce las reglas gramaticales de abajo hacia arriba, nuestras acciones en C recolectan esos punteros de los hijos para sintetizar un nuevo nodo (una estructura en C tipo `struct ast`) que se pasa al nivel superior mediante `$$`.
 
-#### A. Operaciones Algebraicas de Conjuntos
+###### Gramática de atributos para las expresiones de Aleph
 
-  Regla Sintáctica:
-```math
-\Large \langle \text{expresion} \rangle_0 ::= \langle \text{expresion} \rangle_1 \ \text{OP\_UNION} \ \langle \text{termino} \rangle
-```
-                        (Aplica idéntico para OP_INTERSECTION y OP_DIFFERENCE)
+Para ilustrar nuestro modelo, definimos a continuación la gramática de atributos sintetizados para las expresiones algebraicas básicas de Aleph. Sea `.val` el atributo que representa el puntero al nodo del AST que estamos construyendo en memoria, definimos las siguientes reglas semánticas para sintetizar el sub-árbol:
 
-  Reglas Semánticas y Atributos:
-```math
-\begin{aligned}
-\langle \text{expresion} \rangle_1.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
-\langle \text{termino} \rangle.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
-\langle \text{expresion} \rangle_0.\text{nodo} &\leftarrow \text{new\_binary\_ast}(\text{OP\_UNION}, \langle \text{expresion} \rangle_1.\text{nodo}, \langle \text{termino} \rangle.\text{nodo}) \\
-\langle \text{expresion} \rangle_0.\text{tipo} &\leftarrow
-\begin{cases}
-\text{set} & \text{si } (\langle \text{expresion} \rangle_1.\text{tipo} \in \{\text{set}, \text{empty}\}) \land (\langle \text{termino} \rangle.\text{tipo} \in \{\text{set}, \text{empty}\}) \\
-\text{error\_type} & \text{en otro caso (Error de tipos)}
-\end{cases}
-\end{aligned}
-```
+| Producción BNF | Función Semántica (Atributo Sintetizado) |
+| :--- | :--- |
+| `<expresion> ::= <expresion> OP_UNION <termino>` | `<expresion>_padre.val = crear_nodo_operacion(OP_UNION, <expresion>_hijo.val, <termino>.val)` |
+| `<expresion> ::= <expresion> OP_INTERSECTION <termino>` | `<expresion>_padre.val = crear_nodo_operacion(OP_INTERSECTION, <expresion>_hijo.val, <termino>.val)` |
+| `<expresion> ::= <expresion> OP_DIFFERENCE <termino>` | `<expresion>_padre.val = crear_nodo_operacion(OP_DIFFERENCE, <expresion>_hijo.val, <termino>.val)` |
+| `<expresion> ::= <termino>` | `<expresion>.val = <termino>.val` |
+| `<termino> ::= IDENTIFIER` | `<termino>.val = crear_nodo_referencia(IDENTIFIER.lexema)` |
+| `<termino> ::= LIT_ELEMENT` | `<termino>.val = crear_nodo_literal_elemento(LIT_ELEMENT.lexema)` |
+| `<termino> ::= <lts_conjunto>` | `<termino>.val = <lts_conjunto>.val` |
+| `<lts_conjunto> ::= DELIM_LBRACE <lts_expresiones> DELIM_RBRACE`| `<lts_conjunto>.val = crear_nodo_conjunto(<lts_expresiones>.val)` |
 
-#### B. Operaciones de Modificación de Colecciones
-
-  Regla Sintactica:
-```math
-\Large \langle \text{expresion} \rangle_0 ::= \langle \text{expresion} \rangle_1 \ \text{KW\_APPEND} \ \langle \text{termino} \rangle
-```
-
-  Reglas Semánticas y Atributos:
-```math
-\begin{aligned}
-\langle \text{expresion} \rangle_1.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
-\langle \text{termino} \rangle.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
-\langle \text{expresion} \rangle_0.\text{nodo} &\leftarrow \text{new\_binary\_ast}(\text{KW\_APPEND}, \langle \text{expresion} \rangle_1.\text{nodo}, \langle \text{termino} \rangle.\text{nodo}) \\
-\langle \text{expresion} \rangle_0.\text{tipo} &\leftarrow
-\begin{cases}
-\text{list} & \text{si } (\langle \text{expresion} \rangle_1.\text{tipo} \in \{\text{list}, \text{empty}\}) \\
-\text{error\_type} & \text{en otro caso (Error de tipos)}
-\end{cases}
-\end{aligned}
-```
-  Regla Sintactica:
-```math
-\Large \langle \text{expresion} \rangle_0 ::= \langle \text{expresion} \rangle_1 \ \text{KW\_INSERT} \ \langle \text{termino} \rangle
-```
-
-  Reglas Semánticas y Atributos:
-```math
-\begin{aligned}
-\langle \text{expresion} \rangle_1.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
-\langle \text{termino} \rangle.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
-\langle \text{expresion} \rangle_0.\text{nodo} &\leftarrow \text{new\_binary\_ast}(\text{KW\_INSERT}, \langle \text{expresion} \rangle_1.\text{nodo}, \langle \text{termino} \rangle.\text{nodo}) \\
-\langle \text{expresion} \rangle_0.\text{tipo} &\leftarrow
-\begin{cases}
-\text{set} & \text{si } (\langle \text{expresion} \rangle_1.\text{tipo} \in \{\text{set}, \text{empty}\}) \\
-\text{error\_type} & \text{en otro caso (Error de tipos)}
-\end{cases}
-\end{aligned}
-```
-#### C. Transición de Expresión a Término
-
-  Regla Sintactica:
-```math
-\Large \langle \text{expresion} \rangle_0 ::= \langle \text{termino} \rangle
-```
-
-  Reglas Semánticas y Atributos:
-```math
-\begin{aligned}
-\langle \text{termino} \rangle.\text{env} &\leftarrow \langle \text{expresion} \rangle_0.\text{env} \\
-\langle \text{expresion} \rangle_0.\text{nodo} &\leftarrow \langle \text{termino} \rangle.\text{nodo} \\
-\langle \text{expresion} \rangle_0.\text{tipo} &\leftarrow \langle \text{termino} \rangle.\text{tipo}
-\end{aligned}
-```
-#### D. Operaciones Relacionales
-
-  Regla Sintactica:
-```math
-\Large \langle \text{op\_rel} \rangle_0 ::= \langle \text{expresion} \rangle_1 \ \text{OP\_IN} \ \langle \text{expresion} \rangle_2
-```
-                            (Aplica idéntico estructura lógica para OP_EQUAL y OP_NOT_EQUAL)
-
-  Reglas Semánticas y Atributos:
-```math
-\begin{aligned}
-\langle \text{expresion} \rangle_1.\text{env} &\leftarrow \langle \text{op\_rel} \rangle_0.\text{env} \\
-\langle \text{expresion} \rangle_2.\text{env} &\leftarrow \langle \text{op\_rel} \rangle_0.\text{env} \\
-\langle \text{op\_rel} \rangle_0.\text{nodo} &\leftarrow \text{new\_relation\_ast}(\text{OP\_IN}, \langle \text{expresion} \rangle_1.\text{nodo}, \langle \text{expresion} \rangle_2.\text{nodo}) \\
-\langle \text{op\_rel} \rangle_0.\text{tipo} &\leftarrow
-\begin{cases}
-\text{boolean} & \text{si } (\langle \text{expresion} \rangle_1.\text{tipo} == \langle \text{expresion} \rangle_2.\text{tipo}) \lor (\text{colección compatible}) \\
-\text{error\_type} & \text{en otro caso (Error de tipos)}
-\end{cases}
-\end{aligned}
-```
-
-  Regla Sintactica:
-```math
-\Large \langle \text{op\_rel} \rangle_0 ::= \text{KW\_EMPTY} \ \langle \text{expresion} \rangle
-```
-
-   Reglas Semánticas y Atributos:
-```math
-\begin{aligned}
-\langle \text{expresion} \rangle.\text{env} &\leftarrow \langle \text{op\_rel} \rangle_0.\text{env} \\
-\langle \text{op\_rel} \rangle_0.\text{nodo} &\leftarrow \text{new\_unary\_ast}(\text{KW\_EMPTY}, \langle \text{expresion} \rangle.\text{nodo}) \\
-\langle \text{op\_rel} \rangle_0.\text{tipo} &\leftarrow
-\begin{cases}
-\text{boolean} & \text{si } (\langle \text{expresion} \rangle.\text{tipo} \in \{\text{set}, \text{list}, \text{empty}\}) \\
-\text{error\_type} & \text{en otro caso}
-\end{cases}
-\end{aligned}
-```
-
-Regla Sintactica:
-```math
-\Large \langle \text{op\_rel} \rangle_0 ::= \langle \text{expresion} \rangle_1 \ \text{KW\_ANY} \ \langle \text{expresion} \rangle_2
-```
-
-   Reglas Semánticas y Atributos:
-```math
-\begin{aligned}
-\langle \text{expresion} \rangle_1.\text{env} &\leftarrow \langle \text{op\_rel} \rangle_0.\text{env} \\
-\langle \text{expresion} \rangle_2.\text{env} &\leftarrow \langle \text{op\_rel} \rangle_0.\text{env} \\
-\langle \text{op\_rel} \rangle_0.\text{nodo} &\leftarrow \text{new\_binary\_ast}(\text{KW\_ANY}, \langle \text{expresion} \rangle_1.\text{nodo}, \langle \text{expresion} \rangle_2.\text{nodo}) \\
-\langle \text{op\_rel} \rangle_0.\text{tipo} &\leftarrow
-\begin{cases}
-\text{boolean} & \text{si } (\langle \text{expresion} \rangle_2.\text{tipo} \in \{\text{set}, \text{list}, \text{empty}\}) \\
-\text{error\_type} & \text{en otro caso (Error de tipos)}
-\end{cases}
-\end{aligned}
-```
-
-#### E. Operaciones Lógicas
-
-  Regla Sintactica:
-```math
-\Large \langle \text{op\_log} \rangle_0 ::= \langle \text{op\_log} \rangle_1 \ \text{KW\_AND} \ \langle \text{op\_rel} \rangle
-```
-                               (Aplica idéntico para KW_OR)
-
-   Reglas Semánticas y Atributos:
-```math
-\begin{aligned}
-\langle \text{op\_log} \rangle_1.\text{env} &\leftarrow \langle \text{op\_log} \rangle_0.\text{env} \\
-\langle \text{op\_rel} \rangle.\text{env} &\leftarrow \langle \text{op\_log} \rangle_0.\text{env} \\
-\langle \text{op\_log} \rangle_0.\text{nodo} &\leftarrow \text{new\_binary\_ast}(\text{KW\_AND}, \langle \text{op\_log} \rangle_1.\text{nodo}, \langle \text{op\_rel} \rangle.\text{nodo}) \\
-\langle \text{op\_log} \rangle_0.\text{tipo} &\leftarrow
-\begin{cases}
-\text{boolean} & \text{si } (\langle \text{op\_log} \rangle_1.\text{tipo} == \text{boolean}) \land (\langle \text{op\_rel} \rangle.\text{tipo} == \text{boolean}) \\
-\text{error\_type} & \text{en otro caso (Error de tipos)}
-\end{cases}
-\end{aligned}
-```
+En este esquema, cuando analizamos una operación de conjuntos (por ejemplo la unión), la función `crear_nodo_operacion()` encapsula la creación dinámica en memoria de la estructura. El puntero resultante se convierte en el atributo sintetizado del lado izquierdo de la regla (`<expresion>_padre.val`), permitiendo que el árbol crezca progresivamente hasta abarcar la sentencia completa, dejando la estructura lista para ser verificada y evaluada por la Semántica Dinámica.
 
 ## 3.7.2. Semántica Dinámica
 [Poner aquí Def Semántica Dinámica]

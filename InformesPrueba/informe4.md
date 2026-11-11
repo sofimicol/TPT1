@@ -1,67 +1,4 @@
-##### 3.7.1. Semántica Estática
-
-La semántica estática abarca aquellas validaciones y reglas de significado que podemos comprobar en el programa fuente antes de su ejecución real. A diferencia del análisis sintáctico (que solo verifica que las oraciones estén bien formadas según la BNF), la semántica estática de Aleph se encarga de dar sentido a esas estructuras, comprobando, por ejemplo, que las variables utilizadas hayan sido previamente declaradas, que las operaciones algebraicas reciban operandos compatibles y que los identificadores respeten las reglas de alcance (scope).
-
-Dado que hemos diseñado Aleph como un intérprete puro, efectuamos gran parte de nuestro análisis estático de manera integrada durante la fase de construcción del Árbol de Sintaxis Abstracta (AST). El analizador sintáctico (Bison) guía la estructura, pero son las acciones semánticas asociadas a cada regla las que se encargan de propagar la información de tipos y construir los nodos en memoria para su posterior evaluación.
-
-###### Gramática de Atributos
-
-Para formalizar cómo fluye la información de contexto y de tipos a través de la sintaxis de Aleph, nos basamos en el concepto de Gramáticas de Atributos propuesto por Knuth (1968) [Louden, 2004, p. 101]. Una gramática de atributos es una extensión de las gramáticas libres de contexto, donde asociamos a cada símbolo de la gramática (terminal o no terminal) un conjunto de propiedades denominadas "atributos", y a cada regla de producción le asignamos funciones semánticas que especifican cómo calcular dichos atributos.
-
-En nuestro diseño diferenciamos dos tipos de atributos:
-*   **Atributos Sintetizados:** Son aquellos cuyo valor en el nodo padre se calcula exclusivamente a partir de los valores de los atributos de sus nodos hijos. En implementaciones de análisis ascendente (bottom-up) como la generada por Bison, estos atributos son los más naturales de implementar, ya que la información fluye desde las hojas (los lexemas) hacia la raíz del árbol.
-*   **Atributos Heredados:** Son aquellos cuyo valor se calcula tomando información del nodo padre o de los nodos hermanos. Permiten que la información fluya "hacia abajo" o "lateralmente" en el árbol de derivación.
-
-En la arquitectura de nuestro intérprete Aleph, hemos optado por utilizar fundamentalmente **atributos sintetizados**. Cada vez que Flex reconoce un literal o un identificador, emite un token y sintetiza su valor (por ejemplo, el carácter en sí, o el nombre de la variable) hacia Bison mediante la variable `yylval`. Luego, a medida que Bison reduce las reglas gramaticales de abajo hacia arriba, nuestras acciones en C recolectan esos punteros de los hijos para sintetizar un nuevo nodo (una estructura en C tipo `struct ast`) que se pasa al nivel superior mediante `$$`.
-
-###### Gramática de atributos para las expresiones de Aleph
-
-Para ilustrar nuestro modelo, definimos a continuación la gramática de atributos sintetizados para las expresiones algebraicas básicas de Aleph. Sea `.val` el atributo que representa el puntero al nodo del AST que estamos construyendo en memoria, definimos las siguientes reglas semánticas para sintetizar el sub-árbol:
-
-| Producción BNF | Función Semántica (Atributo Sintetizado) |
-| :--- | :--- |
-| `<expresion> ::= <expresion> OP_UNION <termino>` | `<expresion>_padre.val = crear_nodo_operacion(OP_UNION, <expresion>_hijo.val, <termino>.val)` |
-| `<expresion> ::= <expresion> OP_INTERSECTION <termino>` | `<expresion>_padre.val = crear_nodo_operacion(OP_INTERSECTION, <expresion>_hijo.val, <termino>.val)` |
-| `<expresion> ::= <expresion> OP_DIFFERENCE <termino>` | `<expresion>_padre.val = crear_nodo_operacion(OP_DIFFERENCE, <expresion>_hijo.val, <termino>.val)` |
-| `<expresion> ::= <termino>` | `<expresion>.val = <termino>.val` |
-| `<termino> ::= IDENTIFIER` | `<termino>.val = crear_nodo_referencia(IDENTIFIER.lexema)` |
-| `<termino> ::= LIT_ELEMENT` | `<termino>.val = crear_nodo_literal_elemento(LIT_ELEMENT.lexema)` |
-| `<termino> ::= <lts_conjunto>` | `<termino>.val = <lts_conjunto>.val` |
-| `<lts_conjunto> ::= DELIM_LBRACE <lts_expresiones> DELIM_RBRACE`| `<lts_conjunto>.val = crear_nodo_conjunto(<lts_expresiones>.val)` |
-
-En este esquema, cuando analizamos una operación de conjuntos (por ejemplo la unión), la función `crear_nodo_operacion()` encapsula la creación dinámica en memoria de la estructura. El puntero resultante se convierte en el atributo sintetizado del lado izquierdo de la regla (`<expresion>_padre.val`), permitiendo que el árbol crezca progresivamente hasta abarcar la sentencia completa, dejando la estructura lista para ser verificada y evaluada por la Semántica Dinámica.
-
-##### 3.7.2. Semántica Dinámica
-
-La semántica dinámica de un lenguaje de programación define el significado computacional riguroso de cada sentencia y expresión durante el tiempo de ejecución [Louden, 2004, pp. 104-105]. Mientras que la sintaxis y la semántica estática se enfocan en la validez estructural y las restricciones de tipado previo, la semántica dinámica especifica exactamente **qué sucede** cuando el programa es ejecutado por la máquina.
-
-En el diseño de Aleph, la semántica dinámica recae enteramente en el motor de nuestro intérprete puro. Al no compilar a código de máquina nativo, el significado de cada construcción del lenguaje (como un bucle `while` o una operación `union`) está determinado por la rutina en lenguaje C (la función `eval()`) que se invoca recursivamente al visitar el nodo correspondiente del Árbol de Sintaxis Abstracta (AST) en tiempo de ejecución.
-
-###### Semántica Operacional
-
-Existen diversos enfoques formales para describir la semántica dinámica, tales como la Semántica Denotacional (que asocia sentencias a funciones matemáticas) o la Semántica Axiomática (basada en precondiciones lógicas y postcondiciones). Para Aleph, hemos adoptado el enfoque de la **Semántica Operacional**.
-
-La Semántica Operacional describe el significado de un programa especificando cómo su ejecución altera el estado de una máquina matemática abstracta paso a paso [Louden, 2004, p. 106]. En este modelo, el "estado" de la máquina está representado por los valores actuales almacenados en la Tabla de Símbolos, y el significado de una sentencia se comprende evaluando cómo dicha sentencia transforma el estado previo de la memoria en un nuevo estado. 
-
-Para lograr esta descripción sin atarnos a una arquitectura de hardware específica (como x86 o ARM), la semántica operacional requiere que diseñemos un lenguaje intermedio de muy bajo nivel (similar a un lenguaje ensamblador o *bytecode*) que actúa como el conjunto de instrucciones nativas de nuestra máquina abstracta.
-
-###### Descripción de las estructuras de control de Aleph
-
-Para describir rigurosamente la semántica operacional de las estructuras de control de flujo en Aleph, definimos a continuación nuestro **Lenguaje Intermedio de Descripción**. Este conjunto de instrucciones primitivas representa las operaciones atómicas que nuestra máquina virtual es capaz de ejecutar:
-
-*   `eval(expr, dir)`: Evalúa la expresión `expr` (que puede ser una operación relacional, lógica o aritmética) y almacena el resultado booleano (o valor resultante) en la dirección de memoria o registro `dir`.
-*   `goto(etiqueta)`: Transfiere incondicionalmente el flujo de ejecución (el contador de programa) hacia la instrucción marcada con la `etiqueta`.
-*   `if(dir) goto(etiqueta)`: Bifurcación condicional. Transfiere el flujo de control hacia la `etiqueta` únicamente si el valor booleano contenido en `dir` es verdadero.
-*   `if(!dir) goto(etiqueta)`: Bifurcación condicional inversa. Transfiere el flujo de control hacia la `etiqueta` únicamente si el valor booleano contenido en `dir` es falso.
-
-A partir de este conjunto de primitivas, procedemos a describir la semántica operacional de las sentencias estructurales de Aleph:
-
-**1. Semántica Operacional de la Alternativa (`if - else`)**
-
-La estructura condicional en Aleph se define sintácticamente como `if ( <op_log> ) do <bloque_1> else <bloque_2> end`. Dinámicamente, su ejecución altera el flujo de la siguiente manera:
-
-```text
-    // Estado inicial
+3.7.1. Semántica EstáticaLa semántica estática abarca aquellas validaciones y reglas de significado que podemos comprobar en el programa fuente antes de su ejecución real. A diferencia del análisis sintáctico (que solo verifica que las oraciones estén bien formadas según la BNF), la semántica estática de Aleph se encarga de dar sentido a esas estructuras, comprobando, por ejemplo, que las variables utilizadas hayan sido previamente declaradas, que las operaciones algebraicas reciban operandos compatibles y que los identificadores respeten las reglas de alcance (scope).Dado que hemos diseñado Aleph como un intérprete puro, efectuamos gran parte de nuestro análisis estático de manera integrada durante la fase de construcción del Árbol de Sintaxis Abstracta (AST). El analizador sintáctico (Bison) guía la estructura, pero son las acciones semánticas asociadas a cada regla las que se encargan de propagar la información de tipos y construir los nodos en memoria para su posterior evaluación.Gramática de AtributosPara formalizar cómo fluye la información de contexto y de tipos a través de la sintaxis de Aleph, nos basamos en el concepto de Gramáticas de Atributos propuesto por Knuth (1968) [Louden, 2004, p. 101]. Una gramática de atributos es una extensión de las gramáticas libres de contexto, donde asociamos a cada símbolo de la gramática (terminal o no terminal) un conjunto de propiedades denominadas "atributos", y a cada regla de producción le asignamos funciones semánticas que especifican cómo calcular dichos atributos.En nuestro diseño diferenciamos dos tipos de atributos:Atributos Sintetizados: Son aquellos cuyo valor en el nodo padre se calcula exclusivamente a partir de los valores de los atributos de sus nodos hijos. En implementaciones de análisis ascendente (bottom-up) como la generada por Bison, estos atributos son los más naturales de implementar, ya que la información fluye desde las hojas (los lexemas) hacia la raíz del árbol.Atributos Heredados: Son aquellos cuyo valor se calcula tomando información del nodo padre o de los nodos hermanos. Permiten que la información fluya "hacia abajo" o "lateralmente" en el árbol de derivación.En la arquitectura de nuestro intérprete Aleph, hemos optado por utilizar fundamentalmente atributos sintetizados. Cada vez que Flex reconoce un literal o un identificador, emite un token y sintetiza su valor (por ejemplo, el carácter en sí, o el nombre de la variable) hacia Bison mediante la variable yylval. Luego, a medida que Bison reduce las reglas gramaticales de abajo hacia arriba, nuestras acciones en C recolectan esos punteros de los hijos para sintetizar un nuevo nodo (una estructura en C tipo struct ast) que se pasa al nivel superior mediante $$.Gramática de atributos para las expresiones de AlephPara ilustrar nuestro modelo, definimos a continuación la gramática de atributos sintetizados para las expresiones algebraicas básicas de Aleph. Sea .val el atributo que representa el puntero al nodo del AST que estamos construyendo en memoria, definimos las siguientes reglas semánticas para sintetizar el sub-árbol:Producción BNFFunción Semántica (Atributo Sintetizado)<expresion> ::= <expresion> OP_UNION <termino><expresion>_padre.val = crear_nodo_operacion(OP_UNION, <expresion>_hijo.val, <termino>.val)<expresion> ::= <expresion> OP_INTERSECTION <termino><expresion>_padre.val = crear_nodo_operacion(OP_INTERSECTION, <expresion>_hijo.val, <termino>.val)<expresion> ::= <expresion> OP_DIFFERENCE <termino><expresion>_padre.val = crear_nodo_operacion(OP_DIFFERENCE, <expresion>_hijo.val, <termino>.val)<expresion> ::= <termino><expresion>.val = <termino>.val<termino> ::= IDENTIFIER<termino>.val = crear_nodo_referencia(IDENTIFIER.lexema)<termino> ::= LIT_ELEMENT<termino>.val = crear_nodo_literal_elemento(LIT_ELEMENT.lexema)<termino> ::= <lts_conjunto><termino>.val = <lts_conjunto>.val<lts_conjunto> ::= DELIM_LBRACE <lts_expresiones> DELIM_RBRACE<lts_conjunto>.val = crear_nodo_conjunto(<lts_expresiones>.val)3.7.2. Semántica DinámicaLa semántica dinámica de un lenguaje de programación define el significado computacional riguroso de cada sentencia y expresión durante el tiempo de ejecución [Louden, 2004, pp. 104-105]. Mientras que la sintaxis y la semántica estática se enfocan en la validez estructural y las restricciones de tipado previo, la semántica dinámica especifica exactamente qué sucede cuando el programa es ejecutado por la máquina.En el diseño de Aleph, la semántica dinámica recae enteramente en el motor de nuestro intérprete puro. Al no compilar a código de máquina nativo, el significado de cada construcción del lenguaje (como un bucle while o una operación union) está determinado por la rutina en lenguaje C (la función eval()) que se invoca recursivamente al visitar el nodo correspondiente del Árbol de Sintaxis Abstracta (AST) en tiempo de ejecución.Semántica OperacionalExisten diversos enfoques formales para describir la semántica dinámica, tales como la Semántica Denotacional (que asocia sentencias a funciones matemáticas) o la Semántica Axiomática (basada en precondiciones lógicas y postcondiciones). Para Aleph, hemos adoptado el enfoque de la Semántica Operacional.La Semántica Operacional describe el significado de un programa especificando cómo su ejecución altera el estado de una máquina matemática abstracta paso a paso [Louden, 2004, p. 106]. En este modelo, el "estado" de la máquina está representado por los valores actuales almacenados en la Tabla de Símbolos, y el significado de una sentencia se comprende evaluando cómo dicha sentencia transforma el estado previo de la memoria en un nuevo estado.Para lograr esta descripción sin atarnos a una arquitectura de hardware específica (como x86 o ARM), la semántica operacional requiere que diseñemos un lenguaje intermedio de muy bajo nivel (similar a un lenguaje ensamblador o bytecode) que actúa como el conjunto de instrucciones nativas de nuestra máquina abstracta.Descripción de las estructuras de control de AlephPara describir rigurosamente la semántica operacional de las estructuras de control de flujo en Aleph, definimos a continuación nuestro Lenguaje Intermedio de Descripción. Este conjunto de instrucciones primitivas representa las operaciones atómicas que nuestra máquina virtual es capaz de ejecutar:eval(expr, dir): Evalúa la expresión expr (que puede ser una operación relacional, lógica o aritmética) y almacena el resultado booleano (o valor resultante) en la dirección de memoria o registro dir.goto(etiqueta): Transfiere incondicionalmente el flujo de ejecución (el contador de programa) hacia la instrucción marcada con la etiqueta.if(dir) goto(etiqueta): Bifurcación condicional. Transfiere el flujo de control hacia la etiqueta únicamente si el valor booleano contenido en dir es verdadero.if(!dir) goto(etiqueta): Bifurcación condicional inversa. Transfiere el flujo de control hacia la etiqueta únicamente si el valor booleano contenido en dir es falso.A partir de este conjunto de primitivas, procedemos a describir la semántica operacional de las sentencias estructurales de Aleph:1. Semántica Operacional de la Alternativa (if - else)La estructura condicional en Aleph se define sintácticamente como if ( <op_log> ) do <bloque_1> else <bloque_2> end. Dinámicamente, su ejecución altera el flujo de la siguiente manera:    // Estado inicial
     eval(<op_log>, T1)
     if(!T1) goto(L_ELSE)
     
@@ -75,7 +12,20 @@ L_ELSE:
     
 L_FIN:
     // El programa continúa su estado normal
-````
+2. Semántica Operacional de la Iteración (while)La estructura repetitiva básica en Aleph se define sintácticamente como while ( <op_log> ) do <bloque> end. Su semántica operacional requiere una evaluación constante de la guardia booleana antes de cada ejecución del cuerpo, generando el siguiente rastro de estados:L_INICIO_WHILE:
+    // Evaluación de la condición de parada
+    eval(<op_log>, T1)
+    if(!T1) goto(L_FIN_WHILE)
+    
+    // Modificación del estado a través del bloque
+    <bloque>
+    
+    // Retorno incondicional a la evaluación
+    goto(L_INICIO_WHILE)
+    
+L_FIN_WHILE:
+    // Fin de la iteración. El programa continúa.
+
 ## 3.8 Análisis Semántico
 ## 3.8.1 Construcción del AST y evaluación de expresiones
 [Mostrar y explicar la estructura de datos y módulos que se usan para la construcción del AST]

@@ -31,70 +31,50 @@ Para ilustrar nuestro modelo, definimos a continuación la gramática de atribut
 
 En este esquema, cuando analizamos una operación de conjuntos (por ejemplo la unión), la función `crear_nodo_operacion()` encapsula la creación dinámica en memoria de la estructura. El puntero resultante se convierte en el atributo sintetizado del lado izquierdo de la regla (`<expresion>_padre.val`), permitiendo que el árbol crezca progresivamente hasta abarcar la sentencia completa, dejando la estructura lista para ser verificada y evaluada por la Semántica Dinámica.
 
-## 3.7.2. Semántica Dinámica
-[Poner aquí Def Semántica Dinámica]
+##### 3.7.2. Semántica Dinámica
 
-La semántica dinámica define el significado computacional del código en tiempo de ejecución. Su propósito es modelar rigurosamente cómo se transforman el estado de la máquina, los valores en memoria y el flujo de control secuencial a medida que las sentencias son evaluadas dinámicamente por el intérprete de Aleph.
+La semántica dinámica de un lenguaje de programación define el significado computacional riguroso de cada sentencia y expresión durante el tiempo de ejecución [Louden, 2004, pp. 104-105]. Mientras que la sintaxis y la semántica estática se enfocan en la validez estructural y las restricciones de tipado previo, la semántica dinámica especifica exactamente **qué sucede** cuando el programa es ejecutado por la máquina.
 
-Semántica Operacional
-[Poner aquí Def Semántica Operacional]
+En el diseño de Aleph, la semántica dinámica recae enteramente en el motor de nuestro intérprete puro. Al no compilar a código de máquina nativo, el significado de cada construcción del lenguaje (como un bucle `while` o una operación `union`) está determinado por la rutina en lenguaje C (la función `eval()`) que se invoca recursivamente al visitar el nodo correspondiente del Árbol de Sintaxis Abstracta (AST) en tiempo de ejecución.
 
-La semántica operacional describe el significado de un lenguaje definiendo el efecto secuencial de sus sentencias sobre el estado de una máquina abstracta o virtual. En lugar de limitarse a mapeos puramente matemáticos, detalla los pasos algorítmicos que modifican las variables y las estructuras de datos en memoria instrucción por instrucción.
+###### Semántica Operacional
 
-Descripción las estructuras de control de Aleph
-[Poner aquí definición de lenguaje intermedio para describir Aleph]
+Existen diversos enfoques formales para describir la semántica dinámica, tales como la Semántica Denotacional (que asocia sentencias a funciones matemáticas) o la Semántica Axiomática (basada en precondiciones lógicas y postcondiciones). Para Aleph, hemos adoptado el enfoque de la **Semántica Operacional**.
 
-Definimos el estado de la máquina abstracta $E$ como el mapeo activo en memoria que vincula las variables (identificadores) con sus estructuras asignadas (listas, conjuntos).
+La Semántica Operacional describe el significado de un programa especificando cómo su ejecución altera el estado de una máquina matemática abstracta paso a paso [Louden, 2004, p. 106]. En este modelo, el "estado" de la máquina está representado por los valores actuales almacenados en la Tabla de Símbolos, y el significado de una sentencia se comprende evaluando cómo dicha sentencia transforma el estado previo de la memoria en un nuevo estado. 
 
-[Poner aquí las descripciones de las estructuras de control de Apleh con semántica operacional]
+Para lograr esta descripción sin atarnos a una arquitectura de hardware específica (como x86 o ARM), la semántica operacional requiere que diseñemos un lenguaje intermedio de muy bajo nivel (similar a un lenguaje ensamblador o *bytecode*) que actúa como el conjunto de instrucciones nativas de nuestra máquina abstracta.
 
-* Bifurcación Condicional (`if-else`)
-  La semántica operacional de la estructura `<sent_if>` en Aleph se evalúa en base al estado actual σ :
-  1.  Se evalúa la condición booleana `<condicion>` en el estado σ.
-  2.  Rama verdadera: Si la condición se evalúa como true, el intérprete ingresa al primer bloque (`do ...`), ejecutando secuencialmente su lista de sentencias. Esto produce modificaciones en la memoria y genera un nuevo estado σ. Al alcanzar el final del bloque, la instrucción concluye.
-  3.  Rama falsa (con `else`): Si la condición es `false` y existe una cláusula `else`, el intérprete omite el primer bloque y ejecuta el segundo, transicionando a un nuevo estado σ''. Si no existe una cláusula else, el estado de la memoria permanece inalterado como σ y la instrucción termina.
-* Iteración Condicional (`while`)
-  El ciclo `<sent_while>` evalúa su permanencia dinámicamente sobre la memoria:
-  1. Se evalúa la `<condicion>` sobre el estado actual σ.
-  2. Si la condición resulta false, el ciclo se interrumpe y la ejecución continúa con el estado σ original.
-  3. Si la condición resulta `true`, se ejecutan todas las instrucciones contenidas en el bloque, lo que transforma el estado de la memoria a σ. Una vez finalizado el bloque, el control retorna forzosamente al paso 1, reevaluando la misma instrucción `while` pero sobre el nuevo estado σ.
+###### Descripción de las estructuras de control de Aleph
 
-Semántica Denotacional
-[Poner aquí Def Semántica Denotacional]
+Para describir rigurosamente la semántica operacional de las estructuras de control de flujo en Aleph, definimos a continuación nuestro **Lenguaje Intermedio de Descripción**. Este conjunto de instrucciones primitivas representa las operaciones atómicas que nuestra máquina virtual es capaz de ejecutar:
 
-La semántica denotacional representa el significado formal del código asociando cada construcción sintáctica con objetos y funciones matemáticas rigurosas, independizándose completamente de cualquier arquitectura de máquina simulada o mapa de memoria.
+*   `eval(expr, dir)`: Evalúa la expresión `expr` (que puede ser una operación relacional, lógica o aritmética) y almacena el resultado booleano (o valor resultante) en la dirección de memoria o registro `dir`.
+*   `goto(etiqueta)`: Transfiere incondicionalmente el flujo de ejecución (el contador de programa) hacia la instrucción marcada con la `etiqueta`.
+*   `if(dir) goto(etiqueta)`: Bifurcación condicional. Transfiere el flujo de control hacia la `etiqueta` únicamente si el valor booleano contenido en `dir` es verdadero.
+*   `if(!dir) goto(etiqueta)`: Bifurcación condicional inversa. Transfiere el flujo de control hacia la `etiqueta` únicamente si el valor booleano contenido en `dir` es falso.
 
-Descripción las estructuras de control de Aleph
-[Poner aquí las descripciones de las estructuras de control de Apleh con semántica denotacional]
+A partir de este conjunto de primitivas, procedemos a describir la semántica operacional de las sentencias estructurales de Aleph:
 
-A. Evaluación de Colecciones (Conjuntos y Listas)
-  * Lectura de variable (ID): El intérprete busca el identificador en el estado actual de la memoria $\sigma$. Si existe, retorna la lista o conjunto asociado; si no, arroja       un error de ejecución.
-  * Unión de Conjuntos (OP_UNION):
-    1. Se evalúa el operando izquierdo para obtener una colección $C_1$.
-    2. Se evalúa el operando derecho para obtener una colección $C_2$.
-    3. El intérprete crea y retorna un nuevo conjunto que contiene todos los elementos presentes en $C_1$ y $C_2$, omitiendo cualquier elemento duplicado.
-  * Diferencia de Conjuntos (OP_DIFFERENCE):
-    1. Se evalúa el operando izquierdo ($C_1$) y el derecho ($C_2$).
-    2. El intérprete retorna un nuevo conjunto que contiene únicamente los elementos de $C_1$ que no están presentes en $C_2$.
-  * Modificación (KW_INSERT / KW_APPEND):
-    1. Se evalúa la colección base obteniendo $C$.
-    2. Se evalúa el término derecho obteniendo el elemento $e$.Si es KW_APPEND (listas), retorna una nueva colección con $e$ concatenado en la última posición.
-    3. Si es KW_INSERT (conjuntos), retorna la colección con $e$ incluido solo si no existía previamente.2.
+**1. Semántica Operacional de la Alternativa (`if - else`)**
 
-B. Evaluación de Expresiones Relacionales
-  * Pertenencia (OP_IN):
-    1. Se evalúa el término izquierdo obteniendo un elemento $e$.
-    2. Se evalúa la expresión derecha obteniendo la colección $C$.
-    3. El intérprete recorre $C$. Si encuentra una coincidencia exacta con $e$, la instrucción finaliza y retorna true. Si agota la colección sin coincidencias, retorna false.
-  * Comprobación de Vacío (KW_EMPTY):
-    1. Se evalúa la expresión obteniendo una colección $C$.
-    2. Si el tamaño de $C$ es igual a 0 (no contiene elementos), retorna true; de lo contrario, retorna false.3.
+La estructura condicional en Aleph se define sintácticamente como `if ( <op_log> ) do <bloque_1> else <bloque_2> end`. Dinámicamente, su ejecución altera el flujo de la siguiente manera:
 
-C. Semántica de Comandos de Asignación
-  * Asignación Simple (ID = expr):
-    1. Se evalúa secuencialmente la expresión expr hasta resolverse en un valor final $v$ (una colección, elemento o booleano).
-    2. El intérprete actualiza el estado de la memoria $\sigma$, vinculando el identificador ID con el nuevo valor $v$.
-    3. Si ID ya existía en memoria, su referencia anterior se descarta y es sobrescrita. Si no existía, se reserva el espacio y se registra en el entorno actual.
+```text
+    // Estado inicial
+    eval(<op_log>, T1)
+    if(!T1) goto(L_ELSE)
+    
+    // Ejecución de <bloque_1> si T1 es verdadero
+    <bloque_1>
+    goto(L_FIN)
+    
+L_ELSE:
+    // Ejecución de <bloque_2> si T1 es falso
+    <bloque_2>
+    
+L_FIN:
+    // El programa continúa su estado normal
 
 ## 3.8 Análisis Semántico
 ## 3.8.1 Construcción del AST y evaluación de expresiones

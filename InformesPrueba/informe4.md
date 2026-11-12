@@ -14,7 +14,7 @@ En nuestro diseño diferenciamos dos tipos de atributos:
 
 En la arquitectura de nuestro intérprete Aleph, hemos optado por utilizar fundamentalmente **atributos sintetizados**. Cada vez que Flex reconoce un literal o un identificador, emite un token y sintetiza su valor (por ejemplo, el carácter en sí, o el nombre de la variable) hacia Bison mediante la variable `yylval`. Luego, a medida que Bison reduce las reglas gramaticales de abajo hacia arriba, nuestras acciones en C recolectan esos punteros de los hijos para sintetizar un nuevo nodo (una estructura en C tipo `struct ast`) que se pasa al nivel superior mediante `$$`.
 
-### Gramática de atributos para las expresiones de Aleph
+#### Gramática de atributos para las expresiones de Aleph
 
 Para ilustrar nuestro modelo, definimos a continuación la gramática de atributos sintetizados para las expresiones algebraicas básicas de Aleph. Sea `.val` el atributo que representa el puntero al nodo del AST que estamos construyendo en memoria, definimos las siguientes reglas semánticas para sintetizar el sub-árbol:
 
@@ -36,7 +36,7 @@ La semántica dinámica de un lenguaje de programación define el significado co
 
 En el diseño de Aleph, la semántica dinámica recae enteramente en el motor de nuestro intérprete puro. Al no compilar a código de máquina nativo, el significado de cada construcción del lenguaje (como un bucle `while` o una operación `union`) está determinado por la rutina en lenguaje C (la función `eval()`) que se invoca recursivamente al visitar el nodo correspondiente del Árbol de Sintaxis Abstracta (AST) en tiempo de ejecución.
 
-#### Semántica Operacional
+## Semántica Operacional
 
 Existen diversos enfoques formales para describir la semántica dinámica, tales como la Semántica Denotacional (que asocia sentencias a funciones matemáticas) o la Semántica Axiomática (basada en precondiciones lógicas y postcondiciones). Para Aleph, hemos adoptado el enfoque de la **Semántica Operacional**.
 
@@ -44,7 +44,7 @@ La Semántica Operacional describe el significado de un programa especificando c
 
 Para lograr esta descripción sin atarnos a una arquitectura de hardware específica (como x86 o ARM), la semántica operacional requiere que diseñemos un lenguaje intermedio de muy bajo nivel (similar a un lenguaje ensamblador o *bytecode*) que actúa como el conjunto de instrucciones nativas de nuestra máquina abstracta.
 
-### Descripción de las estructuras de control de Aleph
+#### Descripción de las estructuras de control de Aleph
 
 Para describir rigurosamente la semántica operacional de las estructuras de control de flujo en Aleph, definimos a continuación nuestro **Lenguaje Intermedio de Descripción**. Este conjunto de instrucciones primitivas representa las operaciones atómicas que nuestra máquina virtual es capaz de ejecutar:
 
@@ -92,7 +92,7 @@ L_INICIO_WHILE:
     
 L_FIN_WHILE:
     // Fin de la iteración. El programa continúa.
-````
+```
 
 ## 3.8 Análisis Semántico
 
@@ -126,7 +126,7 @@ typedef struct dataType {
 } TNodo;
 
 typedef TNodo* Tdata; // Puntero al nodo raíz de un sub-árbol
-````
+```
 Durante el proceso de reducción sintáctica (acción reduce de Bison), las reglas formales de la gramática invocan funciones constructivas en C. Por ejemplo, al evaluar una colección literal, Bison ejecuta módulos constructores como create_set() o create_list() que instancian un TNodo[cite: 17, 18]. Los elementos terminales se enlazan secuencialmente a través del puntero next, colgando como hijos desde el puntero data del nodo padre. De esta manera, el programa completo en Aleph se transforma en un único nodo raíz Tdata desde el cual se desprenden todos los bloques de código, expresiones y asignaciones.
 
 Estructura de datos y módulos para evaluar el AST
@@ -134,7 +134,7 @@ Estructura de datos y módulos para evaluar el AST
 Una vez que Bison ha finalizado la construcción del AST con éxito, el control del flujo del programa es transferido a nuestra función principal de interpretación, la cual evaluamos algorítmicamente mediante un recorrido en profundidad del árbol (Tree-Walk Evaluator).
 
 Esta rutina, típicamente estructurada mediante una gran sentencia switch sobre el atributo nodeType de nuestro TNodo, determina la semántica dinámica (operacional) de la instrucción representada. A continuación presentamos la estructura conceptual de nuestro motor de evaluación eval():
-````
+```
 Tdata eval(Tdata ast) {
     if (ast == NULL) return NULL;
     
@@ -180,5 +180,5 @@ Tdata eval(Tdata ast) {
             return NULL;
     }
 }
-````
+```
 El motor eval() opera bajo el principio de recursión: para resolver una operación compleja, primero desencadena la evaluación de los nodos hijos en el AST (ast->data y ast->data->next). Una vez que los valores se materializan (retornando un puntero Tdata a la abstracción concreta de lista, string o conjunto), aplica la lógica del lenguaje Aleph y propaga el resultado modificado hacia la raíz, concretando así la ejecución del programa.

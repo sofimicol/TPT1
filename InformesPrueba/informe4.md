@@ -1,4 +1,4 @@
-#### 3.7.1. Semántica Estática
+## 3.7.1. Semántica Estática
 
 La semántica estática abarca aquellas validaciones y reglas de significado que podemos comprobar en el programa fuente antes de su ejecución real. A diferencia del análisis sintáctico (que solo verifica que las oraciones estén bien formadas según la BNF), la semántica estática de Aleph se encarga de dar sentido a esas estructuras, comprobando, por ejemplo, que las variables utilizadas hayan sido previamente declaradas, que las operaciones algebraicas reciban operandos compatibles y que los identificadores respeten las reglas de alcance (scope).
 
@@ -36,7 +36,7 @@ La semántica dinámica de un lenguaje de programación define el significado co
 
 En el diseño de Aleph, la semántica dinámica recae enteramente en el motor de nuestro intérprete puro. Al no compilar a código de máquina nativo, el significado de cada construcción del lenguaje (como un bucle `while` o una operación `union`) está determinado por la rutina en lenguaje C (la función `eval()`) que se invoca recursivamente al visitar el nodo correspondiente del Árbol de Sintaxis Abstracta (AST) en tiempo de ejecución.
 
-### Semántica Operacional
+#### Semántica Operacional
 
 Existen diversos enfoques formales para describir la semántica dinámica, tales como la Semántica Denotacional (que asocia sentencias a funciones matemáticas) o la Semántica Axiomática (basada en precondiciones lógicas y postcondiciones). Para Aleph, hemos adoptado el enfoque de la **Semántica Operacional**.
 

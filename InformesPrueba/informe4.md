@@ -4,7 +4,7 @@ La semántica estática abarca aquellas validaciones y reglas de significado que
 
 Dado que hemos diseñado Aleph como un intérprete puro, efectuamos gran parte de nuestro análisis estático de manera integrada durante la fase de construcción del Árbol de Sintaxis Abstracta (AST). El analizador sintáctico (Bison) guía la estructura, pero son las acciones semánticas asociadas a cada regla las que se encargan de propagar la información de tipos y construir los nodos en memoria para su posterior evaluación.
 
-##### Gramática de Atributos
+### Gramática de Atributos
 
 Para formalizar cómo fluye la información de contexto y de tipos a través de la sintaxis de Aleph, nos basamos en el concepto de Gramáticas de Atributos propuesto por Knuth (1968) [Louden, 2004, p. 101]. Una gramática de atributos es una extensión de las gramáticas libres de contexto, donde asociamos a cada símbolo de la gramática (terminal o no terminal) un conjunto de propiedades denominadas "atributos", y a cada regla de producción le asignamos funciones semánticas que especifican cómo calcular dichos atributos.
 
@@ -14,7 +14,7 @@ En nuestro diseño diferenciamos dos tipos de atributos:
 
 En la arquitectura de nuestro intérprete Aleph, hemos optado por utilizar fundamentalmente **atributos sintetizados**. Cada vez que Flex reconoce un literal o un identificador, emite un token y sintetiza su valor (por ejemplo, el carácter en sí, o el nombre de la variable) hacia Bison mediante la variable `yylval`. Luego, a medida que Bison reduce las reglas gramaticales de abajo hacia arriba, nuestras acciones en C recolectan esos punteros de los hijos para sintetizar un nuevo nodo (una estructura en C tipo `struct ast`) que se pasa al nivel superior mediante `$$`.
 
-#### Gramática de atributos para las expresiones de Aleph
+### Gramática de atributos para las expresiones de Aleph
 
 Para ilustrar nuestro modelo, definimos a continuación la gramática de atributos sintetizados para las expresiones algebraicas básicas de Aleph. Sea `.val` el atributo que representa el puntero al nodo del AST que estamos construyendo en memoria, definimos las siguientes reglas semánticas para sintetizar el sub-árbol:
 
@@ -44,7 +44,7 @@ La Semántica Operacional describe el significado de un programa especificando c
 
 Para lograr esta descripción sin atarnos a una arquitectura de hardware específica (como x86 o ARM), la semántica operacional requiere que diseñemos un lenguaje intermedio de muy bajo nivel (similar a un lenguaje ensamblador o *bytecode*) que actúa como el conjunto de instrucciones nativas de nuestra máquina abstracta.
 
-#### Descripción de las estructuras de control de Aleph
+### Descripción de las estructuras de control de Aleph
 
 Para describir rigurosamente la semántica operacional de las estructuras de control de flujo en Aleph, definimos a continuación nuestro **Lenguaje Intermedio de Descripción**. Este conjunto de instrucciones primitivas representa las operaciones atómicas que nuestra máquina virtual es capaz de ejecutar:
 
@@ -100,7 +100,7 @@ El análisis semántico constituye la fase final y decisiva en el *front-end* de
 
 En esta etapa, nuestro intérprete verifica la consistencia de tipos, asegurando que las operaciones conjuntistas y de listas operen sobre operandos válidos. Asimismo, es durante este análisis dirigido por la sintaxis donde construimos en memoria la representación jerárquica del programa fuente: el Árbol de Sintaxis Abstracta (AST), el cual será posteriormente recorrido por el motor de evaluación para su ejecución dinámica.
 
-#### 3.8.1 Construcción del AST y evaluación de expresiones
+### 3.8.1 Construcción del AST y evaluación de expresiones
 
 **Estructura de datos y módulos para la construcción del AST**
 

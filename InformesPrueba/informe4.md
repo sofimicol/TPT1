@@ -30,7 +30,7 @@ Para ilustrar nuestro modelo, definimos a continuación la gramática de atribut
 | `<lts_conjunto> ::= DELIM_LBRACE <lts_expresiones> DELIM_RBRACE`| `<lts_conjunto>.val = crear_nodo_conjunto(<lts_expresiones>.val)` |
 ````
 
-##### 3.7.2. Semántica Dinámica
+## 3.7.2. Semántica Dinámica
 
 La semántica dinámica de un lenguaje de programación define el significado computacional riguroso de cada sentencia y expresión durante el tiempo de ejecución [Louden, 2004, pp. 104-105]. Mientras que la sintaxis y la semántica estática se enfocan en la validez estructural y las restricciones de tipado previo, la semántica dinámica especifica exactamente **qué sucede** cuando el programa es ejecutado por la máquina.
 

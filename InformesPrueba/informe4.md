@@ -17,7 +17,7 @@ En la arquitectura de nuestro intérprete Aleph, hemos optado por utilizar funda
 ### Gramática de atributos para las expresiones de Aleph
 
 Para ilustrar nuestro modelo, definimos a continuación la gramática de atributos sintetizados para las expresiones algebraicas básicas de Aleph. Sea `.val` el atributo que representa el puntero al nodo del AST que estamos construyendo en memoria, definimos las siguientes reglas semánticas para sintetizar el sub-árbol:
-```
+
 | Producción BNF | Función Semántica (Atributo Sintetizado) |
 | :--- | :--- |
 | `<expresion> ::= <expresion> OP_UNION <termino>` | `<expresion>_padre.val = crear_nodo_operacion(OP_UNION, <expresion>_hijo.val, <termino>.val)` |
@@ -28,7 +28,7 @@ Para ilustrar nuestro modelo, definimos a continuación la gramática de atribut
 | `<termino> ::= LIT_ELEMENT` | `<termino>.val = crear_nodo_literal_elemento(LIT_ELEMENT.lexema)` |
 | `<termino> ::= <lts_conjunto>` | `<termino>.val = <lts_conjunto>.val` |
 | `<lts_conjunto> ::= DELIM_LBRACE <lts_expresiones> DELIM_RBRACE`| `<lts_conjunto>.val = crear_nodo_conjunto(<lts_expresiones>.val)` |
-````
+
 
 ## 3.7.2. Semántica Dinámica
 

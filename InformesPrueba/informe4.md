@@ -95,9 +95,90 @@ L_FIN_WHILE:
 ````
 
 ## 3.8 Análisis Semántico
-## 3.8.1 Construcción del AST y evaluación de expresiones
-[Mostrar y explicar la estructura de datos y módulos que se usan para la construcción del AST]
 
-[Mostrar y explicar la estructura de datos y módulos utilizados para evaluar los AST en Aleph]
+El análisis semántico constituye la fase final y decisiva en el *front-end* de nuestro intérprete Aleph. Mientras que el analizador léxico agrupa los caracteres en tokens válidos y el analizador sintáctico verifica que la secuencia de estos tokens obedezca la gramática formal (BNF), el análisis semántico se encarga de dotar de significado computacional a dichas estructuras.
 
-[Entrega de código en el repo correspondiente: Evaluación de literales listas, conjuntos (sin elementos repetidos) y elemento (con sus operaciones no excluyente)]
+En esta etapa, nuestro intérprete verifica la consistencia de tipos, asegurando que las operaciones conjuntistas y de listas operen sobre operandos válidos. Asimismo, es durante este análisis dirigido por la sintaxis donde construimos en memoria la representación jerárquica del programa fuente: el Árbol de Sintaxis Abstracta (AST), el cual será posteriormente recorrido por el motor de evaluación para su ejecución dinámica.
+
+#### 3.8.1 Construcción del AST y evaluación de expresiones
+
+**Estructura de datos y módulos para la construcción del AST**
+
+Para representar los programas escritos en Aleph, hemos estructurado nuestro Árbol de Sintaxis Abstracta aprovechando las bases de nuestro Tipo Abstracto de Datos (TAD) construido previamente para manipular conjuntos y listas en memoria dinámica. El núcleo de nuestra representación recae en la estructura polimórfica `dataType` (`TNodo`).
+
+A diferencia de un árbol binario clásico que posee explícitamente punteros "izquierdo" y "derecho", nuestra implementación modela los nodos del AST utilizando una arquitectura de listas enlazadas generalizadas, lo que nos brinda extrema flexibilidad para representar tanto sentencias de control anidadas como colecciones algebraicas arbitrarias.
+
+```c
+#define STR 1
+#define SET 2
+#define LIST 3
+// Extendible a tipos adicionales de AST como OP_UNION, IF_NODE, WHILE_NODE, etc.
+
+typedef struct dataType {
+    int nodeType;   /* Identificador de tipo de nodo o instrucción */
+    union {
+        str string; /* Almacenamiento de valores terminales (Identificadores, Literales) */
+        struct {
+            struct dataType* data; /* Puntero al primer operando o nodo hijo (rama inferior) */
+            struct dataType* next; /* Puntero al siguiente operando o sentencia (hermano) */
+        };
+    };
+} TNodo;
+
+typedef TNodo* Tdata; // Puntero al nodo raíz de un sub-árbol
+````
+Durante el proceso de reducción sintáctica (acción reduce de Bison), las reglas formales de la gramática invocan funciones constructivas en C. Por ejemplo, al evaluar una colección literal, Bison ejecuta módulos constructores como create_set() o create_list() que instancian un TNodo[cite: 17, 18]. Los elementos terminales se enlazan secuencialmente a través del puntero next, colgando como hijos desde el puntero data del nodo padre. De esta manera, el programa completo en Aleph se transforma en un único nodo raíz Tdata desde el cual se desprenden todos los bloques de código, expresiones y asignaciones.
+
+Estructura de datos y módulos para evaluar el AST
+
+Una vez que Bison ha finalizado la construcción del AST con éxito, el control del flujo del programa es transferido a nuestra función principal de interpretación, la cual evaluamos algorítmicamente mediante un recorrido en profundidad del árbol (Tree-Walk Evaluator).
+
+Esta rutina, típicamente estructurada mediante una gran sentencia switch sobre el atributo nodeType de nuestro TNodo, determina la semántica dinámica (operacional) de la instrucción representada. A continuación presentamos la estructura conceptual de nuestro motor de evaluación eval():
+````
+Tdata eval(Tdata ast) {
+    if (ast == NULL) return NULL;
+    
+    // Variables temporales para operandos
+    Tdata izq, der, resultado;
+    
+    switch (ast->nodeType) {
+        
+        // 1. Evaluación de terminales (hojas del AST)
+        case STR: 
+        case SET: 
+        case LIST:
+            // Retorna una copia del valor del nodo en memoria
+            return copy_ast(ast); 
+            
+        // 2. Operaciones de colecciones (Ej: Unión)
+        case OP_UNION:
+            // Evalúa recursivamente ambos operandos (hijos)
+            izq = eval(ast->data);
+            der = eval(ast->data->next);
+            
+            // Ejecuta la lógica matemática pura sobre nuestras estructuras
+            if (izq->nodeType == SET && der->nodeType == SET) {
+                 resultado = union_set(izq, der); // Función interna de lógica de conjuntos
+            } else {
+                 yyerror("Error semántico: Operandos incompatibles para operador union.");
+                 resultado = NULL;
+            }
+            free_ast(izq); free_ast(der);
+            return resultado;
+            
+        // 3. Estructura de Control Iterativa (While)
+        case WHILE_NODE:
+            // Evalúa la condición (guardia). Mientras sea verdadera, ejecuta el cuerpo.
+            while (es_verdadero( eval(ast->data) )) {
+                 // El cuerpo del while está enlazado a continuación de la condición
+                 eval(ast->data->next); 
+            }
+            return NULL;
+            
+        default:
+            printf("Error interno: Tipo de nodo desconocido.\n");
+            return NULL;
+    }
+}
+````
+El motor eval() opera bajo el principio de recursión: para resolver una operación compleja, primero desencadena la evaluación de los nodos hijos en el AST (ast->data y ast->data->next). Una vez que los valores se materializan (retornando un puntero Tdata a la abstracción concreta de lista, string o conjunto), aplica la lógica del lenguaje Aleph y propaga el resultado modificado hacia la raíz, concretando así la ejecución del programa.

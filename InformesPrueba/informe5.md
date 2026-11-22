@@ -148,23 +148,94 @@ Al haber diseñado Aleph como un **intérprete puro con front-end de análisis e
   * *Categoría de variables en Aleph:* Desde la perspectiva del programador de Aleph, todas las variables del lenguaje se comportan como **variables implícitas de montón dinámico**. El usuario no declara tamaños máximos ni reserva memoria de forma manual: cada vez que evalúa una expresión o realiza una asignación, el intérprete gestiona transparentemente la creación en el montón y la liberación del valor anterior.
   * *Mecanismo interno en C:* Para materializar estas variables implícitas de montón dinámico en el nivel de implementación del intérprete en C, utilizamos internamente **variables explícitas de montón dinámico** (mediante `malloc`/`calloc` en `create_str`, `create_set`, `create_list`, `copy_ast` e `insertar_simbolo`, junto con `free`/`free_ast` para evitar fugas de memoria al reasignar). Asimismo, el puntero raíz de la Tabla de Símbolos global (`TTablaSimbolos tabla_global`) actúa como una **variable estática** dentro del intérprete en C, manteniéndose viva durante toda la ejecución de la sesión de Aleph, mientras que las variables auxiliares de las rutinas recursivas de evaluación (`eval`) son **variables dinámicas de pila** gestionadas por la pila de llamadas de C.
 
-3.8.4 Ámbito
-[Defina: tiempo de vida, alcance, alcance estático y alcance dinámico.]
+### 3.8.4 Ámbito
 
-[Defina: ancestro estático y dinámico de un subprograma]
+Al analizar cómo un programa gestiona y resuelve los nombres de sus variables, resulta fundamental distinguir entre la dimensión temporal de almacenamiento de una variable y la dimensión espacial o textual desde la cual puede referenciarse.
 
-[Relacione estos conceptos con la implementación de Aleph]
+#### Tiempo de vida y alcance
 
-3.8.5 Tipos de Datos
-[Defina: Chequeo de tipos. ¿Qué es un tipo compatible?]
+* **Tiempo de vida (*Lifetime*):** Es el intervalo de tiempo durante la ejecución del programa en el cual una variable permanece ligada a una localidad específica de memoria [Pratt & Zelkowitz, p. 109]. Comienza cuando se reserva almacenamiento para la variable y finaliza cuando dicha memoria es desasignada o liberada.
+* **Alcance (*Scope*):** Es el rango o conjunto de sentencias del programa dentro del cual una variable es visible y puede ser referenciada mediante su identificador [Louden, 2004, p. 122]. Una variable se denomina *local* en una unidad de programa o bloque si se declara en ella, y *no local* si es visible en dicha unidad pero fue declarada fuera de ella.
 
-[Defina: error de tipo]
+Aunque el alcance y el tiempo de vida suelen estar estrechamente vinculados, constituyen conceptos independientes que no siempre coinciden: por ejemplo, una variable local declarada como `static` en C posee un **alcance local** (solo es visible dentro de su función), pero un **tiempo de vida global** (su celda de memoria persiste durante toda la ejecución del programa) [Louden, 2004, p. 153]. Asimismo, cuando un bloque interno declara una variable con el mismo nombre que una externa, la declaración interna oculta temporalmente a la externa, generando una *apertura* o hueco de visibilidad dentro del alcance de esta última [Louden, 2004, p. 124].
 
-[Defina: fuertemente tipado y enumere las ventajas de los lenguajes de este tipo.]
+#### Alcance estático y alcance dinámico
 
-[Defina: conversión implícita y conversión explícita de tipos.]
+Según el criterio que utilice el lenguaje para resolver las referencias a variables no locales, distinguimos dos modelos de alcance:
 
-[Relacione estos conceptos con la implementación de Aleph]
+* **Alcance estático (o alcance léxico):** Las reglas de alcance se determinan exclusivamente a partir de la estructura textual del código fuente, antes de la ejecución del programa [Louden, 2004, p. 122; Pratt & Zelkowitz, p. 337]. Cuando un bloque o subprograma referencia un identificador no local, el procesador busca su declaración primero en el ámbito local y, si no la encuentra, asciende sucesivamente por los bloques que lo contienen textualmente hasta llegar al ámbito global. Al depender únicamente del texto del programa, favorece la legibilidad, facilita la verificación estática y garantiza que cada referencia resuelva siempre a la misma declaración sin importar el flujo de llamadas.
+* **Alcance dinámico:** El alcance de las variables se determina en tiempo de ejecución en función de la secuencia de llamadas activas a subprogramas (*cadena dinámica*) [Louden, 2004, p. 133; Pratt & Zelkowitz, p. 333]. Ante una referencia a un identificador no local, el intérprete aplica la *regla de la asociación más reciente*: busca primero en el entorno local del subprograma actual y, si no existe, retrocede por el subprograma que lo invocó, luego por el que invocó a este, y así sucesivamente hasta hallar una asociación activa [Pratt & Zelkowitz, pp. 333-334]. Su principal desventaja es que una misma referencia puede quedar ligada a variables distintas —e incluso de diferentes tipos— según la ruta de ejecución, lo que impide la verificación estática de tipos y reduce la legibilidad y confiabilidad del código [Louden, 2004, p. 133; Pratt & Zelkowitz, p. 334].
+
+#### Ancestro estático y ancestro dinámico de un subprograma
+
+La distinción entre ambos modelos de alcance se formaliza mediante las relaciones de parentesco entre subprogramas [Pratt & Zelkowitz, pp. 333, 340-341; Sebesta, 2012]:
+
+* **Ancestro estático:** En lenguajes que permiten el anidamiento textual de subprogramas, si un subprograma $B$ está definido sintácticamente dentro del cuerpo de un subprograma $A$, decimos que $A$ es el *padre estático* de $B$. Por extensión, $A$ y todos los subprogramas (o el programa principal) que envuelven textualmente a $A$ conforman los **ancestros estáticos** de $B$. Durante la ejecución, el acceso a variables no locales bajo alcance estático sigue esta jerarquía de anidamiento mediante apuntadores de *cadena estática* [Pratt & Zelkowitz, pp. 340-341].
+* **Ancestro dinámico:** Independientemente de cómo estén ubicados los subprogramas en el texto fuente, si durante la ejecución un subprograma $A$ invoca a un subprograma $B$ (ya sea de forma directa o a través de una secuencia intermedia de llamadas, como $A \to C \to B$), decimos que $A$ es un **ancestro dinámico** de $B$. El encadenamiento de registros de activación que registra este historial de invocaciones conforma la *cadena dinámica* en la pila de ejecución [Pratt & Zelkowitz, pp. 333, 340].
+
+#### Relación con la implementación de Aleph
+
+En nuestro intérprete de Aleph vinculamos estos conceptos tanto al estado actual de la implementación (evaluación de asignaciones y expresiones) como a la arquitectura general diseñada para bloques y subrutinas:
+
+* **Alcance en la implementación actual (`TAD_symtab`):** En esta etapa del intérprete gestionamos los identificadores mediante una única Tabla de Símbolos global (`TTablaSimbolos tabla_global`). Toda variable definida a través de una sentencia de asignación (`ID = expresion`) adquiere **alcance global** desde el punto de su primera asignación en adelante (regla de definición antes de uso). Si una expresión referencia un identificador que aún no fue registrado en `tabla_global`, `buscar_simbolo` retorna `NULL` y el intérprete emite un error semántico.
+* **Tiempo de vida en Aleph:** Diferenciamos dos niveles de tiempo de vida en memoria:
+  1. *Entrada en la Tabla de Símbolos (`TSimbolo`):* Su tiempo de vida se inicia la primera vez que el identificador aparece a la izquierda de una asignación (`insertar_simbolo`) y finaliza al concluir la ejecución del programa, cuando se libera toda la tabla.
+  2. *Valor dinámico en el montón (`Tdata`):* Cada estructura `TNodo` asociada al campo `valor` tiene un tiempo de vida acotado al lapso entre dos asignaciones sobre la misma variable. Al ejecutarse una reasignación (por ejemplo, `Q = Q union {'c'};`), `insertar_simbolo` libera el árbol previo con `free_ast` —poniendo fin a su tiempo de vida— y liga el identificador al nuevo árbol reservado con `copy_ast`.
+* **Diseño de alcance y ancestros para bloques y subprogramas:** Conforme a la gramática de Aleph (estructuras de control delimitadas por `do ... end` y subrutinas como `afnd2afd`), adoptamos el **alcance estático (léxico)** para asegurar previsibilidad y legibilidad. Dado que en Aleph todas las subrutinas se definen al nivel superior del programa (sin anidamiento textual de funciones dentro de funciones), el único **ancestro estático** de cualquier subprograma es el ámbito global. En cambio, los **ancestros dinámicos** quedan determinados en tiempo de ejecución por la secuencia de llamadas activas entre subrutinas (por ejemplo, si el programa principal invoca a `afnd2afd` y esta llama a una función auxiliar). Esta arquitectura es directamente extensible sobre `TAD_symtab`: al incorporar subprogramas, basta con organizar las tablas como una pila de entornos locales vinculados a la tabla global, aislando las variables locales de cada activación respecto del ámbito externo.
+
+### 3.8.5 Tipos de Datos
+
+El sistema de tipos constituye uno de los pilares de confiabilidad de un lenguaje de programación, ya que establece el conjunto de valores que puede adoptar cada entidad de datos y las operaciones legítimas aplicables sobre ellos [Louden, 2004, pp. 178-179].
+
+#### Chequeo de tipos y tipos compatibles
+
+* **Chequeo (o verificación) de tipos (*Type checking*):** Es el proceso mediante el cual el compilador o el intérprete verifica que todas las construcciones del programa sean consistentes en términos de los tipos de sus variables, constantes y expresiones, asegurando que los operandos de cada operador sean de tipos compatibles [Louden, 2004, pp. 178, 205; Sebesta, 2012]. Según el momento en que se efectúa, se clasifica en:
+  * **Verificación estática de tipos:** Se realiza durante la fase de traducción a partir de las declaraciones presentes en el código fuente, antes de ejecutar el programa [Louden, 2004, p. 205; Pratt & Zelkowitz, p. 123].
+  * **Verificación dinámica de tipos:** Se efectúa durante el tiempo de ejecución, inmediatamente antes de aplicar cada operación. Se implementa almacenando una *marca de tipo* (*type tag*) en cada objeto de datos para comprobar su validez antes de operar [Louden, 2004, p. 205; Pratt & Zelkowitz, p. 122].
+* **Tipo compatible:** Un tipo es **compatible** respecto de un operador si constituye un tipo legal aceptado directamente por dicho operador, o si las reglas del lenguaje permiten que sea convertido automáticamente (mediante una conversión implícita o coerción) a un tipo legal para dicha operación [Sebesta, 2012].
+
+#### Error de tipo
+
+Un **error de tipo** (*type error*) ocurre cuando se aplica un operador o una operación a uno o más operandos cuyo tipo resulta inapropiado o incompatible con lo que la operación requiere [Sebesta, 2012; Pratt & Zelkowitz, p. 125]. Si estos errores no son detectados por el procesador del lenguaje, el programa interpreta secuencias de bits o estructuras de memoria de manera incorrecta, produciendo corrupción silenciosa de datos o fallos críticos en ejecución [Louden, 2004, p. 179].
+
+#### Lenguajes fuertemente tipados y sus ventajas
+
+Un lenguaje se considera **fuertemente tipado** (*strongly typed*) si su sistema de tipos garantiza que **todos los errores de tipo son detectados siempre** —ya sea en tiempo de traducción o mediante comprobaciones estrictas en tiempo de ejecución—, impidiendo que un programa aplique operaciones ilegales o corrompa datos en memoria [Louden, 2004, p. 179; Pratt & Zelkowitz, p. 124; Sebesta, 2012]. Un factor clave del tipado fuerte es la restricción o ausencia de conversiones implícitas arbitrarias entre tipos, ya que las coerciones excesivas debilitan la capacidad de detectar errores del programador [Pratt & Zelkowitz, p. 124; Sebesta, 2012].
+
+Las principales ventajas de los lenguajes fuertemente tipados son [Louden, 2004, p. 175; Pratt & Zelkowitz, p. 124]:
+
+1. **Mayor confiabilidad y seguridad:** Garantizan la detección de usos erróneos de datos antes de que provoquen fallos silenciosos o corrupción de memoria.
+2. **Mejora en la capacidad de escritura y depuración:** Permiten identificar rápidamente errores frecuentes de programación (como intercambiar argumentos o aplicar operaciones a estructuras equivocadas), reduciendo drásticamente el tiempo de depuración.
+3. **Mayor legibilidad y documentación:** Al restringir explícitamente qué operaciones se admiten sobre cada clase de dato, el código expresa con mayor claridad el papel de cada estructura dentro del algoritmo.
+4. **Eliminación de ambigüedades:** La información rigurosa de tipos permite desambiguar el significado de los operadores y detectar inconsistencias de interfaz en programas extensos.
+5. **Eficiencia (cuando se combina con tipado estático):** Permite asignar memoria de forma óptima y generar código máquina eficiente sin comprobaciones repetitivas en tiempo de ejecución.
+
+#### Conversión implícita y conversión explícita de tipos
+
+Una **conversión de tipo** es una operación con signatura $\text{conversión\_op}: \text{tipo}_1 \to \text{tipo}_2$ que toma un valor de un tipo de dato y produce un valor equivalente de otro tipo distinto [Pratt & Zelkowitz, p. 125]. Existen dos mecanismos para realizarla:
+
+* **Conversión implícita (o coerción):** Es efectuada de manera automática por el compilador o el intérprete cuando detecta una discordancia entre el tipo real de un operando y el tipo esperado por un operador [Pratt & Zelkowitz, p. 125]. Por lo general, los lenguajes restringen las coerciones a conversiones de **ensanchamiento** (*widening* o promoción, como convertir un entero a real), donde el tipo destino puede representar al origen sin pérdida de información, evitando las de **estrechamiento** (*narrowing*, como truncar un real a entero), que conllevan pérdida de precisión [Pratt & Zelkowitz, p. 125].
+* **Conversión explícita (*casting*):** Es solicitada expresamente en el código fuente por el programador, ya sea mediante operadores de moldeado dedicados (como `(int) x` en C) o mediante funciones de conversión integradas (como `round()` en Pascal) [Pratt & Zelkowitz, p. 125]. Hace visible la intención del cambio de tipo y evita transformaciones inesperadas.
+
+#### Relación con la implementación de Aleph
+
+En Aleph, las abstracciones de datos provistas al programador se circunscriben estrictamente a tres tipos nativos: **Elemento (`STR = 1`)**, **Conjunto (`SET = 2`)** y **Lista (`LIST = 3`)**. Con base en esta arquitectura, nuestro intérprete adopta las siguientes decisiones de diseño:
+
+* **Chequeo dinámico de tipos mediante marcas de tipo:** Al ser Aleph un intérprete puro con ligadura dinámica de tipos en la Tabla de Símbolos (`TAD_symtab`), efectuamos **verificación dinámica de tipos**. Tal como describe Pratt [p. 122], cada objeto en memoria (`TNodo`) porta su propia marca de tipo en el campo `nodeType` (consultada mediante `return_type(nodo)`), y cada operación del evaluador verifica las marcas de sus operandos antes de invocar las rutinas de `TAD_set` o `TAD_ast`, etiquetando correctamente el nodo resultante.
+* **Reglas de compatibilidad y detección de errores de tipo:** En la siguiente tabla detallamos la compatibilidad exigida por los operadores de colecciones evaluados en Aleph:
+
+| Operador | Tipo Operando Izquierdo | Tipo Operando Derecho | Tipo del Resultado | Condición de Error de Tipo |
+| :--- | :--- | :--- | :--- | :--- |
+| `union` (`OP_UNION`) | `SET` | `SET` | `SET` | Cualquier operando distinto de `SET`. |
+| `inter` (`OP_INTERSECTION`) | `SET` | `SET` | `SET` | Cualquier operando distinto de `SET`. |
+| `diff` (`OP_DIFFERENCE`) | `SET` | `SET` | `SET` | Cualquier operando distinto de `SET`. |
+| `insert` (`KW_INSERT`) | `SET` | `STR`, `SET` o `LIST` | `SET` | Operando izquierdo distinto de `SET`. |
+| `append` (`KW_APPEND`) | `LIST` | `STR`, `SET` o `LIST` | `LIST` | Operando izquierdo distinto de `LIST`. |
+
+  Ante cualquier incumplimiento de estas reglas —por ejemplo, intentar evaluar `['a', 'b'] union {'c'}` o `'a' insert 'b'`—, el evaluador no ejecuta la operación de bajo nivel sobre los punteros en C, sino que informa explícitamente un **error semántico de tipo** y aborta la evaluación de esa expresión de forma segura.
+
+* **Grado de tipado en Aleph:** Aleph combina **tipado dinámico con verificación estricta (tipado fuerte en tiempo de ejecución)**, de forma análoga al comportamiento de lenguajes interpretados como Scheme [Louden, 2004, p. 205]. Aunque las variables no declaran un tipo estático fijo y pueden re-ligarse a otro tipo en una nueva asignación, ningún operador puede aplicarse sobre operandos incompatibles sin disparar un error de tipo.
+* **Política frente a conversiones implícitas y explícitas:** En Aleph **no permitimos conversiones implícitas (coerciones)** entre `STR`, `SET` y `LIST`. Convertir automáticamente una lista en un conjunto para resolver una unión provocaría pérdida silenciosa del orden y de elementos duplicados, mientras que transformar automáticamente un elemento `'a'` en `{'a'}` ocultaría errores lógicos del programador. Asimismo, no incorporamos operadores de conversión explícita (*casting*), ya que la sintaxis literal del lenguaje permite construir directamente la estructura deseada cuando hace falta envolver un valor (por ejemplo, escribiendo `Q union {'c'}` en lugar de `Q union 'c'`).
 
 3.8.6 Semántica de las asignaciones y expresiones
 [Explicar y mostrar la implementación de las asignaciones y expresiones de Aleph]

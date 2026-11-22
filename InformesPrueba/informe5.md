@@ -82,8 +82,11 @@ TSimbolo* insertar_simbolo(TTablaSimbolos *tabla, str nombre, Tdata valor) {
 Al interpretar la siguiente secuencia de sentencias en Aleph:
 
 Q = {'a', 'b'};
+
 Sigma = {'0', '1'};
+
 Estados = [Q, Sigma];
+
 Q = Q union {'c'};
 
 La Tabla de Símbolos registra inicialmente las entradas Q (tipo SET, valor {'a', 'b'}), Sigma (tipo SET, valor {'0', '1'}) y Estados (tipo LIST, valor [{'a', 'b'}, {'0', '1'}]). Al ejecutarse la última sentencia, buscar_simbolo recupera el valor actual de Q para resolver la unión y insertar_simbolo actualiza la entrada existente de Q en memoria con el nuevo conjunto {'a', 'b', 'c'}.

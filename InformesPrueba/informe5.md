@@ -237,7 +237,158 @@ En Aleph, las abstracciones de datos provistas al programador se circunscriben e
 * **Grado de tipado en Aleph:** Aleph combina **tipado dinámico con verificación estricta (tipado fuerte en tiempo de ejecución)**, de forma análoga al comportamiento de lenguajes interpretados como Scheme [Louden, 2004, p. 205]. Aunque las variables no declaran un tipo estático fijo y pueden re-ligarse a otro tipo en una nueva asignación, ningún operador puede aplicarse sobre operandos incompatibles sin disparar un error de tipo.
 * **Política frente a conversiones implícitas y explícitas:** En Aleph **no permitimos conversiones implícitas (coerciones)** entre `STR`, `SET` y `LIST`. Convertir automáticamente una lista en un conjunto para resolver una unión provocaría pérdida silenciosa del orden y de elementos duplicados, mientras que transformar automáticamente un elemento `'a'` en `{'a'}` ocultaría errores lógicos del programador. Asimismo, no incorporamos operadores de conversión explícita (*casting*), ya que la sintaxis literal del lenguaje permite construir directamente la estructura deseada cuando hace falta envolver un valor (por ejemplo, escribiendo `Q union {'c'}` en lugar de `Q union 'c'`).
 
-3.8.6 Semántica de las asignaciones y expresiones
-[Explicar y mostrar la implementación de las asignaciones y expresiones de Aleph]
+### 3.8.6 Semántica de las asignaciones y expresiones
 
-[Evaluación de asignaciones]
+En un lenguaje imperativo, la **evaluación de expresiones** constituye el mecanismo fundamental para computar nuevos valores a partir de literales, variables y operadores, mientras que la **sentencia de asignación** provee el mecanismo esencial para modificar el estado del programa al ligar dichos valores con identificadores en la Tabla de Símbolos [Sebesta, 2012; Louden, 2004].
+
+En el diseño de Aleph separamos con claridad dos capas estructurales durante el análisis semántico y la interpretación:
+1. **Capa de datos en memoria (`Tdata` / `TNodo`):** Representa exclusivamente los valores concretos resultantes de un cómputo (`STR`, `SET`, `LIST`), manipulados mediante nuestros TADs base (`TAD_str`, `TAD_ast`, `TAD_set`, `TAD_lista`).
+2. **Capa del Árbol de Sintaxis Abstracta ejecutable (`TAst`):** Representa la estructura sintáctico-semántica de las sentencias y expresiones reconocidas por Bison (asignaciones simples y múltiples, referencias a variables, construcción de colecciones y operaciones algebraicas), siguiendo el patrón de intérprete basado en AST propuesto por Levine [2009, pp. 62-66].
+
+Esta separación evita mezclar las instrucciones ejecutables con los datos almacenados en la Tabla de Símbolos y permite recorrer y evaluar el árbol de forma limpia mediante un evaluador recursivo (`eval_ast`).
+
+#### Implementación del AST de expresiones y asignaciones
+
+En el módulo `TAD_eval.h` definimos los tipos de nodos ejecutables y la estructura `TAst` que Bison construye durante las reducciones sintácticas:
+
+```c
+/* Definición en TAD_eval.h */
+#include "TAD_ast.h"
+#include "TAD_symtab.h"
+
+typedef enum {
+    AST_LITERAL,      /* Literal elemental: 'a', '0', etc. */
+    AST_EMPTY,        /* Constante de colección vacía: empty */
+    AST_VAR,          /* Referencia a variable (r-value): ID */
+    AST_SET_LIT,      /* Construcción de conjunto: { ... } */
+    AST_LIST_LIT,     /* Construcción de lista: [ ... ] */
+    AST_UNION,        /* Operación binaria: expr union term */
+    AST_INTER,        /* Operación binaria: expr inter term */
+    AST_DIFF,         /* Operación binaria: expr diff term */
+    AST_INSERT,       /* Operación binaria: expr insert term */
+    AST_APPEND,       /* Operación binaria: expr append term */
+    AST_ASSIGN,       /* Asignación simple: ID = expr */
+    AST_MULTI_ASSIGN, /* Asignación múltiple: let ID1, ID2 = expr1, expr2 */
+    AST_EXPR_LIST,    /* Lista enlazada de subexpresiones */
+    AST_ID_LIST       /* Lista enlazada de identificadores */
+} TipoNodoAST;
+
+typedef struct nodoAST {
+    TipoNodoAST tipo;
+    str nombre;             /* Identificador para AST_VAR, AST_ASSIGN y AST_ID_LIST */
+    Tdata literal;          /* Dato elemental para AST_LITERAL */
+    struct nodoAST *izq;    /* Operando izquierdo / lista de IDs / elementos */
+    struct nodoAST *der;    /* Operando derecho / lista de expresiones / siguiente */
+} TAst;
+```
+Evaluación de expresiones
+La evaluación de expresiones se realiza en postorden mediante la función recursiva eval_ast(TAst *nodo, TTablaSimbolos *tabla). Para cada clase de nodo, el motor aplica la siguiente semántica dinámica:
+
+Literales (AST_LITERAL, AST_EMPTY): Un literal atómico devuelve una copia en memoria (copy_ast) de su Tdata de tipo STR. El literal empty genera una colección vacía mediante create_set().
+
+Referencia a variable (AST_VAR): Consulta la Tabla de Símbolos mediante buscar_simbolo(*tabla, nodo->nombre). Si el identificador existe, retorna una copia profunda de su valor almacenado (copy_ast(sim->valor)) para preservar la inmutabilidad del registro en la tabla; si no existe, emite un error semántico de variable no declarada y retorna NULL.
+
+Construcción dinámica de colecciones (AST_SET_LIT, AST_LIST_LIT): Instancia un nuevo contenedor (create_set() o create_list()), evalúa recursivamente cada subexpresión de su lista de elementos y la incorpora con insert_set (garantizando ausencia de repetidos en conjuntos, incluso con conjuntos anidados) o append (preservando el orden en listas). Esto habilita evaluar expresiones compuestas dentro de colecciones, como [A union B, {'c'}].
+
+Operaciones algebraicas y de colecciones (AST_UNION, AST_INTER, AST_DIFF, AST_INSERT, AST_APPEND): Evalúa primero ambos operandos (izq y der), verifica sus marcas de tipo (return_type) conforme a la tabla de compatibilidad definida en la sección 3.8.5 y, solo si los tipos son compatibles, ejecuta la rutina correspondiente (unionset, intersection_set, difference_set, insert_set o append) sobre copias limpias, liberando finalmente los operandos temporales con free_ast.
+```
+/* Fragmento del evaluador de expresiones en TAD_eval.c */
+case AST_VAR: {
+    TSimbolo *sim = buscar_simbolo(*tabla, nodo->nombre);
+    if (sim == NULL) {
+        fprintf(stderr, "Error semantico: variable '");
+        print(nodo->nombre);
+        fprintf(stderr, "' no declarada.\n");
+        return NULL;
+    }
+    return copy_ast(sim->valor);
+}
+
+case AST_UNION:
+case AST_INTER:
+case AST_DIFF: {
+    Tdata izq = eval_ast(nodo->izq, tabla);
+    Tdata der = eval_ast(nodo->der, tabla);
+    Tdata res = NULL;
+
+    if (izq != NULL && der != NULL) {
+        if (return_type(izq) == SET && return_type(der) == SET) {
+            if (nodo->tipo == AST_UNION)      res = unionset(izq, der);
+            else if (nodo->tipo == AST_INTER) res = intersection_set(izq, der);
+            else                              res = difference_set(izq, der);
+        } else {
+            fprintf(stderr, "Error semantico de tipo: los operadores conjuntistas requieren dos conjuntos (SET).\n");
+        }
+    }
+    free_ast(izq);
+    free_ast(der);
+    return res;
+}
+```
+Evaluación de asignaciones
+En Aleph implementamos la semántica dinámica tanto de la asignación simple como de la asignación múltiple definidas en la gramática de la sección 3.5:
+
+Asignación simple (ID = expresion):
+El evaluador resuelve primero completamente la expresión del lado derecho (r-value) invocando eval_ast(nodo->der, tabla). Si la evaluación culmina sin errores semánticos (val != NULL), actualiza el estado de la memoria invocando insertar_simbolo(tabla, nodo->nombre, val):
+
+Si la variable no existía, crea una nueva entrada en la Tabla de Símbolos ligada a su valor y tipo dinámico.
+
+Si la variable ya existía, libera el árbol anterior (free_ast), almacena una copia del nuevo valor y actualiza su tipo.
+
+Al evaluar primero el lado derecho completo, garantizamos la correcta ejecución de autoasignaciones como Q = Q union {'c'}; sin sobrescribir prematuramente el valor previo de Q.
+
+Asignación múltiple (let ID1, ID2, ... = expr1, expr2, ...):
+Para respetar la semántica de asignación simultánea, el evaluador procede en tres pasos estrictos:
+
+Verificación de aridad: Comprueba que la cantidad de identificadores a la izquierda coincida exactamente con la cantidad de expresiones a la derecha; de lo contrario reporta un error semántico y aborta la asignación sin alterar la tabla.
+
+Evaluación previa del lado derecho: Evalúa todas las expresiones del lado derecho y resguarda temporalmente todos sus resultados en una lista auxiliar antes de modificar ninguna variable. De este modo, instrucciones como let A, B = B, A; intercambian los valores de A y B sin pisar datos intermedios.
+
+Actualización en la Tabla de Símbolos: Recorre simultáneamente la lista de identificadores y la lista de resultados evaluados, invocando insertar_simbolo para cada par y liberando las copias temporales.
+```
+/* Evaluación de asignaciones en TAD_eval.c */
+case AST_ASSIGN: {
+    Tdata val = eval_ast(nodo->der, tabla);
+    if (val == NULL) return NULL;
+
+    insertar_simbolo(tabla, nodo->nombre, val);
+    return val;
+}
+
+case AST_MULTI_ASSIGN: {
+    /* 1. Contar identificadores y expresiones para verificar aridad */
+    int n_ids = contar_lista_ast(nodo->izq);
+    int n_exprs = contar_lista_ast(nodo->der);
+    if (n_ids != n_exprs) {
+        fprintf(stderr, "Error semantico: la asignacion multiple tiene %d variables y %d expresiones.\n",
+                n_ids, n_exprs);
+        return NULL;
+    }
+
+    /* 2. Evaluar primero todas las expresiones del lado derecho */
+    Tdata *valores = (Tdata*)calloc(n_exprs, sizeof(Tdata));
+    TAst *it_e = nodo->der;
+    int error = 0;
+    for (int i = 0; i < n_exprs; i++) {
+        valores[i] = eval_ast(it_e->izq, tabla);
+        if (valores[i] == NULL) error = 1;
+        it_e = it_e->der;
+    }
+
+    /* 3. Si no hubo errores, actualizar todas las variables en la tabla */
+    Tdata resumen = NULL;
+    if (!error) {
+        resumen = create_list();
+        TAst *it_id = nodo->izq;
+        for (int i = 0; i < n_ids; i++) {
+            insertar_simbolo(tabla, it_id->nombre, valores[i]);
+            append(&resumen, valores[i]);
+            it_id = it_id->der;
+        }
+    }
+
+    for (int i = 0; i < n_exprs; i++) free_ast(valores[i]);
+    free(valores);
+    return resumen;
+}
+```

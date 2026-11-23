@@ -1,0 +1,110 @@
+// -----------------------------------------------------------------------------
+// 1. OPERACIONES CON CONJUNTO VACIO (empty y {})
+// -----------------------------------------------------------------------------
+Vacio1 = empty;
+Vacio2 = {};
+S1 = {'a', 'b', 'c'};
+
+// Propiedades con el vacio
+VacioUnion = S1 union empty;        // Debe dar {a, b, c}
+VacioInter = S1 inter empty;        // Debe dar {}
+VacioDiff1 = S1 diff empty;         // Debe dar {a, b, c}
+VacioDiff2 = empty diff S1;         // Debe dar {}
+
+// -----------------------------------------------------------------------------
+// 2. PRECEDENCIA Y ASOCIATIVIDAD CON PARENTESIS
+// -----------------------------------------------------------------------------
+X1 = {'1', '2'};
+X2 = {'2', '3'};
+X3 = {'3', '4'};
+
+// 'inter' tiene mayor precedencia que 'union' y 'diff'
+SinParentesis = X1 union X2 inter X3;        // X1 union (X2 inter X3) => {'1', '2', '3'}
+ConParentesis = (X1 union X2) inter X3;      // ({'1', '2', '3'}) inter X3 => {'3'}
+DiffAsoc      = (X1 union X2) diff X2;       // Debe dar {'1'}
+
+// -----------------------------------------------------------------------------
+// 3. ANIDAMIENTO COMPLEJO (CONJUNTOS DENTRO DE CONJUNTOS Y LISTAS MIXTAS)
+// -----------------------------------------------------------------------------
+SubA = {'x', 'y'};
+SubB = {'y', 'x'};                          // Mismo contenido que SubA (duplicado semantico)
+ConjAnidado = {SubA, SubB, {'z'}};           // SubA y SubB deben colapsar en un unico elemento
+
+ListaHeterogenea = [SubA, ['1', '2'], 'w', empty];
+ListaHeterogenea = ListaHeterogenea append {'f'};
+
+// -----------------------------------------------------------------------------
+// 4. EXPRESIONES DIRECTAS (EVALUADAS SIN ASIGNAR A VARIABLE)
+// -----------------------------------------------------------------------------
+{'a', 'b'} union {'b', 'c'};
+['1', '2'] append '3';
+({'m', 'n'} inter {'n', 'p'}) union {'k'};
+
+// -----------------------------------------------------------------------------
+// 5. ASIGNACION MULTIPLE CON ROTACION TRIPLE (A -> B -> C -> A)
+// -----------------------------------------------------------------------------
+R1 = {'1'};
+R2 = {'2'};
+R3 = {'3'};
+let R1, R2, R3 = R2, R3, R1;                 // R1={'2'}, R2={'3'}, R3={'1'}
+
+// -----------------------------------------------------------------------------
+// 6. ERRORES SEMANTICOS: TIPOS INVALIDOS EN OPERADORES
+// -----------------------------------------------------------------------------
+// Error: 'append' aplicado a un conjunto (SET)
+S1 append 'd';
+
+// Error: 'insert' aplicado a una lista (LIST)
+ListaHeterogenea insert 'd';
+
+// Error: 'insert' sobre un literal char
+'a' insert 'b';
+
+// Error: 'union' entre una lista y un conjunto
+ListaHeterogenea union S1;
+
+// Error: 'diff' entre literales simples
+'a' diff 'b';
+
+// -----------------------------------------------------------------------------
+// 7. ERRORES SEMANTICOS: VARIABLES NO DECLARADAS Y ASIGNACION MULTIPLE
+// -----------------------------------------------------------------------------
+// Error: variable no definida en expresion
+VariableInexistente union S1;
+
+// Error: asignacion simple con variable inexistente
+Destino = VariableFantasma;
+
+// Error: asignacion multiple con diferente cantidad de variables y expresiones (3 vs 2)
+let M1, M2, M3 = {'a'}, {'b'};
+
+// Error: asignacion multiple donde una expresion falla por variable inexistente
+let OK1, OK2 = {'1'}, VariableFallo;
+
+// -----------------------------------------------------------------------------
+// 8. ERRORES LEXICOS (EL INTERPRETE DEBE REPORTARLOS Y CONTINUAR)
+// -----------------------------------------------------------------------------
+// Error lexico: caracteres especiales no reconocidos
+S1 union {'a'} @;
+$ = {'x'};
+
+// Error lexico / sintactico: variables deben comenzar con MAYUSCULA (ID = [A-Z]...)
+variableMinuscula = {'a'};
+
+// -----------------------------------------------------------------------------
+// 9. ERRORES SINTACTICOS (RECUPERACION CON ERROR Y ';')
+// -----------------------------------------------------------------------------
+// Error sintactico: llave sin cerrar
+ConjuntoRoto = {'a', 'b' ;
+
+// Error sintactico: doble operador consecutivo
+S1 union union S1;
+
+// Error sintactico: asignacion vacia
+VacioError = ;
+
+// -----------------------------------------------------------------------------
+// 10. ESTADO FINAL POSTERIOR A ERRORES (DEMUESTRA QUE EL INTERPRETE SIGUE VIVO)
+// -----------------------------------------------------------------------------
+Recuperado = {'o', 'k'};
+Recuperado = Recuperado insert '!';

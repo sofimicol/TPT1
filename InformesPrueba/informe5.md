@@ -46,6 +46,7 @@ typedef struct simbolo {
 typedef TSimbolo* TTablaSimbolos;
 ```
 ```
+```c
 /* Operaciones principales en TAD_symtab.c */
 TSimbolo* buscar_simbolo(TTablaSimbolos tabla, str nombre) {
     TSimbolo *aux = tabla;
@@ -78,19 +79,19 @@ TSimbolo* insertar_simbolo(TTablaSimbolos *tabla, str nombre, Tdata valor) {
     return nuevo;
 }
 ```
+
 #### Ejemplo de uso en código Aleph
+
 Al interpretar la siguiente secuencia de sentencias en Aleph:
 
+```text
 Q = {'a', 'b'};
-
 Sigma = {'0', '1'};
-
 Estados = [Q, Sigma];
-
 Q = Q union {'c'};
+```
 
-La Tabla de Símbolos registra inicialmente las entradas Q (tipo SET, valor {'a', 'b'}), Sigma (tipo SET, valor {'0', '1'}) y Estados (tipo LIST, valor [{'a', 'b'}, {'0', '1'}]). Al ejecutarse la última sentencia, buscar_simbolo recupera el valor actual de Q para resolver la unión y insertar_simbolo actualiza la entrada existente de Q en memoria con el nuevo conjunto {'a', 'b', 'c'}.
-
+La Tabla de Símbolos registra inicialmente las entradas `Q` (tipo `SET`, valor `{'a', 'b'}`), `Sigma` (tipo `SET`, valor `{'0', '1'}`) y `Estados` (tipo `LIST`, valor `[{'a', 'b'}, {'0', '1'}]`). Al ejecutarse la última sentencia, `buscar_simbolo` recupera el valor actual de `Q` para resolver la unión e `insertar_simbolo` actualiza la entrada existente de `Q` en memoria con el nuevo conjunto `{'a', 'b', 'c'}`.
 
 ### 3.8.3 Ligaduras
 
@@ -212,7 +213,7 @@ Las principales ventajas de los lenguajes fuertemente tipados son [Louden, 2004,
 
 #### Conversión implícita y conversión explícita de tipos
 
-Una **conversión de tipo** es una operación con signatura $\text{conversión\_op}: \text{tipo}_1 \to \text{tipo}_2$ que toma un valor de un tipo de dato y produce un valor equivalente de otro tipo distinto [Pratt & Zelkowitz, p. 125]. Existen dos mecanismos para realizarla:
+Una **conversión de tipo** es una operación con signatura `conversión_op`: $\text{tipo}_1 \to \text{tipo}_2$ que toma un valor de un tipo de dato y produce un valor equivalente de otro tipo distinto [Pratt & Zelkowitz, p. 125]. Existen dos mecanismos para realizarla:
 
 * **Conversión implícita (o coerción):** Es efectuada de manera automática por el compilador o el intérprete cuando detecta una discordancia entre el tipo real de un operando y el tipo esperado por un operador [Pratt & Zelkowitz, p. 125]. Por lo general, los lenguajes restringen las coerciones a conversiones de **ensanchamiento** (*widening* o promoción, como convertir un entero a real), donde el tipo destino puede representar al origen sin pérdida de información, evitando las de **estrechamiento** (*narrowing*, como truncar un real a entero), que conllevan pérdida de precisión [Pratt & Zelkowitz, p. 125].
 * **Conversión explícita (*casting*):** Es solicitada expresamente en el código fuente por el programador, ya sea mediante operadores de moldeado dedicados (como `(int) x` en C) o mediante funciones de conversión integradas (como `round()` en Pascal) [Pratt & Zelkowitz, p. 125]. Hace visible la intención del cambio de tipo y evita transformaciones inesperadas.
@@ -281,17 +282,41 @@ typedef struct nodoAST {
     struct nodoAST *der;    /* Operando derecho / lista de expresiones / siguiente */
 } TAst;
 ```
-Evaluación de expresiones
-La evaluación de expresiones se realiza en postorden mediante la función recursiva eval_ast(TAst *nodo, TTablaSimbolos *tabla). Para cada clase de nodo, el motor aplica la siguiente semántica dinámica:
+En el archivo de Bison (`aleph.y`), las reglas gramaticales ya no descartan las asignaciones ni emiten advertencias temporales, sino que sintetizan nodos `TAst` y delegan la ejecución al evaluador al finalizar cada sentencia terminada en `;`:
 
-Literales (AST_LITERAL, AST_EMPTY): Un literal atómico devuelve una copia en memoria (copy_ast) de su Tdata de tipo STR. El literal empty genera una colección vacía mediante create_set().
+```c
+/* Reglas principales de asignaciones y expresiones en aleph.y */
+sentencia: asignacion { $$ = $1; }
+         | expresion  { $$ = $1; }
+         ;
 
-Referencia a variable (AST_VAR): Consulta la Tabla de Símbolos mediante buscar_simbolo(*tabla, nodo->nombre). Si el identificador existe, retorna una copia profunda de su valor almacenado (copy_ast(sim->valor)) para preservar la inmutabilidad del registro en la tabla; si no existe, emite un error semántico de variable no declarada y retorna NULL.
+asignacion: ID '=' expresion {
+                $$ = crear_nodo_asig($1, $3);
+            }
+          | KW_LET lts_id '=' lts_expresiones {
+                $$ = crear_nodo_asig_mult($2, $4);
+            }
+          ;
 
-Construcción dinámica de colecciones (AST_SET_LIT, AST_LIST_LIT): Instancia un nuevo contenedor (create_set() o create_list()), evalúa recursivamente cada subexpresión de su lista de elementos y la incorpora con insert_set (garantizando ausencia de repetidos en conjuntos, incluso con conjuntos anidados) o append (preservando el orden en listas). Esto habilita evaluar expresiones compuestas dentro de colecciones, como [A union B, {'c'}].
-
-Operaciones algebraicas y de colecciones (AST_UNION, AST_INTER, AST_DIFF, AST_INSERT, AST_APPEND): Evalúa primero ambos operandos (izq y der), verifica sus marcas de tipo (return_type) conforme a la tabla de compatibilidad definida en la sección 3.8.5 y, solo si los tipos son compatibles, ejecuta la rutina correspondiente (unionset, intersection_set, difference_set, insert_set o append) sobre copias limpias, liberando finalmente los operandos temporales con free_ast.
+expresion: termino                           { $$ = $1; }
+         | expresion OP_UNION termino        { $$ = crear_nodo_op(AST_UNION, $1, $3); }
+         | expresion OP_INTERSECTION termino { $$ = crear_nodo_op(AST_INTER, $1, $3); }
+         | expresion OP_DIFFERENCE termino   { $$ = crear_nodo_op(AST_DIFF, $1, $3); }
+         | expresion KW_APPEND termino       { $$ = crear_nodo_op(AST_APPEND, $1, $3); }
+         | expresion KW_INSERT termino       { $$ = crear_nodo_op(AST_INSERT, $1, $3); }
+         ;
 ```
+
+#### Evaluación de expresiones
+
+La evaluación de expresiones se realiza en postorden mediante la función recursiva `eval_ast(TAst *nodo, TTablaSimbolos *tabla)`. Para cada clase de nodo, el motor aplica la siguiente semántica dinámica:
+
+* **Literales (`AST_LITERAL`, `AST_EMPTY`):** Un literal atómico devuelve una copia en memoria (`copy_ast`) de su `Tdata` de tipo `STR`. El literal `empty` genera una colección vacía mediante `create_set()`.
+* **Referencia a variable (`AST_VAR`):** Consulta la Tabla de Símbolos mediante `buscar_simbolo(*tabla, nodo->nombre)`. Si el identificador existe, retorna una copia profunda de su valor almacenado (`copy_ast(sim->valor)`) para preservar la inmutabilidad del registro en la tabla; si no existe, emite un **error semántico de variable no declarada** y retorna `NULL`.
+* **Construcción dinámica de colecciones (`AST_SET_LIT`, `AST_LIST_LIT`):** Instancia un nuevo contenedor (`create_set()` o `create_list()`), evalúa recursivamente cada subexpresión de su lista de elementos y la incorpora con `insert_set` (garantizando ausencia de repetidos en conjuntos, incluso con conjuntos anidados) o `append` (preservando el orden en listas). Esto habilita evaluar expresiones compuestas dentro de colecciones, como `[A union B, {'c'}]`.
+* **Operaciones algebraicas y de colecciones (`AST_UNION`, `AST_INTER`, `AST_DIFF`, `AST_INSERT`, `AST_APPEND`):** Evalúa primero ambos operandos (`izq` y `der`), verifica sus marcas de tipo (`return_type`) conforme a la tabla de compatibilidad definida en la sección 3.8.5 y, solo si los tipos son compatibles, ejecuta la rutina correspondiente (`unionset`, `intersection_set`, `difference_set`, `insert_set` o `append`) sobre copias limpias, liberando finalmente los operandos temporales con `free_ast`.
+
+```c
 /* Fragmento del evaluador de expresiones en TAD_eval.c */
 case AST_VAR: {
     TSimbolo *sim = buscar_simbolo(*tabla, nodo->nombre);
@@ -325,27 +350,24 @@ case AST_DIFF: {
     return res;
 }
 ```
-Evaluación de asignaciones
-En Aleph implementamos la semántica dinámica tanto de la asignación simple como de la asignación múltiple definidas en la gramática de la sección 3.5:
 
-Asignación simple (ID = expresion):
-El evaluador resuelve primero completamente la expresión del lado derecho (r-value) invocando eval_ast(nodo->der, tabla). Si la evaluación culmina sin errores semánticos (val != NULL), actualiza el estado de la memoria invocando insertar_simbolo(tabla, nodo->nombre, val):
+#### Evaluación de asignaciones
 
-Si la variable no existía, crea una nueva entrada en la Tabla de Símbolos ligada a su valor y tipo dinámico.
+En Aleph implementamos la semántica dinámica tanto de la **asignación simple** como de la **asignación múltiple** definidas en la gramática de la sección 3.5:
 
-Si la variable ya existía, libera el árbol anterior (free_ast), almacena una copia del nuevo valor y actualiza su tipo.
+1. **Asignación simple (`ID = expresion`):**
+   El evaluador resuelve primero completamente la expresión del lado derecho (*r-value*) invocando `eval_ast(nodo->der, tabla)`. Si la evaluación culmina sin errores semánticos (`val != NULL`), actualiza el estado de la memoria invocando `insertar_simbolo(tabla, nodo->nombre, val)`:
+   * Si la variable no existía, crea una nueva entrada en la Tabla de Símbolos ligada a su valor y tipo dinámico.
+   * Si la variable ya existía, libera el árbol anterior (`free_ast`), almacena una copia del nuevo valor y actualiza su tipo.
+   * Al evaluar primero el lado derecho completo, garantizamos la correcta ejecución de **autoasignaciones** como `Q = Q union {'c'};` sin sobrescribir prematuramente el valor previo de `Q`.
 
-Al evaluar primero el lado derecho completo, garantizamos la correcta ejecución de autoasignaciones como Q = Q union {'c'}; sin sobrescribir prematuramente el valor previo de Q.
+2. **Asignación múltiple (`let ID1, ID2, ... = expr1, expr2, ...`):**
+   Para respetar la semántica de **asignación simultánea**, el evaluador procede en tres pasos estrictos:
+   * **Verificación de aridad:** Comprueba que la cantidad de identificadores a la izquierda coincida exactamente con la cantidad de expresiones a la derecha; de lo contrario reporta un error semántico y aborta la asignación sin alterar la tabla.
+   * **Evaluación previa del lado derecho:** Evalúa todas las expresiones del lado derecho y resguarda temporalmente todos sus resultados en una lista auxiliar antes de modificar ninguna variable. De este modo, instrucciones como `let A, B = B, A;` intercambian los valores de `A` y `B` sin pisar datos intermedios.
+   * **Actualización en la Tabla de Símbolos:** Recorre simultáneamente la lista de identificadores y la lista de resultados evaluados, invocando `insertar_simbolo` para cada par y liberando las copias temporales.
 
-Asignación múltiple (let ID1, ID2, ... = expr1, expr2, ...):
-Para respetar la semántica de asignación simultánea, el evaluador procede en tres pasos estrictos:
-
-Verificación de aridad: Comprueba que la cantidad de identificadores a la izquierda coincida exactamente con la cantidad de expresiones a la derecha; de lo contrario reporta un error semántico y aborta la asignación sin alterar la tabla.
-
-Evaluación previa del lado derecho: Evalúa todas las expresiones del lado derecho y resguarda temporalmente todos sus resultados en una lista auxiliar antes de modificar ninguna variable. De este modo, instrucciones como let A, B = B, A; intercambian los valores de A y B sin pisar datos intermedios.
-
-Actualización en la Tabla de Símbolos: Recorre simultáneamente la lista de identificadores y la lista de resultados evaluados, invocando insertar_simbolo para cada par y liberando las copias temporales.
-```
+```c
 /* Evaluación de asignaciones en TAD_eval.c */
 case AST_ASSIGN: {
     Tdata val = eval_ast(nodo->der, tabla);
@@ -392,3 +414,18 @@ case AST_MULTI_ASSIGN: {
     return resumen;
 }
 ```
+
+**Traza de ejecución de ejemplo en Aleph:**
+
+```text
+A = {'a', 'b'};
+B = {'b', 'c'};
+U = A union B;
+I = A inter B;
+D = A diff B;
+let A, B = B, A;
+L = ['0'] append '1';
+S = A insert 'z';
+```
+
+Al ejecutar este bloque en el intérprete, `U` queda ligado a `{'a','b','c'}`, `I` a `{'b'}`, `D` a `{'a'}`, `let A, B = B, A;` intercambia limpiamente los contenidos de `A` y `B` en la Tabla de Símbolos, `L` resulta en `['0','1']` y `S` en `{'b','c','z'}`. Si a continuación se intentara evaluar `L union A;`, el evaluador detecta la incompatibilidad (`LIST` frente a `SET`) y emite el correspondiente error semántico de tipo.

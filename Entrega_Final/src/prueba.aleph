@@ -1,0 +1,32 @@
+// 1. Asignaciones simples, eliminacion de duplicados y conjuntos anidados
+A = {'a', 'b', 'a'};
+B = {'b', 'c'};
+Anidado = {{'a', 'b'}, {'b', 'a'}};
+
+// 2. Operaciones de conjuntos (union, inter, diff) y precedencia
+U = A union B;
+I = A inter B;
+D = A diff B;
+Prec = {'x'} union A inter B;
+
+// 3. Autoasignacion y literal empty
+Q = empty;
+Q = Q union {'0', '1'};
+Q = Q insert '2';
+
+// 4. Listas y append
+L = ['0', '1'] append '2';
+Automata = [Q, {'0', '1'}, L];
+
+// 5. Asignacion multiple simultanea (intercambio A <-> B)
+let A, B = B, A;
+
+// 6. Ligadura dinamica de tipo (X cambia de SET a LIST)
+X = {'a'};
+X = ['a', 'b'];
+
+// 7. Pruebas de deteccion de errores semanticos (debe reportarlos sin caerse)
+NoExiste union A;
+L union A;
+'a' insert 'b';
+let P, R = {'1'};
